@@ -22,4 +22,10 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+
+// Test passwords exist in env vars in production env
+// Console.WriteLine(System.Environment.GetEnvironmentVariable("SomeSecret"));
+
+
+// Inject Secrets
 app.Run();
