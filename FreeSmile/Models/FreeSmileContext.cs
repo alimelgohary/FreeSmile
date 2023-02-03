@@ -44,7 +44,7 @@ namespace FreeSmile.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Name=FreeSmileDatabase");
+                optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("FreeSmileDatabase"));
             }
         }
 
