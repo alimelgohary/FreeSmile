@@ -1,3 +1,4 @@
+using FreeSmile;
 using FreeSmile.Models;
 using Microsoft.EntityFrameworkCore;
 

@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using FreeSmile.Models;
 
-namespace FreeSmile.Models
+namespace FreeSmile
 {
     public partial class FreeSmileContext : DbContext
     {
@@ -93,7 +94,7 @@ namespace FreeSmile.Models
                 entity.HasOne(d => d.AdminNavigation)
                     .WithOne(p => p.Admin)
                     .HasForeignKey<Admin>(d => d.AdminId)
-                    .HasConstraintName("FK__admins__admin_id__2CF2ADDF");
+                    .HasConstraintName("FK__admins__admin_id__10AB74EC");
             });
 
             modelBuilder.Entity<Article>(entity =>
@@ -247,18 +248,18 @@ namespace FreeSmile.Models
                     .WithMany(p => p.Dentists)
                     .HasForeignKey(d => d.CurrentDegree)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__dentists__curren__3D2915A8");
+                    .HasConstraintName("FK__dentists__curren__035179CE");
 
                 entity.HasOne(d => d.CurrentUniversityNavigation)
                     .WithMany(p => p.Dentists)
                     .HasForeignKey(d => d.CurrentUniversity)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_dentists_universities");
+                    .HasConstraintName("FK__dentists__curren__04459E07");
 
                 entity.HasOne(d => d.DentistNavigation)
                     .WithOne(p => p.Dentist)
                     .HasForeignKey<Dentist>(d => d.DentistId)
-                    .HasConstraintName("FK__dentists__dentis__3C34F16F");
+                    .HasConstraintName("FK__dentists__dentis__025D5595");
             });
 
             modelBuilder.Entity<Governate>(entity =>
@@ -436,7 +437,7 @@ namespace FreeSmile.Models
                 entity.HasOne(d => d.PatientNavigation)
                     .WithOne(p => p.Patient)
                     .HasForeignKey<Patient>(d => d.PatientId)
-                    .HasConstraintName("FK__patients__patien__2FCF1A8A");
+                    .HasConstraintName("FK__patients__patien__147C05D0");
             });
 
             modelBuilder.Entity<Portfolio>(entity =>
@@ -464,7 +465,7 @@ namespace FreeSmile.Models
                 entity.HasOne(d => d.Dentist)
                     .WithMany(p => p.Portfolios)
                     .HasForeignKey(d => d.DentistId)
-                    .HasConstraintName("FK__portfolio__denti__74444068");
+                    .HasConstraintName("FK__portfolio__denti__0AF29B96");
             });
 
             modelBuilder.Entity<Post>(entity =>
@@ -767,7 +768,7 @@ namespace FreeSmile.Models
             modelBuilder.Entity<VerificationRequest>(entity =>
             {
                 entity.HasKey(e => e.OwnerId)
-                    .HasName("PK__verifica__3C4FBEE4D5DE8CD5");
+                    .HasName("PK__verifica__3C4FBEE4EDBC849E");
 
                 entity.ToTable("verificationRequests");
 
@@ -796,12 +797,12 @@ namespace FreeSmile.Models
                     .WithMany(p => p.VerificationRequests)
                     .HasForeignKey(d => d.DegreeRequested)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__verificat__degre__2334397B");
+                    .HasConstraintName("FK__verificat__degre__08162EEB");
 
                 entity.HasOne(d => d.Owner)
                     .WithOne(p => p.VerificationRequest)
                     .HasForeignKey<VerificationRequest>(d => d.OwnerId)
-                    .HasConstraintName("FK__verificat__owner__22401542");
+                    .HasConstraintName("FK__verificat__owner__07220AB2");
             });
 
             OnModelCreatingPartial(modelBuilder);
