@@ -44,7 +44,13 @@ namespace FreeSmile.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("FreeSmileDatabase"));
+                var connectionString = Environment.GetEnvironmentVariable("FreeSmileDatabase");
+                if (string.IsNullOrEmpty(connectionString))
+                {
+                    Console.WriteLine("Fatal Error: Database Connection String is not found in Environment Variables");
+                    Environment.Exit(1);
+                }
+                optionsBuilder.UseSqlServer(connectionString);
             }
         }
 

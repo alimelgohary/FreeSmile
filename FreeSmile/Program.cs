@@ -27,13 +27,11 @@ app.UseAuthorization();
 app.MapControllers();
 
 
-// TODO : Test passwords exist in env vars in production env
-// Console.WriteLine(System.Environment.GetEnvironmentVariable("SomeSecret"));
 
 
 // Inject Secrets
 
-new FreeSmile.Models.FreeSmileContext().CaseTypes.ToList().ForEach(x => Console.WriteLine(x.NameEn + x.NameAr));
-new FreeSmile.Models.FreeSmileContext().ArticleCats.ToList().ForEach(x => Console.WriteLine(x.NameEn + x.NameAr));
-new FreeSmile.Models.FreeSmileContext().ProductCats.ToList().ForEach(x => Console.WriteLine(x.NameEn + x.NameAr));
+new FreeSmileContext().CaseTypes.ToList().ForEach(x => Console.WriteLine(x.NameEn + x.NameAr));
+new FreeSmileContext().ArticleCats.ToList().ForEach(x => Console.WriteLine(x.NameEn + x.NameAr));
+new FreeSmileContext().ProductCats.ToList().ForEach(x => Console.WriteLine(x.NameEn + x.NameAr));
 app.Run();
