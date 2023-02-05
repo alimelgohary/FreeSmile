@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using FreeSmile.Models;
+using FreeSmile.Services;
 
 namespace FreeSmile
 {
@@ -45,14 +46,7 @@ namespace FreeSmile
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var connectionString = Environment.GetEnvironmentVariable("FreeSmileDatabase");
-                if (string.IsNullOrEmpty(connectionString))
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Fatal Error: Database Connection String is not found in Environment Variables", ConsoleColor.Red);
-                    Environment.Exit(1);
-                }
-                optionsBuilder.UseSqlServer(connectionString);
+                optionsBuilder.UseSqlServer(Helper.GetEnvVariable("FreeSmileDatabase", true));
             }
         }
 

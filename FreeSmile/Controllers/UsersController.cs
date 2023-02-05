@@ -8,9 +8,11 @@ namespace FreeSmile.Controllers
     public class UsersController : ControllerBase
     {
         private readonly ILogger<UsersController> _logger;
-        public UsersController(ILogger<UsersController> logger)
+        private readonly FreeSmileContext _context;
+        public UsersController(ILogger<UsersController> logger, FreeSmileContext context)
         {
             _logger = logger;
+            _context = context;
         }
         [HttpPost("Register")]
         public void Register([FromBody] User value)
@@ -20,6 +22,7 @@ namespace FreeSmile.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
+            _context.CaseTypes.ToList().ForEach(x => Console.WriteLine(x.NameEn + x.NameAr));
             return new string[] { "value1", "value2" };
         }
 
