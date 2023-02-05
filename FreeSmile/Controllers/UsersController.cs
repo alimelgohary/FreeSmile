@@ -1,5 +1,6 @@
 ﻿using FreeSmile.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace FreeSmile.Controllers
 {
@@ -14,10 +15,10 @@ namespace FreeSmile.Controllers
             _logger = logger;
             _context = context;
         }
-        [HttpPost("Register")]
-        public void Register([FromBody] User value)
+        [HttpPost("RegisterPatient")]
+        public void Register([FromBody] BlaBla value, string id)
         {
-            Console.WriteLine($"Post {value}");
+            Console.WriteLine($"Post {value.Name} {value.Id} {id}");
         }
         [HttpGet]
         public IEnumerable<string> Get()
@@ -26,10 +27,10 @@ namespace FreeSmile.Controllers
             return new string[] { "value1", "value2" };
         }
 
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("lang")]
+        public string Get(string id)
         {
-            return $"GEtvalue {id}";
+            return $"GEtvalue {string.Join(", ", _context.ArticleCats.Select(x => new { lang = x.Lang(id)}).ToList())}";
         }
 
         [HttpPost]
@@ -48,6 +49,13 @@ namespace FreeSmile.Controllers
         public void Delete(int id)
         {
             Console.WriteLine("Deleted" + id);
+        }
+
+        public class BlaBla
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+
         }
     }
 }

@@ -12,10 +12,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//builder.Services.AddDbContext<FreeSmileContext>(optionsBuilder =>
-//{
-//    optionsBuilder.UseSqlServer(Helper.GetEnvVariable("FreeSmileDatabase", true));
-//});
+builder.Services.AddDbContext<FreeSmileContext>(optionsBuilder =>
+{
+    optionsBuilder.UseSqlServer(Helper.GetEnvVariable("FreeSmileDatabase", true));
+});
 
 
 var app = builder.Build();

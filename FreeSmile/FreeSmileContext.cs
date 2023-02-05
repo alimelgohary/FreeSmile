@@ -25,6 +25,7 @@ namespace FreeSmile
         public virtual DbSet<Case> Cases { get; set; } = null!;
         public virtual DbSet<CaseType> CaseTypes { get; set; } = null!;
         public virtual DbSet<Dentist> Dentists { get; set; } = null!;
+        public virtual DbSet<Error> Errors { get; set; } = null!;
         public virtual DbSet<Governate> Governates { get; set; } = null!;
         public virtual DbSet<Listing> Listings { get; set; } = null!;
         public virtual DbSet<Message> Messages { get; set; } = null!;
@@ -250,6 +251,27 @@ namespace FreeSmile
                     .WithOne(p => p.Dentist)
                     .HasForeignKey<Dentist>(d => d.DentistId)
                     .HasConstraintName("FK__dentists__dentis__025D5595");
+            });
+
+            modelBuilder.Entity<Error>(entity =>
+            {
+                entity.HasKey(e => e.TempName)
+                    .HasName("PK_returns");
+
+                entity.ToTable("errors");
+
+                entity.Property(e => e.TempName)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasColumnName("temp_name");
+
+                entity.Property(e => e.MessageAr)
+                    .HasMaxLength(50)
+                    .HasColumnName("messageAr");
+
+                entity.Property(e => e.MessageEn)
+                    .HasMaxLength(50)
+                    .HasColumnName("messageEn");
             });
 
             modelBuilder.Entity<Governate>(entity =>
