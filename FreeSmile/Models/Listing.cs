@@ -6,7 +6,6 @@ namespace FreeSmile.Models
     public partial class Listing
     {
         public int ListingId { get; set; }
-        public bool? VisibleContactInfo { get; set; }
         public decimal Price { get; set; }
         public int GovernateId { get; set; }
         public int CatId { get; set; }

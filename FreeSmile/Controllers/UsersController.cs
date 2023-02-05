@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FreeSmile.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FreeSmile.Controllers
 {
@@ -11,7 +12,11 @@ namespace FreeSmile.Controllers
         {
             _logger = logger;
         }
-    
+        [HttpPost("Register")]
+        public void Register([FromBody] User value)
+        {
+            Console.WriteLine($"Post {value}");
+        }
         [HttpGet]
         public IEnumerable<string> Get()
         {

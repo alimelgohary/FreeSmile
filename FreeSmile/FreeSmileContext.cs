@@ -157,10 +157,6 @@ namespace FreeSmile
 
                 entity.Property(e => e.GovernateId).HasColumnName("governate_id");
 
-                entity.Property(e => e.VisibleContactInfo)
-                    .HasColumnName("visible_contact_info")
-                    .HasDefaultValueSql("((0))");
-
                 entity.HasOne(d => d.CaseNavigation)
                     .WithOne(p => p.Case)
                     .HasForeignKey<Case>(d => d.CaseId)
@@ -304,10 +300,6 @@ namespace FreeSmile
                 entity.Property(e => e.Price)
                     .HasColumnType("money")
                     .HasColumnName("price");
-
-                entity.Property(e => e.VisibleContactInfo)
-                    .HasColumnName("visible_contact_info")
-                    .HasDefaultValueSql("((0))");
 
                 entity.HasOne(d => d.Cat)
                     .WithMany(p => p.Listings)
@@ -787,11 +779,6 @@ namespace FreeSmile
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("proof_of_degree_photo");
-
-                entity.Property(e => e.UniversityIdPhoto)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("university_id_photo");
 
                 entity.HasOne(d => d.DegreeRequestedNavigation)
                     .WithMany(p => p.VerificationRequests)

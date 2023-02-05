@@ -6,7 +6,6 @@ namespace FreeSmile.Models
     public partial class Case
     {
         public int CaseId { get; set; }
-        public bool? VisibleContactInfo { get; set; }
         public int CaseTypeId { get; set; }
         public int GovernateId { get; set; }
 
