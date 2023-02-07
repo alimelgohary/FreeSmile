@@ -1,6 +1,9 @@
 ﻿using FreeSmile.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Localization;
 
 namespace FreeSmile.Controllers
 {
@@ -9,28 +12,31 @@ namespace FreeSmile.Controllers
     public class UsersController : ControllerBase
     {
         private readonly ILogger<UsersController> _logger;
+        private readonly IStringLocalizer<UsersController> _localizer;
         private readonly FreeSmileContext _context;
-        public UsersController(ILogger<UsersController> logger, FreeSmileContext context)
+        public UsersController(ILogger<UsersController> logger, FreeSmileContext context, IStringLocalizer<UsersController> localizer)
         {
             _logger = logger;
             _context = context;
+            _localizer = localizer;
         }
         [HttpPost("RegisterPatient")]
-        public void Register([FromBody] BlaBla value, string id)
+        public IActionResult Register([FromBody] BlaBla value)
         {
-            Console.WriteLine($"Post {value.Name} {value.Id} {id}");
+
+            //Console.WriteLine($"Post {value.Name} {value.Id}");
+            return Ok(value);
         }
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            _context.CaseTypes.ToList().ForEach(x => Console.WriteLine(x.NameEn + x.NameAr));
-            return new string[] { "value1", "value2" };
+            return new string[] { _localizer["balbal", "Ali"], _localizer["home"], _localizer["privacy"] };
         }
 
         [HttpGet("lang")]
         public string Get(string id)
         {
-            return $"GEtvalue {string.Join(", ", _context.ArticleCats.Select(x => new { lang = x.Lang(id)}).ToList())}";
+            return $"GEtvalue {id}";
         }
 
         [HttpPost]
@@ -53,9 +59,13 @@ namespace FreeSmile.Controllers
 
         public class BlaBla
         {
-            public int Id { get; set; }
+            [DisplayName("iD")]
+            [Required(ErrorMessage = "required")]
+            public int? Id { get; set; }
+            [DisplayName("name")] // useful for printing property **localized** name in error message
+            [Required(ErrorMessage = "required")]
             public string Name { get; set; }
-
         }
+
     }
 }
