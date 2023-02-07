@@ -6,11 +6,15 @@ using FreeSmile.Services;
 using Microsoft.Extensions.Localization;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddLogging();
+var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
+builder.Host.UseSerilog((ctx, lc) => lc
+    .ReadFrom.Configuration(config));
 builder.Services.AddControllers();
 
 builder.Services.AddLocalization();
