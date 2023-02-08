@@ -4,6 +4,7 @@ using System.Linq;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Localization;
+using FreeSmile.DTOs;
 
 namespace FreeSmile.Controllers
 {
@@ -21,9 +22,9 @@ namespace FreeSmile.Controllers
             _localizer = localizer;
         }
         [HttpPost("RegisterPatient")]
-        public IActionResult Register([FromBody] BlaBla value)
+        public IActionResult Register(UserRegisterDto value)
         {
-
+            Console.WriteLine($"{value.Username}, {value.Gender}, {value.Email}");
             //Console.WriteLine($"Post {value.Name} {value.Id}");
             return Ok(value);
         }
@@ -62,7 +63,7 @@ namespace FreeSmile.Controllers
             [DisplayName("iD")]
             [Required(ErrorMessage = "required")]
             public int? Id { get; set; }
-            [DisplayName("name")] // useful for printing property **localized** name in error message
+            [DisplayName("name")] // useful for printing property **localized** name **in** error 
             [Required(ErrorMessage = "required")]
             public string Name { get; set; }
         }
