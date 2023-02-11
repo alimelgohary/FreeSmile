@@ -10,13 +10,17 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+#region Logging
 builder.Services.AddLogging();
 var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
 builder.Host.UseSerilog((ctx, lc) => lc
     .ReadFrom.Configuration(config));
+#endregion
+
 builder.Services.AddControllers();
 
+#region Localization1
 builder.Services.AddLocalization();
 builder.Services.AddSingleton<IStringLocalizerFactory, JsonStringLocalizerFactory>();
 builder.Services.AddMvc()
@@ -32,7 +36,13 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.DefaultRequestCulture = new RequestCulture(supportedCultures[0]);
     options.SupportedCultures = supportedCultures;
 });
+#endregion
 
+#region TransientServices
+builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IDentistService, DentistService>();
+builder.Services.AddTransient<IPatientService, PatientService>();
+#endregion
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -52,11 +62,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+#region Localization2
 var supportedCultures = new[] { "en", "ar" };
 var localizationOptions = new RequestLocalizationOptions()
     .SetDefaultCulture(supportedCultures[0])
     .AddSupportedCultures(supportedCultures);
-app.UseRequestLocalization(localizationOptions);
+app.UseRequestLocalization(localizationOptions); 
+#endregion
 
 app.UseHttpsRedirection();
 
@@ -65,9 +77,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 
-
-
-new FreeSmileContext().CaseTypes.ToList().ForEach(x => Console.WriteLine(x.NameEn + x.NameAr));
-new FreeSmileContext().ArticleCats.ToList().ForEach(x => Console.WriteLine(x.NameEn + x.NameAr));
-new FreeSmileContext().ProductCats.ToList().ForEach(x => Console.WriteLine(x.NameEn + x.NameAr));
 app.Run();

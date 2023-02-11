@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Localization;
 using FreeSmile.DTOs;
+using FreeSmile.Services;
 
 namespace FreeSmile.Controllers
 {
@@ -12,20 +13,30 @@ namespace FreeSmile.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly ILogger<UsersController> _logger;
         private readonly IStringLocalizer<UsersController> _localizer;
-        private readonly FreeSmileContext _context;
-        public UsersController(ILogger<UsersController> logger, FreeSmileContext context, IStringLocalizer<UsersController> localizer)
+        private readonly IUserService _userService;
+        private readonly IPatientService _patientService;
+
+        public UsersController(IStringLocalizer<UsersController> localizer, IUserService userService, IPatientService patientService)
         {
-            _logger = logger;
-            _context = context;
             _localizer = localizer;
+            _userService = userService;
+            _patientService = patientService;
         }
         [HttpPost("RegisterPatient")]
-        public IActionResult Register(UserRegisterDto value)
+        public async Task<IActionResult> Register(UserRegisterDto value)
         {
+            try
+            {
+                await _patientService.AddUserAsync(value);
+                // TODO : Return a token, cookie
+                return Ok(_localizer["RegistrationSuccess"]);
+            }
+            catch (Exception)
+            {
+                return BadRequest(_localizer["patientAddError"]);
+            }
 
-            return Ok(value);
         }
         [HttpPost("RegisteDentist")]
         public IActionResult Register(DentistRegisterDto value)

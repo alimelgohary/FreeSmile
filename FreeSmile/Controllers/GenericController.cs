@@ -1,0 +1,81 @@
+﻿using FreeSmile.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Localization;
+using FreeSmile.DTOs;
+using FreeSmile.Services;
+
+namespace FreeSmile.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class GenericController : ControllerBase
+    {
+        private readonly IStringLocalizer<UsersController> _localizer;
+        private readonly FreeSmileContext _context;
+
+        public GenericController(IStringLocalizer<UsersController> localizer, FreeSmileContext context)
+        {
+            _localizer = localizer;
+            _context = context;
+        }
+        
+        [HttpGet("GetUniversities")]
+        public IActionResult GetUniversityList()
+        {
+            string lang = Thread.CurrentThread.CurrentCulture.Name;
+            var universities = _context.Universities.Select(u => new { id = u.UniversityId, name = u.Lang(lang) }).ToList();
+            return Ok(universities);
+        }
+        
+        [HttpGet("GetAcademicDegrees")]
+        public IActionResult GetAcademicDegrees()
+        {
+            string lang = Thread.CurrentThread.CurrentCulture.Name;
+            var academicDegrees = _context.AcademicDegrees.Select(x => new { id = x.DegId, name = x.Lang(lang) }).ToList();
+            return Ok(academicDegrees);
+        }
+        
+        [HttpGet("GetGovernates")]
+        public IActionResult GetGovernatesList()
+        {
+            string lang = Thread.CurrentThread.CurrentCulture.Name;
+            var govs = _context.Governates.Select(x => new { id = x.GovId, name = x.Lang(lang) }).ToList();
+            return Ok(govs);
+        }
+
+        [HttpGet("GetTypes")]
+        public IActionResult GetTypesList()
+        {
+            string lang = Thread.CurrentThread.CurrentCulture.Name;
+            var types = _context.CaseTypes.Select(x => new { id = x.CaseTypeId, name = x.Lang(lang) }).ToList();
+            return Ok(types);
+        }
+        
+        [HttpGet("GetArticleCats")]
+        public IActionResult GetArticleCatsList()
+        {
+            string lang = Thread.CurrentThread.CurrentCulture.Name;
+            var artCats = _context.ArticleCats.Select(x => new { id = x.ArticleCatId, name = x.Lang(lang) }).ToList();
+            return Ok(artCats);
+        }
+
+        [HttpGet("GetProductCats")]
+        public IActionResult GetProductCatsList()
+        {
+            string lang = Thread.CurrentThread.CurrentCulture.Name;
+            var productCats = _context.ProductCats.Select(x => new { id = x.ProductCatId, name = x.Lang(lang) }).ToList();
+            return Ok(productCats);
+        }
+
+        [HttpGet("GetNotificationTemplates")]
+        public IActionResult GetNotificationTemplatesList()
+        {
+            string lang = Thread.CurrentThread.CurrentCulture.Name;
+            var productCats = _context.NotificationTemplates.Select(x => new { id = x.TempId, name = x.TempName, title = x.Lang(lang), body = x.LangBody(lang) }).ToList();
+            return Ok(productCats);
+        }
+    }
+}

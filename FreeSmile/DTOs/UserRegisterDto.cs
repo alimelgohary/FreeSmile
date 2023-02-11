@@ -31,19 +31,15 @@ namespace FreeSmile.DTOs
         public string Password { get; set; } = null!;
 
         [DisplayName(nameof(Phone))]
-        [StringLength(10, ErrorMessage = "exactchar")]
+        [StringLength(10, MinimumLength = 10, ErrorMessage = "exactchar")]
         [Unique(nameof(User), nameof(Phone), ErrorMessage = "unique")]
+        [RegularExpression("^1[0-9]*$", ErrorMessage = "mustBeNumber")]
         public string? Phone { get; set; }
 
-        [DisplayName(nameof(Fname))]
+        [DisplayName(nameof(Fullname))]
         [Required(ErrorMessage = "required")]
-        [StringLength(50, MinimumLength = 2, ErrorMessage = "maxMinchar")]
-        public string Fname { get; set; } = null!;
-
-        [DisplayName(nameof(Lname))]
-        [Required(ErrorMessage = "required")]
-        [StringLength(50, MinimumLength = 2, ErrorMessage = "maxMinchar")]
-        public string Lname { get; set; } = null!;
+        [StringLength(100, MinimumLength = 4, ErrorMessage = "maxMinchar")]
+        public string Fullname { get; set; } = null!;
 
         [DisplayName(nameof(Gender))]
         [Required(ErrorMessage = "required")]

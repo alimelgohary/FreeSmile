@@ -9,6 +9,7 @@ namespace FreeSmile.DTOs
 {
     public class DentistRegisterDto: UserRegisterDto
     {
-        
+        public int CurrentDegree { get; set; }
+        public int CurrentUniversity { get; set; }
     }
 }
