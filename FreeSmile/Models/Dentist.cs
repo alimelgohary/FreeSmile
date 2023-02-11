@@ -11,9 +11,6 @@ namespace FreeSmile.Models
         }
 
         public int DentistId { get; set; }
-        public string Name2 { get; set; } = null!;
-        public string Name3 { get; set; } = null!;
-        public string Name4 { get; set; } = null!;
         public string? Bio { get; set; }
         public string? FbUsername { get; set; }
         public string? LinkedUsername { get; set; }

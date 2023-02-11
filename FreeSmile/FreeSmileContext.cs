@@ -222,18 +222,6 @@ namespace FreeSmile
                     .IsUnicode(false)
                     .HasColumnName("linkedUsername");
 
-                entity.Property(e => e.Name2)
-                    .HasMaxLength(50)
-                    .HasColumnName("name2");
-
-                entity.Property(e => e.Name3)
-                    .HasMaxLength(50)
-                    .HasColumnName("name3");
-
-                entity.Property(e => e.Name4)
-                    .HasMaxLength(50)
-                    .HasColumnName("name4");
-
                 entity.HasOne(d => d.CurrentDegreeNavigation)
                     .WithMany(p => p.Dentists)
                     .HasForeignKey(d => d.CurrentDegree)
@@ -673,17 +661,23 @@ namespace FreeSmile
                     .IsUnicode(false)
                     .HasColumnName("email");
 
-                entity.Property(e => e.Fname)
-                    .HasMaxLength(50)
-                    .HasColumnName("fname");
+                entity.Property(e => e.Fullname)
+                    .HasMaxLength(100)
+                    .HasColumnName("fullname");
 
                 entity.Property(e => e.Gender).HasColumnName("gender");
 
                 entity.Property(e => e.IsVerified).HasColumnName("isVerified");
 
-                entity.Property(e => e.Lname)
-                    .HasMaxLength(50)
-                    .HasColumnName("lname");
+                entity.Property(e => e.Otp)
+                    .HasMaxLength(6)
+                    .IsUnicode(false)
+                    .HasColumnName("otp")
+                    .IsFixedLength();
+
+                entity.Property(e => e.OtpExp)
+                    .HasColumnType("datetime")
+                    .HasColumnName("otp_exp");
 
                 entity.Property(e => e.Password)
                     .HasMaxLength(64)

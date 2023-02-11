@@ -24,14 +24,15 @@ namespace FreeSmile.Models
         public string Salt { get; set; } = null!;
         public bool IsVerified { get; set; }
         public string? Phone { get; set; }
-        public string Fname { get; set; } = null!;
-        public string Lname { get; set; } = null!;
+        public string Fullname { get; set; } = null!;
         public bool Gender { get; set; }
         public DateTime? Bd { get; set; }
         public int? Age { get; set; }
         public bool VisibleMail { get; set; }
         public bool VisibleContact { get; set; }
         public string? ProfilePicture { get; set; }
+        public string? Otp { get; set; }
+        public DateTime? OtpExp { get; set; }
 
         public virtual Admin Admin { get; set; } = null!;
         public virtual Dentist Dentist { get; set; } = null!;

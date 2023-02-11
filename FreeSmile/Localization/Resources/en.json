@@ -6,6 +6,7 @@
   "password": "Password",
   "email": "Email",
   "mustbeemail": "You must provide a valid {0}",
+  "mustbeemaildentist": "Your email must end with .edu.eg",
   "maxminchar": "{0} must be between {2} and {1} characters",
   "maxchar": "{0} must be less than {1} characters",
   "exactchar": "{0} must be {1} characters",
@@ -15,5 +16,6 @@
   "gender": "Gender",
   "birthdate": "Birth Date",
   "age": "Age",
-  "ageminmax": "Your age must be greater than {2} and less than {1} years"
+  "ageminmax": "Your age must be greater than {2} and less than {1} years",
+  "unique": "This {0} already exists",
 }
