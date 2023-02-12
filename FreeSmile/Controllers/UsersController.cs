@@ -14,35 +14,54 @@ namespace FreeSmile.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IStringLocalizer<UsersController> _localizer;
-        private readonly IUserService _userService;
+        //private readonly IUserService _userService;
         private readonly IPatientService _patientService;
+        private readonly IDentistService _dentistService;
 
-        public UsersController(IStringLocalizer<UsersController> localizer, IUserService userService, IPatientService patientService)
+        public UsersController(IStringLocalizer<UsersController> localizer, IPatientService patientService, IDentistService dentistService)
         {
             _localizer = localizer;
-            _userService = userService;
             _patientService = patientService;
+            _dentistService = dentistService;
         }
         [HttpPost("RegisterPatient")]
-        public async Task<IActionResult> Register(UserRegisterDto value)
+        public async Task<IActionResult> Register([FromBody] UserRegisterDto value)
         {
             try
             {
-                await _patientService.AddUserAsync(value);
+                var res = await _patientService.AddUserAsync(value);
+                if (string.IsNullOrEmpty(res.Error))
+                {
+                    return Ok(_localizer["RegisterSuccess"].ToString());
+                }
+                return BadRequest(res.Error);
                 // TODO : Return a token, cookie
-                return Ok(_localizer["RegistrationSuccess"]);
+
             }
             catch (Exception)
             {
-                return BadRequest(_localizer["patientAddError"]);
+                return BadRequest(_localizer["RegisterError"].ToString());
             }
 
         }
-        [HttpPost("RegisteDentist")]
-        public IActionResult Register(DentistRegisterDto value)
+        [HttpPost("RegisterDentist")]
+        public async Task<IActionResult> RegisterAsync([FromForm] DentistRegisterDto value)
         {
+            try
+            {
+                var res = await _dentistService.AddUserAsync(value);
+                if (string.IsNullOrEmpty(res.Error))
+                {
+                    return Ok(_localizer["RegisterSuccess"].ToString());
+                }
+                return BadRequest(res.Error);
+                // TODO : Return a token, cookie
 
-            return Ok(value);
+            }
+            catch (Exception)
+            {
+                return BadRequest(_localizer["RegisterError"].ToString());
+            }
         }
 
     }

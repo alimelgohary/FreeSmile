@@ -19,5 +19,12 @@
   "unique": "This {0} already exists",
   "registererror": "We are sorry, an error occurred while registering, try again later",
   "mustbenumber": "{0} must contain numbers only",
-  "registrationsuccess": "Registration Success",
+  "registersuccess": "Registration Success",
+  "undergradedu": "You must register with your academic email (.edu.eg)",
+  "toolarge": "File must be less than {0} Mb",
+  "invalidchoice": "Something went wrong selecting the {0}",
+  "degree": "Academic Degree",
+  "university": "University",
+  "imagespdfonly": "Only images or pdf are allowed to upload"
+
 }

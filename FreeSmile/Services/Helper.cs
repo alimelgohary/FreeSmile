@@ -15,5 +15,18 @@ namespace FreeSmile.Services
             }
             return value;
         }
+
+        public async static Task SaveToDisk(IFormFile? file, string path)
+        {
+            if (file is null)
+                return;
+            using var stream = new FileStream(path, FileMode.Create);
+            await file.CopyToAsync(stream);
+        }
+        public struct ServiceReturnType
+        {
+            public int Id;
+            public string Error;
+        }
     }
 }

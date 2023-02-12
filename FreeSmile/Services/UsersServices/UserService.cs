@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Security.Cryptography;
 using System.Text;
+using static FreeSmile.Services.Helper;
 
 namespace FreeSmile.Services
 {
@@ -23,10 +24,10 @@ namespace FreeSmile.Services
             _logger = logger;
             _context = context;
             _localizer = localizer;
-            _pepper = Helper.GetEnvVariable("PEPPER", true);
+            _pepper = GetEnvVariable("PEPPER", true);
 
         }
-        public async Task<int> AddUserAsync(UserRegisterDto userDto)
+        public async Task<ServiceReturnType> AddUserAsync(UserRegisterDto userDto)
         {
             var salt = CreateSalt();
             var passEnc = Encrypt(userDto.Password, _pepper);
@@ -59,7 +60,7 @@ namespace FreeSmile.Services
             {
                 _logger.LogError("Sending Email Error : " + ex.Message);
             }
-            return user.Id;
+            return new ServiceReturnType() { Id = user.Id, Error = "" };
         }
 
         private void SendEmail(string email, string otp)

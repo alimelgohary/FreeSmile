@@ -17,6 +17,7 @@ namespace FreeSmile.Models
         public string? GScholarUsername { get; set; }
         public int CurrentDegree { get; set; }
         public int CurrentUniversity { get; set; }
+        public bool IsVerifiedDentist { get; set; }
 
         public virtual AcademicDegree CurrentDegreeNavigation { get; set; } = null!;
         public virtual University CurrentUniversityNavigation { get; set; } = null!;

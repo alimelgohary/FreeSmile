@@ -46,7 +46,7 @@ namespace FreeSmile.DTOs
         public bool Gender { get; set; }
 
         [DisplayName(nameof(Birthdate))]
-        [Age(10, 120, ErrorMessage ="ageminmax")]
+        [Age(5, 120, ErrorMessage ="ageminmax")]
         public DateTime? Birthdate { get; set; }
     }
 }

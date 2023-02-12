@@ -3,6 +3,7 @@ using FreeSmile.DTOs;
 using FreeSmile.Models;
 using Microsoft.Extensions.Localization;
 using System.Transactions;
+using static FreeSmile.Services.Helper;
 
 namespace FreeSmile.Services
 {
@@ -21,23 +22,24 @@ namespace FreeSmile.Services
             _userService = userService;
         }
 
-        public async Task<int> AddUserAsync(UserRegisterDto userDto)
+        public async Task<ServiceReturnType> AddUserAsync(UserRegisterDto userDto)
         {
+            ServiceReturnType serviceReturnType;
             using var transaction = _context.Database.BeginTransaction();
             try
             {
-                int id = await _userService.AddUserAsync(userDto);
+                serviceReturnType = await _userService.AddUserAsync(userDto);
 
                 var patient = new Patient()
                 {
-                    PatientId = id
+                    PatientId = serviceReturnType.Id
                 };
                 await _context.AddAsync(patient);
                 await _context.SaveChangesAsync();
 
                 await transaction.CommitAsync();
 
-                return id;
+                return serviceReturnType;
             }
             catch (Exception ex)
             {

@@ -203,7 +203,9 @@ namespace FreeSmile
                     .HasMaxLength(100)
                     .HasColumnName("bio");
 
-                entity.Property(e => e.CurrentDegree).HasColumnName("currentDegree");
+                entity.Property(e => e.CurrentDegree)
+                    .HasColumnName("currentDegree")
+                    .HasDefaultValueSql("((2))");
 
                 entity.Property(e => e.CurrentUniversity).HasColumnName("current_university");
 
@@ -216,6 +218,8 @@ namespace FreeSmile
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("gScholarUsername");
+
+                entity.Property(e => e.IsVerifiedDentist).HasColumnName("isVerifiedDentist");
 
                 entity.Property(e => e.LinkedUsername)
                     .HasMaxLength(50)
