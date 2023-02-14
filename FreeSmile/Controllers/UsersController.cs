@@ -47,6 +47,7 @@ namespace FreeSmile.Controllers
         [HttpPost("RegisterDentist")]
         public async Task<IActionResult> RegisterAsync([FromForm] DentistRegisterDto value)
         {
+            // TODO: take photos as a string?
             try
             {
                 var res = await _dentistService.AddUserAsync(value);
@@ -63,6 +64,7 @@ namespace FreeSmile.Controllers
                 return BadRequest(_localizer["RegisterError"].ToString());
             }
         }
-
+        [HttpPost("Dummy")]
+        public void DummyAction(DentistRegisterDto value){} // Only for including DentistDto in the docs
     }
 }

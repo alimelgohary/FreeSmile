@@ -21,7 +21,7 @@
   "mustbenumber": "{0} must contain numbers only",
   "registersuccess": "Registration Success",
   "undergradedu": "You must register with your academic email (.edu.eg)",
-  "toolarge": "File must be less than {0} Mb",
+  "toolarge": "File must be less than {1} Mb",
   "invalidchoice": "Something went wrong selecting the {0}",
   "degree": "Academic Degree",
   "university": "University",
