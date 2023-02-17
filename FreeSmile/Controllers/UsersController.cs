@@ -1,16 +1,8 @@
-﻿using FreeSmile.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using FreeSmile.DTOs;
 using FreeSmile.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.VisualBasic;
-using static FreeSmile.Services.Helper;
-using Microsoft.AspNetCore.Identity;
-using static FreeSmile.Services.Helper.MyConstants;
 
 namespace FreeSmile.Controllers
 {
@@ -68,6 +60,7 @@ namespace FreeSmile.Controllers
                 return BadRequest(_localizer["UnknownError"].ToString());
             }
         }
+        // TODO : only verified email?
         [Authorize(Roles = "Dentist")]
         [HttpPost("RequestVerification")]
         public async Task<IActionResult> AddVerificationRequestAsync([FromForm] VerificationDto value)
@@ -78,7 +71,9 @@ namespace FreeSmile.Controllers
                 if(userId is null)
                     return Unauthorized();
 
-                await _dentistService.AddVerificationRequestAsync(value, userId);
+                var userIdInt = int.Parse(userId);
+
+                await _dentistService.AddVerificationRequestAsync(value, userIdInt);
                 return Ok(_localizer["VerificationRequestSuccess"].ToString());
 
             }
