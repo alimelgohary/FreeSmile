@@ -6,6 +6,11 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Localization;
 using FreeSmile.DTOs;
 using FreeSmile.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.VisualBasic;
+using static FreeSmile.Services.Helper;
+using Microsoft.AspNetCore.Identity;
+using static FreeSmile.Services.Helper.MyConstants;
 
 namespace FreeSmile.Controllers
 {
@@ -40,7 +45,7 @@ namespace FreeSmile.Controllers
             }
             catch (Exception)
             {
-                return BadRequest(_localizer["RegisterError"].ToString());
+                return BadRequest(_localizer["UnknownError"].ToString());
             }
 
         }
@@ -60,10 +65,29 @@ namespace FreeSmile.Controllers
             }
             catch (Exception)
             {
-                return BadRequest(_localizer["RegisterError"].ToString());
+                return BadRequest(_localizer["UnknownError"].ToString());
+            }
+        }
+        [Authorize(Roles = "Dentist")]
+        [HttpPost("RequestVerification")]
+        public async Task<IActionResult> AddVerificationRequestAsync([FromForm] VerificationDto value)
+        {
+            try
+            {
+                var userId = User.FindFirst("sub")?.Value;
+                if(userId is null)
+                    return Unauthorized();
+
+                await _dentistService.AddVerificationRequestAsync(value, userId);
+                return Ok(_localizer["VerificationRequestSuccess"].ToString());
+
+            }
+            catch (Exception)
+            {
+                return BadRequest(_localizer["UnknownError"].ToString());
             }
         }
         [HttpPost("Dummy")]
-        public void DummyAction(VerificationDto value){} // Only for including DentistDto in the docs
+        public void DummyAction(VerificationDto value){} // Only for including VerificationDto in the docs
     }
 }

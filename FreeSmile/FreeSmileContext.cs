@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using FreeSmile.Models;
 using FreeSmile.Services;
+using static FreeSmile.Services.Helper;
 
 namespace FreeSmile
 {
@@ -46,7 +47,7 @@ namespace FreeSmile
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(Helper.GetEnvVariable("FreeSmileDatabase", true));
+                optionsBuilder.UseSqlServer(MyConstants.FREESMILE_CONNECTION);
             }
         }
 

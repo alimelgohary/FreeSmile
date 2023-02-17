@@ -24,7 +24,7 @@ namespace FreeSmile.Services
             _logger = logger;
             _context = context;
             _localizer = localizer;
-            _pepper = GetEnvVariable("PEPPER", true);
+            _pepper = MyConstants.PEPPER;
 
         }
         public async Task<ResponseDTO> AddUserAsync(UserRegisterDto userDto)

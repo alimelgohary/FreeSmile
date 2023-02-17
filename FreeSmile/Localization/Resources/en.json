@@ -17,7 +17,7 @@
   "age": "Age",
   "ageminmax": "Your age must be greater than {2} and less than {1} years",
   "unique": "This {0} already exists",
-  "registererror": "We are sorry, an error occurred while registering, try again later",
+  "unknownerror": "We are sorry, an error occurred, try again later",
   "mustbenumber": "{0} must contain numbers only",
   "registersuccess": "Registration Success",
   "undergradedu": "You must register with your academic email (.edu.eg)",
@@ -25,6 +25,7 @@
   "invalidchoice": "Something went wrong selecting the {0}",
   "degree": "Academic Degree",
   "university": "University",
-  "imagespdfonly": "Only images or pdf are allowed to upload"
-
+  "imagespdfonly": "Only images or pdf are allowed to upload",
+  "verificationrequestsuccess": "Verification request sent successfully",
+  "s"
 }

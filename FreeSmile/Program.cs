@@ -7,6 +7,7 @@ using Microsoft.Extensions.Localization;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Serilog;
+using static FreeSmile.Services.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,7 +50,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<FreeSmileContext>(optionsBuilder =>
-    optionsBuilder.UseSqlServer(Helper.GetEnvVariable("FreeSmileDatabase", true))
+    optionsBuilder.UseSqlServer(MyConstants.FREESMILE_CONNECTION)
 );
 
 

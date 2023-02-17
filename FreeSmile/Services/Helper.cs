@@ -2,7 +2,7 @@
 
 namespace FreeSmile.Services
 {
-    public class Helper
+    public partial class Helper
     {
         public static string? GetEnvVariable(string key, bool closeIfNotFound)
         {
@@ -11,7 +11,9 @@ namespace FreeSmile.Services
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine($"Fatal Error: {key} is not found in Environment Variables.");
-                Environment.Exit(1);
+                
+                if (closeIfNotFound)
+                    Environment.Exit(1);
             }
             return value;
         }
@@ -29,7 +31,6 @@ namespace FreeSmile.Services
             public int Id;
             public string Error;
         }
-
 
     }
 }
