@@ -2,7 +2,7 @@
 
 namespace FreeSmile.Services
 {
-    public partial class Helper
+    public class Helper
     {
         public static string? GetEnvVariable(string key, bool closeIfNotFound)
         {
