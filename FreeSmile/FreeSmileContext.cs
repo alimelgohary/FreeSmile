@@ -207,7 +207,9 @@ namespace FreeSmile
                     .HasColumnName("currentDegree")
                     .HasDefaultValueSql("((2))");
 
-                entity.Property(e => e.CurrentUniversity).HasColumnName("current_university");
+                entity.Property(e => e.CurrentUniversity)
+                    .HasColumnName("current_university")
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.FbUsername)
                     .HasMaxLength(50)

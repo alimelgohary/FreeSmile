@@ -25,7 +25,7 @@ namespace FreeSmile.Controllers
             _dentistService = dentistService;
         }
         [HttpPost("RegisterPatient")]
-        public async Task<IActionResult> Register([FromBody] UserRegisterDto value)
+        public async Task<IActionResult> RegisterPatientAsync([FromBody] UserRegisterDto value)
         {
             try
             {
@@ -45,9 +45,8 @@ namespace FreeSmile.Controllers
 
         }
         [HttpPost("RegisterDentist")]
-        public async Task<IActionResult> RegisterAsync([FromForm] DentistRegisterDto value)
+        public async Task<IActionResult> RegisterDentistAsync([FromBody] UserRegisterDto value)
         {
-            // TODO: take photos as a string?
             try
             {
                 var res = await _dentistService.AddUserAsync(value);
@@ -65,6 +64,6 @@ namespace FreeSmile.Controllers
             }
         }
         [HttpPost("Dummy")]
-        public void DummyAction(DentistRegisterDto value){} // Only for including DentistDto in the docs
+        public void DummyAction(VerificationDto value){} // Only for including DentistDto in the docs
     }
 }

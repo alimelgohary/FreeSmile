@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace FreeSmile.DTOs
 {
-    public class DentistRegisterDto : UserRegisterDto
+    public class VerificationDto
     {
         [Required]
         [DisplayName("university")]

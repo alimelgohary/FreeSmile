@@ -18,6 +18,7 @@ namespace FreeSmile.Services
 
         public async static Task SaveToDisk(IFormFile? file, string path)
         {
+            //DO NOT REMOVE THIS CHECK
             if (file is null)
                 return;
             using var stream = new FileStream(path, FileMode.Create);
