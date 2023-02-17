@@ -6,7 +6,7 @@ namespace FreeSmile.Services
 {
     public interface IUserService
     {
-        public Task<ServiceReturnType> AddUserAsync(UserRegisterDto user);
+        public Task<ResponseDTO> AddUserAsync(UserRegisterDto user);
         
     }
 }

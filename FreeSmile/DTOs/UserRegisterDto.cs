@@ -13,7 +13,7 @@ namespace FreeSmile.DTOs
         [Required(ErrorMessage = "required")]
         [RegularExpression("^[A-Za-z]+[A-Za-z0-9_]*[A-Za-z0-9]+$", ErrorMessage = "usernameRegex")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "maxMinChar")]
-        [Unique(nameof(User), nameof(Username), ErrorMessage = "unique")]
+        [UniqueVerified(nameof(User), nameof(Username), ErrorMessage = "unique")]
         public string Username { get; set; } = null!;
         
         
@@ -21,7 +21,7 @@ namespace FreeSmile.DTOs
         [DisplayName(nameof(Email))]
         [RegularExpression("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", ErrorMessage = "mustBeEmail")] // Provide a real validation, .Net validation sucks, .edu.eg
         [MaxLength(100, ErrorMessage = "maxchar")]
-        [Unique(nameof(User), nameof(Email), ErrorMessage = "unique")]
+        [UniqueVerified(nameof(User), nameof(Email), ErrorMessage = "unique")]
         public string Email { get; set; } = null!;
         
         
@@ -32,7 +32,7 @@ namespace FreeSmile.DTOs
 
         [DisplayName(nameof(Phone))]
         [StringLength(10, MinimumLength = 10, ErrorMessage = "exactchar")]
-        [Unique(nameof(User), nameof(Phone), ErrorMessage = "unique")]
+        [UniqueVerified(nameof(User), nameof(Phone), ErrorMessage = "unique")]
         [RegularExpression("^1[0-9]*$", ErrorMessage = "mustBeNumber")]
         public string? Phone { get; set; }
 

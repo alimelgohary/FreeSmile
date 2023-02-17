@@ -27,7 +27,7 @@ namespace FreeSmile.Services
             _pepper = GetEnvVariable("PEPPER", true);
 
         }
-        public async Task<ServiceReturnType> AddUserAsync(UserRegisterDto userDto)
+        public async Task<ResponseDTO> AddUserAsync(UserRegisterDto userDto)
         {
             var salt = CreateSalt();
             var passEnc = Encrypt(userDto.Password, _pepper);
@@ -60,7 +60,7 @@ namespace FreeSmile.Services
             {
                 _logger.LogError("Sending Email Error : " + ex.Message);
             }
-            return new ServiceReturnType() { Id = user.Id, Error = "" };
+            return new ResponseDTO() { Id = user.Id, Error = "" };
         }
 
         private void SendEmail(string email, string otp)

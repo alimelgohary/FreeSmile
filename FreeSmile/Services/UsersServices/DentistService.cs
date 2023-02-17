@@ -21,9 +21,9 @@ namespace FreeSmile.Services
             _userService = userService;
         }
 
-        public async Task<ServiceReturnType> AddUserAsync(UserRegisterDto userDto)
+        public async Task<ResponseDTO> AddUserAsync(UserRegisterDto userDto)
         {
-            ServiceReturnType serviceReturnType;
+            ResponseDTO responseDto;
             DentistRegisterDto? dentistDto = userDto as DentistRegisterDto;
 
             using var transaction = _context.Database.BeginTransaction();
@@ -32,17 +32,17 @@ namespace FreeSmile.Services
                 int gradDegId = 1; // (1 = grad)
                 if (!dentistDto.Email.EndsWith(".edu.eg") && dentistDto.DegreeRequested != gradDegId)
                 {
-                    serviceReturnType.Id = -1;
-                    serviceReturnType.Error = _localizer["undergradedu"];
-                    return serviceReturnType;
+                    responseDto.Id = -1;
+                    responseDto.Error = _localizer["undergradedu"];
+                    return responseDto;
                 }
 
 
-                serviceReturnType = await _userService.AddUserAsync(userDto);
+                responseDto = await _userService.AddUserAsync(userDto);
 
                 var dentist = new Dentist()
                 {
-                    DentistId = serviceReturnType.Id,
+                    DentistId = responseDto.Id,
                     CurrentUniversity = dentistDto!.CurrentUniversity,
                 };
                 await _context.AddAsync(dentist);
@@ -50,13 +50,13 @@ namespace FreeSmile.Services
 
                 //What if fake EXt
                 var natExt = Path.GetExtension(dentistDto.NatIdPhoto.FileName);
-                var natRelativePath = Path.Combine("Images", "verificationRequests", $"{serviceReturnType.Id}nat{natExt}");
+                var natRelativePath = Path.Combine("Images", "verificationRequests", $"{responseDto.Id}nat{natExt}");
                 var natFullPath = Path.Combine(Directory.GetCurrentDirectory(), natRelativePath);
                 await SaveToDisk(dentistDto.NatIdPhoto, natFullPath);
 
                 var proofFile = dentistDto.ProofOfDegreePhoto;
                 var proofExt = Path.GetExtension(proofFile?.FileName);
-                var proofRelativePath = Path.Combine("Images", "verificationRequests", $"{serviceReturnType.Id}proof{proofExt}");
+                var proofRelativePath = Path.Combine("Images", "verificationRequests", $"{responseDto.Id}proof{proofExt}");
                 var proofFullPath = Path.Combine(Directory.GetCurrentDirectory(), proofRelativePath);
                 await SaveToDisk(dentistDto.ProofOfDegreePhoto, proofFullPath);
 
@@ -64,7 +64,7 @@ namespace FreeSmile.Services
                 await _context.AddAsync(
                     new VerificationRequest()
                     {
-                        OwnerId = serviceReturnType.Id,
+                        OwnerId = responseDto.Id,
                         NatIdPhoto = natRelativePath,
                         ProofOfDegreePhoto = proofFile is null ? null : proofRelativePath,
                         DegreeRequested = dentistDto.DegreeRequested
@@ -74,7 +74,7 @@ namespace FreeSmile.Services
 
                 await transaction.CommitAsync();
 
-                return serviceReturnType;
+                return responseDto;
             }
             catch (Exception ex)
             {

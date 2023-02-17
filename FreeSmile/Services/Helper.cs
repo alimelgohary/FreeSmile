@@ -23,10 +23,12 @@ namespace FreeSmile.Services
             using var stream = new FileStream(path, FileMode.Create);
             await file.CopyToAsync(stream);
         }
-        public struct ServiceReturnType
+        public struct ResponseDTO
         {
             public int Id;
             public string Error;
         }
+
+
     }
 }

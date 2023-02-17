@@ -22,24 +22,24 @@ namespace FreeSmile.Services
             _userService = userService;
         }
 
-        public async Task<ServiceReturnType> AddUserAsync(UserRegisterDto userDto)
+        public async Task<ResponseDTO> AddUserAsync(UserRegisterDto userDto)
         {
-            ServiceReturnType serviceReturnType;
+            ResponseDTO responseDto;
             using var transaction = _context.Database.BeginTransaction();
             try
             {
-                serviceReturnType = await _userService.AddUserAsync(userDto);
+                responseDto = await _userService.AddUserAsync(userDto);
 
                 var patient = new Patient()
                 {
-                    PatientId = serviceReturnType.Id
+                    PatientId = responseDto.Id
                 };
                 await _context.AddAsync(patient);
                 await _context.SaveChangesAsync();
 
                 await transaction.CommitAsync();
 
-                return serviceReturnType;
+                return responseDto;
             }
             catch (Exception ex)
             {
