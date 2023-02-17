@@ -29,6 +29,14 @@ namespace FreeSmile.Services
         }
         public async Task<ResponseDTO> AddUserAsync(UserRegisterDto userDto)
         {
+            // Allow duplicate emails if user not verified yet
+            _context.Users.RemoveRange(_context.Users.Where(x => x.Email == userDto.Email && x.IsVerified == false));
+            _context.SaveChanges();
+
+            // Allow duplicate phones if user not verified yet
+            _context.Users.RemoveRange(_context.Users.Where(x => x.Phone == userDto.Phone && x.IsVerified == false));
+            _context.SaveChanges();
+
             var salt = CreateSalt();
             var passEnc = Encrypt(userDto.Password, _pepper);
             var passHashed = Hash256(passEnc, salt);
@@ -50,7 +58,6 @@ namespace FreeSmile.Services
 
             await _context.AddAsync(user);
             await _context.SaveChangesAsync();
-            
             
             try
             {

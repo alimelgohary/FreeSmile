@@ -10,12 +10,10 @@ namespace FreeSmile.CustomValidations
 {
     public class UniqueVerifiedAttribute : RequiredAttribute
     {
-        public string className { get; set; }
         public string colName { get; set; }
 
         public UniqueVerifiedAttribute(string className, string colName)
         {
-            this.className = className;
             this.colName = colName;
         }
         public override bool IsValid(object? value)
@@ -23,12 +21,12 @@ namespace FreeSmile.CustomValidations
             if (value == null)
                 return true;
             
-            if (IsUnique(className, colName, value.ToString()))
+            if (IsUnique(colName, value.ToString()))
                 return true;
             
             return false;
         }
-        public static bool IsUnique(string className, string colName, string value)
+        public static bool IsUnique(string colName, string value)
         {
             var query = $"SELECT COUNT(*) FROM Users WHERE {colName}=@{colName} AND isVerified=1";
             using var context = new FreeSmileContext();

@@ -13,7 +13,7 @@ namespace FreeSmile.DTOs
         [Required(ErrorMessage = "required")]
         [RegularExpression("^[A-Za-z]+[A-Za-z0-9_]*[A-Za-z0-9]+$", ErrorMessage = "usernameRegex")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "maxMinChar")]
-        [UniqueVerified(nameof(User), nameof(Username), ErrorMessage = "unique")]
+        [Unique(nameof(User), nameof(Username), ErrorMessage = "unique")]
         public string Username { get; set; } = null!;
         
         
