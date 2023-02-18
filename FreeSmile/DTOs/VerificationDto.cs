@@ -27,7 +27,7 @@ namespace FreeSmile.DTOs
 
         [MaxFileSize(2, ErrorMessage = "TooLarge")]
         [AllowedExtensions(new[] {".jpg", ".jpeg", ".png", ".jpe", ".jfif", ".bmp" , ".pdf"}, ErrorMessage = "imagespdfonly")]
-        public IFormFile? ProofOfDegreePhoto { get; set; }
-        
+        public IFormFile ProofOfDegreePhoto { get; set; } = null!;
+
     }
 }

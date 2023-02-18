@@ -5,6 +5,6 @@ namespace FreeSmile.Services
 {
     public interface IDentistService : IUserService
     {
-        public Task AddVerificationRequestAsync(VerificationDto verificationDto, int ownerId);
+        public Task<ResponseDTO> AddVerificationRequestAsync(VerificationDto verificationDto, int ownerId);
     }
 }

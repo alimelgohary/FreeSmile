@@ -27,5 +27,5 @@
   "university": "University",
   "imagespdfonly": "Only images or pdf are allowed to upload",
   "verificationrequestsuccess": "Verification request sent successfully",
-  "s"
+  "alreadyrequested": "You have already requested verification",
 }

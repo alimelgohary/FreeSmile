@@ -57,30 +57,50 @@ namespace FreeSmile.Services
             }
 
         }
-        public async Task AddVerificationRequestAsync(VerificationDto verificationDto, int ownerId)
+        public async Task<ResponseDTO> AddVerificationRequestAsync(VerificationDto verificationDto, int ownerId)
         {
-            var natExt = Path.GetExtension(verificationDto.NatIdPhoto.FileName);
-            var natRelativePath = Path.Combine("Images", "verificationRequests", $"{ownerId}nat{natExt}");
-            var natFullPath = Path.Combine(Directory.GetCurrentDirectory(), natRelativePath);
-            await SaveToDisk(verificationDto.NatIdPhoto, natFullPath);
+            try
+            {
+                if (_context.VerificationRequests.Any(v => v.OwnerId == ownerId))
+                    return new ResponseDTO()
+                    {
+                        Id = -1,
+                        Error = _localizer["AlreadyRequested"]
+                    };
 
-            var proofFile = verificationDto.ProofOfDegreePhoto;
-            var proofExt = Path.GetExtension(proofFile?.FileName);
-            var proofRelativePath = Path.Combine("Images", "verificationRequests", $"{ownerId}proof{proofExt}");
-            var proofFullPath = Path.Combine(Directory.GetCurrentDirectory(), proofRelativePath);
-            await SaveToDisk(verificationDto.ProofOfDegreePhoto, proofFullPath);
+                var natExt = Path.GetExtension(verificationDto.NatIdPhoto.FileName);
+                var natRelativePath = Path.Combine("Images", "verificationRequests", $"{ownerId}nat{natExt}");
+                var natFullPath = Path.Combine(Directory.GetCurrentDirectory(), natRelativePath);
+                await SaveToDisk(verificationDto.NatIdPhoto, natFullPath);
+
+                var proofExt = Path.GetExtension(verificationDto.ProofOfDegreePhoto.FileName);
+                var proofRelativePath = Path.Combine("Images", "verificationRequests", $"{ownerId}proof{proofExt}");
+                var proofFullPath = Path.Combine(Directory.GetCurrentDirectory(), proofRelativePath);
+                await SaveToDisk(verificationDto.ProofOfDegreePhoto, proofFullPath);
 
 
-            await _context.AddAsync(
-                new VerificationRequest()
+                await _context.AddAsync(
+                    new VerificationRequest()
+                    {
+                        OwnerId = ownerId,
+                        NatIdPhoto = natRelativePath,
+                        ProofOfDegreePhoto = proofRelativePath,
+                        DegreeRequested = verificationDto.DegreeRequested
+                    });
+
+                await _context.SaveChangesAsync();
+
+                return new ResponseDTO()
                 {
-                    OwnerId = ownerId,
-                    NatIdPhoto = natRelativePath,
-                    ProofOfDegreePhoto = proofFile is null ? null : proofRelativePath,
-                    DegreeRequested = verificationDto.DegreeRequested
-                });
-
-            await _context.SaveChangesAsync();
+                    Id = -1,
+                    Error = ""
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
         }
     }
 }

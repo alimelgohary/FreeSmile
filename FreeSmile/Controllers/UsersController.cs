@@ -11,7 +11,6 @@ namespace FreeSmile.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IStringLocalizer<UsersController> _localizer;
-        //private readonly IUserService _userService;
         private readonly IPatientService _patientService;
         private readonly IDentistService _dentistService;
 
@@ -21,6 +20,8 @@ namespace FreeSmile.Controllers
             _patientService = patientService;
             _dentistService = dentistService;
         }
+        
+        
         [HttpPost("RegisterPatient")]
         public async Task<IActionResult> RegisterPatientAsync([FromBody] UserRegisterDto value)
         {
@@ -28,10 +29,9 @@ namespace FreeSmile.Controllers
             {
                 var res = await _patientService.AddUserAsync(value);
                 if (string.IsNullOrEmpty(res.Error))
-                {
                     return Ok(_localizer["RegisterSuccess"].ToString());
-                }
-                return BadRequest(res.Error);
+                
+                return BadRequest(_localizer[res.Error].ToString());
                 // TODO : Return a token, cookie
 
             }
@@ -41,6 +41,8 @@ namespace FreeSmile.Controllers
             }
 
         }
+
+        
         [HttpPost("RegisterDentist")]
         public async Task<IActionResult> RegisterDentistAsync([FromBody] UserRegisterDto value)
         {
@@ -48,10 +50,9 @@ namespace FreeSmile.Controllers
             {
                 var res = await _dentistService.AddUserAsync(value);
                 if (string.IsNullOrEmpty(res.Error))
-                {
                     return Ok(_localizer["RegisterSuccess"].ToString());
-                }
-                return BadRequest(res.Error);
+                
+                return BadRequest(_localizer[res.Error].ToString());
                 // TODO : Return a token, cookie
 
             }
@@ -60,7 +61,9 @@ namespace FreeSmile.Controllers
                 return BadRequest(_localizer["UnknownError"].ToString());
             }
         }
-        // TODO : only verified email?
+        
+        
+        // TODO : only verified emails?
         [Authorize(Roles = "Dentist")]
         [HttpPost("RequestVerification")]
         public async Task<IActionResult> AddVerificationRequestAsync([FromForm] VerificationDto value)
@@ -72,17 +75,21 @@ namespace FreeSmile.Controllers
                     return Unauthorized();
 
                 var userIdInt = int.Parse(userId);
+                var res = await _dentistService.AddVerificationRequestAsync(value, userIdInt);
 
-                await _dentistService.AddVerificationRequestAsync(value, userIdInt);
-                return Ok(_localizer["VerificationRequestSuccess"].ToString());
+                if (string.IsNullOrEmpty(res.Error))
+                    return Ok(_localizer["VerificationRequestSuccess"].ToString());
 
+                return BadRequest(_localizer[res.Error].ToString());
             }
             catch (Exception)
             {
                 return BadRequest(_localizer["UnknownError"].ToString());
             }
         }
+        
+        
         [HttpPost("Dummy")]
-        public void DummyAction(VerificationDto value){} // Only for including VerificationDto in the docs
+        public void DummyAction(VerificationDto v){} // Only for including VerificationDto in the docs
     }
 }

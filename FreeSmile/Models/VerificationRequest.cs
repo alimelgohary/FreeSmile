@@ -7,7 +7,7 @@ namespace FreeSmile.Models
     {
         public int OwnerId { get; set; }
         public string NatIdPhoto { get; set; } = null!;
-        public string? ProofOfDegreePhoto { get; set; }
+        public string ProofOfDegreePhoto { get; set; } = null!;
         public int DegreeRequested { get; set; }
 
         public virtual AcademicDegree DegreeRequestedNavigation { get; set; } = null!;
