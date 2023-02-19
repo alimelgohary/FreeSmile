@@ -1,9 +1,27 @@
 ﻿using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace FreeSmile.Services
 {
     public class Helper
     {
+        public static string GenerateToken(ClaimsIdentity claims, TimeSpan tokenAge)
+        {
+            JwtSecurityTokenHandler tokenHandler = new();
+            byte[] key = Encoding.ASCII.GetBytes(MyConstants.JWT_SECRET);
+            SecurityTokenDescriptor tokenDescriptor = new()
+            {
+
+                Subject = claims,
+                Expires = DateTime.UtcNow + tokenAge,
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+            };
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
         public static string? GetEnvVariable(string key, bool closeIfNotFound)
         {
             var value = Environment.GetEnvironmentVariable(key);

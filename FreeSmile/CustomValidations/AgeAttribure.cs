@@ -22,7 +22,7 @@ namespace FreeSmile.CustomValidations
             DateTime dt = (DateTime)value;
             var spanMin = TimeSpan.FromDays(365 * RequiredAgeMin);
             var spanMax= TimeSpan.FromDays(365 * RequiredAgeMax);
-            var objAge = (DateTime.Now - dt);
+            var objAge = (DateTime.UtcNow - dt);
             if (objAge >= spanMin && objAge <= spanMax)
                 return true;
 

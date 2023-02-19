@@ -7,7 +7,9 @@ using Microsoft.Extensions.Localization;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Serilog;
-using static FreeSmile.Services.Helper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +47,44 @@ builder.Services.AddTransient<IDentistService, DentistService>();
 builder.Services.AddTransient<IPatientService, PatientService>();
 #endregion
 
+#region Auth
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(MyConstants.JWT_SECRET)),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+    options.Events = new JwtBearerEvents() {
+        OnMessageReceived = context =>
+        {
+            if (context.Request.Cookies.ContainsKey("Authorization-Token"))
+            {
+                context.Token = context.Request.Cookies["Authorization-Token"];
+            }
+            return Task.CompletedTask;
+        }
+};  
+    //options.Events.OnMessageReceived = context =>
+    //{
+    //    if (context.Request.Cookies.ContainsKey("Authorization-Token"))
+    //    {
+    //        context.Token = context.Request.Cookies["Authorization-Token"];
+    //    }
+    //    return Task.CompletedTask;
+    //};
+});
+#endregion
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -73,6 +113,7 @@ app.UseRequestLocalization(localizationOptions);
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

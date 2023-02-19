@@ -3,6 +3,7 @@ using Microsoft.Extensions.Localization;
 using FreeSmile.DTOs;
 using FreeSmile.Services;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace FreeSmile.Controllers
 {
@@ -28,16 +29,18 @@ namespace FreeSmile.Controllers
             try
             {
                 var res = await _patientService.AddUserAsync(value);
-                if (string.IsNullOrEmpty(res.Error))
-                    return Ok(_localizer["RegisterSuccess"].ToString());
+                if (string.IsNullOrEmpty(res.Error)) 
+                {
+                    var token = AuthHelper.TokenPatient(res.Id, TimeSpan.FromHours(1));
+                    Response.Cookies.Append("Authorization-Token", token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict, Expires = DateTime.UtcNow.AddHours(1) });
+                    return Ok(new { message = _localizer["RegisterSuccess"].ToString(), token });
+                }
                 
                 return BadRequest(_localizer[res.Error].ToString());
-                // TODO : Return a token, cookie
-
             }
             catch (Exception)
             {
-                return BadRequest(_localizer["UnknownError"].ToString());
+                return StatusCode(StatusCodes.Status500InternalServerError, _localizer["UnknownError"].ToString());
             }
 
         }
@@ -50,15 +53,17 @@ namespace FreeSmile.Controllers
             {
                 var res = await _dentistService.AddUserAsync(value);
                 if (string.IsNullOrEmpty(res.Error))
-                    return Ok(_localizer["RegisterSuccess"].ToString());
-                
+                {
+                    var token = AuthHelper.TokenDentist(res.Id, TimeSpan.FromHours(1));
+                    Response.Cookies.Append("Authorization-Token", token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict, Expires = DateTime.UtcNow.AddHours(1) });
+                    return Ok(new { message = _localizer["RegisterSuccess"].ToString(), token });
+                }
                 return BadRequest(_localizer[res.Error].ToString());
-                // TODO : Return a token, cookie
 
             }
             catch (Exception)
             {
-                return BadRequest(_localizer["UnknownError"].ToString());
+                return StatusCode(StatusCodes.Status500InternalServerError, _localizer["UnknownError"].ToString());
             }
         }
         
@@ -70,7 +75,7 @@ namespace FreeSmile.Controllers
         {
             try
             {
-                var userId = User.FindFirst("sub")?.Value;
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if(userId is null)
                     return Unauthorized();
 
@@ -90,6 +95,6 @@ namespace FreeSmile.Controllers
         
         
         [HttpPost("Dummy")]
-        public void DummyAction(VerificationDto v){} // Only for including VerificationDto in the docs
+        public void DummyAction(VerificationDto v){} // Only for including VerificationDto in Swagger
     }
 }

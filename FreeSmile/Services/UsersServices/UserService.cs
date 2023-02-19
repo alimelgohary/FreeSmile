@@ -53,7 +53,7 @@ namespace FreeSmile.Services
                 Gender = userDto.Gender,
                 Bd = userDto.Birthdate,
                 Otp = otp,
-                OtpExp = DateTime.Now.AddMinutes(10)
+                OtpExp = DateTime.UtcNow.AddMinutes(10)
             };
 
             await _context.AddAsync(user);
