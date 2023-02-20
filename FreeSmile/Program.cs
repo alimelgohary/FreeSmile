@@ -45,6 +45,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IDentistService, DentistService>();
 builder.Services.AddTransient<IPatientService, PatientService>();
+builder.Services.AddTransient<IAdminService, AdminService>();
 #endregion
 
 #region Auth

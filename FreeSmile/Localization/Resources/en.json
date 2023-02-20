@@ -28,4 +28,10 @@
   "imagespdfonly": "Only images or pdf are allowed to upload",
   "verificationrequestsuccess": "Verification request sent successfully",
   "alreadyrequested": "You have already requested verification",
+  "verifyemailfirst": "You must verify your email first",
+  "usernotfound": "User not found",
+  "otpexpired": "We are sorry. Your OTP expired, Click on resend OTP",
+  "otpnotmatch": "OTP is incorrect",
+  "emailverificationsuccess": "Email verified successfully",
+  "useralreadyverified": "Your email is already verified",
 }

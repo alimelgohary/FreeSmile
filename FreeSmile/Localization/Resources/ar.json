@@ -28,4 +28,10 @@
   "imagespdfonly": "مسموح برفع ملفات الصور والبي دي اف فقط",
   "verificationrequestsuccess": "تم إرسال طلب التحقق بنجاح",
   "alreadyrequested": "لقد تم إرسال طلب التحقق من قبل",
+  "verifyemailfirst": "يجب تفعيل البريد الإلكتروني أولا",
+  "usernotfound": "المستخدم غير موجود",
+  "otpexpired": "نأسف لانتهاء صلاحية رمز التحقق، بالرجاء الضغط على زر إعادة إرسال رمز التحقق",
+  "otpnotmatch": "رمز التحقق غير صحيح",
+  "emailverificationsuccess": "تم تفعيل البريد الإلكتروني بنجاح",
+  "useralreadyverified": "لقد تم تفعيل بريدك الإلكتروني مسبقا",
 }

@@ -7,14 +7,14 @@ using static FreeSmile.Services.Helper;
 
 namespace FreeSmile.Services
 {
-    public class PatientService : IPatientService
+    public class AdminService : IAdminService
     {
         private readonly ILogger<UsersController> _logger;
         private readonly IStringLocalizer<UsersController> _localizer;
         private readonly FreeSmileContext _context;
         private readonly IUserService _userService;
 
-        public PatientService(ILogger<UsersController> logger, FreeSmileContext context, IStringLocalizer<UsersController> localizer, IUserService userService)
+        public AdminService(ILogger<UsersController> logger, FreeSmileContext context, IStringLocalizer<UsersController> localizer, IUserService userService)
         {
             _logger = logger;
             _context = context;
@@ -30,11 +30,11 @@ namespace FreeSmile.Services
             {
                 responseDto = await _userService.AddUserAsync(userDto);
 
-                var patient = new Patient()
+                var admin = new Admin()
                 {
-                    PatientId = responseDto.Id
+                    AdminId = responseDto.Id
                 };
-                await _context.AddAsync(patient);
+                await _context.AddAsync(admin);
                 await _context.SaveChangesAsync();
 
                 await transaction.CommitAsync();

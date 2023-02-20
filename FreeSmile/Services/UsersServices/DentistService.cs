@@ -1,6 +1,7 @@
 ﻿using FreeSmile.Controllers;
 using FreeSmile.DTOs;
 using FreeSmile.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using static FreeSmile.Services.Helper;
 
@@ -61,11 +62,27 @@ namespace FreeSmile.Services
         {
             try
             {
-                if (_context.VerificationRequests.Any(v => v.OwnerId == ownerId))
+                if (await _context.VerificationRequests.AnyAsync(v => v.OwnerId == ownerId))
                     return new ResponseDTO()
                     {
                         Id = -1,
                         Error = _localizer["AlreadyRequested"]
+                    };
+
+                User? user = await _context.Users.FindAsync(ownerId);
+                
+                if (user is null)
+                    return new ResponseDTO()
+                    {
+                        Id = -1,
+                        Error = _localizer["UserNotFound"]
+                    };
+                
+                if (user.IsVerified != true)
+                    return new ResponseDTO()
+                    {
+                        Id = -1,
+                        Error = _localizer["VerifyEmailFirst"]
                     };
 
                 var natExt = Path.GetExtension(verificationDto.NatIdPhoto.FileName);
@@ -101,6 +118,11 @@ namespace FreeSmile.Services
                 _logger.LogError(ex.Message);
                 throw;
             }
+        }
+
+        public Task<ResponseDTO> VerifyAccount(string otp, int user_id)
+        {
+            return _userService.VerifyAccount(otp, user_id);
         }
     }
 }

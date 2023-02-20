@@ -8,7 +8,8 @@ namespace FreeSmile.Services
         {
             Admin,
             Patient,
-            Dentist
+            Dentist,
+            SuperAdmin
         }
         public static List<Claim> COMMON_CLAIMS(int sub)
         {
@@ -41,6 +42,15 @@ namespace FreeSmile.Services
                 COMMON_CLAIMS(sub).Concat(new Claim[]
                     {
                         new (ClaimTypes.Role, Role.Dentist.ToString())
+                    })
+                );
+        }
+        public static ClaimsIdentity SUPER_ADMIN_CLAIMS(int sub)
+        {
+            return new(
+                COMMON_CLAIMS(sub).Concat(new Claim[]
+                    {
+                        new (ClaimTypes.Role, Role.SuperAdmin.ToString())
                     })
                 );
         }

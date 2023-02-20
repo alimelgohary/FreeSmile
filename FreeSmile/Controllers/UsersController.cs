@@ -4,6 +4,7 @@ using FreeSmile.DTOs;
 using FreeSmile.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using static FreeSmile.Services.Helper;
 
 namespace FreeSmile.Controllers
 {
@@ -14,28 +15,33 @@ namespace FreeSmile.Controllers
         private readonly IStringLocalizer<UsersController> _localizer;
         private readonly IPatientService _patientService;
         private readonly IDentistService _dentistService;
+        private readonly IAdminService _adminService;
+        private readonly IUserService _userService;
 
-        public UsersController(IStringLocalizer<UsersController> localizer, IPatientService patientService, IDentistService dentistService)
+        public UsersController(IStringLocalizer<UsersController> localizer,
+            IPatientService patientService, IDentistService dentistService, IAdminService adminService, IUserService userService)
         {
             _localizer = localizer;
             _patientService = patientService;
             _dentistService = dentistService;
+            _adminService = adminService;
+            _userService = userService;
         }
-        
-        
+
+
         [HttpPost("RegisterPatient")]
         public async Task<IActionResult> RegisterPatientAsync([FromBody] UserRegisterDto value)
         {
             try
             {
                 var res = await _patientService.AddUserAsync(value);
-                if (string.IsNullOrEmpty(res.Error)) 
+                if (string.IsNullOrEmpty(res.Error))
                 {
                     var token = AuthHelper.TokenPatient(res.Id, TimeSpan.FromHours(1));
                     Response.Cookies.Append("Authorization-Token", token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict, Expires = DateTime.UtcNow.AddHours(1) });
                     return Ok(new { message = _localizer["RegisterSuccess"].ToString(), token });
                 }
-                
+
                 return BadRequest(_localizer[res.Error].ToString());
             }
             catch (Exception)
@@ -45,7 +51,28 @@ namespace FreeSmile.Controllers
 
         }
 
-        
+        [Authorize(Roles = "SuperAdmin")]
+        [HttpPost("RegisterAdmin")]
+        public async Task<IActionResult> RegisterAdminAsync([FromBody] UserRegisterDto value)
+        {
+            try
+            {
+                var res = await _adminService.AddUserAsync(value);
+                if (string.IsNullOrEmpty(res.Error))
+                {
+                    return Ok(new { message = _localizer["RegisterSuccess"].ToString() });
+                }
+
+                return BadRequest(_localizer[res.Error].ToString());
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, _localizer["UnknownError"].ToString());
+            }
+
+        }
+
+
         [HttpPost("RegisterDentist")]
         public async Task<IActionResult> RegisterDentistAsync([FromBody] UserRegisterDto value)
         {
@@ -66,35 +93,33 @@ namespace FreeSmile.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, _localizer["UnknownError"].ToString());
             }
         }
-        
-        
-        // TODO : only verified emails?
-        [Authorize(Roles = "Dentist")]
-        [HttpPost("RequestVerification")]
-        public async Task<IActionResult> AddVerificationRequestAsync([FromForm] VerificationDto value)
+
+
+        [HttpPut("VerifyAccount")]
+        [Authorize]
+        public async Task<IActionResult> VerifyMyAccount([FromBody]string otp)
         {
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if(userId is null)
+                string? user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(user_id))
                     return Unauthorized();
 
-                var userIdInt = int.Parse(userId);
-                var res = await _dentistService.AddVerificationRequestAsync(value, userIdInt);
+                int user_id_int = int.Parse(user_id);
+                ResponseDTO res = await _userService.VerifyAccount(otp, user_id_int);
 
                 if (string.IsNullOrEmpty(res.Error))
-                    return Ok(_localizer["VerificationRequestSuccess"].ToString());
-
+                {
+                    return Ok(new { message = _localizer["EmailVerificationSuccess"].ToString()});
+                }
                 return BadRequest(_localizer[res.Error].ToString());
             }
             catch (Exception)
             {
-                return BadRequest(_localizer["UnknownError"].ToString());
+                return StatusCode(StatusCodes.Status500InternalServerError, _localizer["UnknownError"].ToString());
             }
         }
+
         
-        
-        [HttpPost("Dummy")]
-        public void DummyAction(VerificationDto v){} // Only for including VerificationDto in Swagger
     }
 }

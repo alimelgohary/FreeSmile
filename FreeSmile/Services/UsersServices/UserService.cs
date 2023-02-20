@@ -40,7 +40,7 @@ namespace FreeSmile.Services
             var salt = CreateSalt();
             var passEnc = Encrypt(userDto.Password, _pepper);
             var passHashed = Hash256(passEnc, salt);
-            
+
             var otp = GenerateOtp();
             var user = new User()
             {
@@ -58,7 +58,7 @@ namespace FreeSmile.Services
 
             await _context.AddAsync(user);
             await _context.SaveChangesAsync();
-            
+
             try
             {
                 SendEmail(userDto.Email, otp);
@@ -103,10 +103,10 @@ namespace FreeSmile.Services
 
             return Sb.ToString();
         }
-        
+
         string Encrypt(string password, string key)
         {
-            
+
             byte[] keyBytes = Encoding.UTF8.GetBytes(key);
             byte[] iv = new byte[16]; // Generate a random IV for added security
             byte[] plainTextBytes = Encoding.UTF8.GetBytes(password);
@@ -122,7 +122,7 @@ namespace FreeSmile.Services
         string Decrypt(string encryptedText, string key)
         {
             byte[] keyBytes = Encoding.UTF8.GetBytes(key);
-            byte[] iv = new byte[16]; 
+            byte[] iv = new byte[16];
             byte[] encryptedBytes = Convert.FromBase64String(encryptedText);
 
             using Aes aes = Aes.Create();
@@ -139,8 +139,49 @@ namespace FreeSmile.Services
             Random random = new Random();
             var salt = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*", length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
-            
+
             return salt;
+        }
+
+        public async Task<ResponseDTO> VerifyAccount(string otp, int user_id)
+        {
+            User? user = await _context.Users.FindAsync(user_id);
+            if (user is null)
+                return new ResponseDTO()
+                {
+                    Id = -1,
+                    Error = _localizer["UserNotFound"]
+                };
+
+            if (user.IsVerified)
+                return new ResponseDTO()
+                {
+                    Id = -1,
+                    Error = _localizer["UserAlreadyVerified"]
+                };
+
+            if (user.Otp != otp)
+                return new ResponseDTO()
+                {
+                    Id = -1,
+                    Error = _localizer["OtpNotMatch"]
+                };
+
+            if (user.OtpExp < DateTime.UtcNow)
+                return new ResponseDTO()
+                {
+                    Id = -1,
+                    Error = _localizer["OtpExpired"]
+                };
+
+            user.IsVerified = true;
+            await _context.SaveChangesAsync();
+
+            return new ResponseDTO()
+            {
+                Id = user.Id,
+                Error = ""
+            };
         }
     }
 }
