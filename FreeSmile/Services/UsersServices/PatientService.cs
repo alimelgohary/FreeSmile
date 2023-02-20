@@ -2,7 +2,9 @@
 using FreeSmile.DTOs;
 using FreeSmile.Models;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json.Linq;
 using System.Transactions;
+using static FreeSmile.Services.AuthHelper;
 using static FreeSmile.Services.Helper;
 
 namespace FreeSmile.Services
@@ -22,37 +24,58 @@ namespace FreeSmile.Services
             _userService = userService;
         }
 
-        public async Task<ResponseDTO> AddUserAsync(UserRegisterDto userDto)
+        public async Task<RegularResponse> AddUserAsync(UserRegisterDto userDto, IResponseCookies cookies)
         {
-            ResponseDTO responseDto;
+            RegularResponse response;
             using var transaction = _context.Database.BeginTransaction();
             try
             {
-                responseDto = await _userService.AddUserAsync(userDto);
+                response = await _userService.AddUserAsync(userDto, cookies);
 
                 var patient = new Patient()
                 {
-                    PatientId = responseDto.Id
+                    PatientId = response.Id
                 };
                 await _context.AddAsync(patient);
                 await _context.SaveChangesAsync();
 
                 await transaction.CommitAsync();
 
-                return responseDto;
+                var tokenAge = MyConstants.REGISTER_TOKEN_AGE;
+                string token = GetToken(patient.PatientId, tokenAge, Role.Patient);
+                cookies.Append(MyConstants.AUTH_COOKIE_KEY, token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict, MaxAge = tokenAge });
+
+                response = new()
+                {
+                    Id = patient.PatientId,
+                    StatusCode = StatusCodes.Status200OK,
+                    Token = token,
+                    Message = _localizer["RegisterSuccess"],
+                    NextPage = Pages.verifyEmail.ToString()
+                };
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 transaction.Rollback();
-                throw;
+                response = new RegularResponse()
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Error = _localizer["UnknownError"],
+                    NextPage = Pages.registerPatient.ToString()
+                };
             }
-
+            return response;
         }
 
-        public Task<ResponseDTO> VerifyAccount(string otp, int user_id)
+        public Task<RegularResponse> VerifyAccount(string otp, int user_id)
         {
             return _userService.VerifyAccount(otp, user_id);
+        }
+
+        public async Task<RegularResponse> Login(UserLoginDto value, IResponseCookies cookies)
+        {
+            return await _userService.Login(value, cookies);
         }
     }
 }

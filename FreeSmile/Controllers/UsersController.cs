@@ -32,94 +32,47 @@ namespace FreeSmile.Controllers
         [HttpPost("RegisterPatient")]
         public async Task<IActionResult> RegisterPatientAsync([FromBody] UserRegisterDto value)
         {
-            try
-            {
-                var res = await _patientService.AddUserAsync(value);
-                if (string.IsNullOrEmpty(res.Error))
-                {
-                    var token = AuthHelper.TokenPatient(res.Id, TimeSpan.FromHours(1));
-                    Response.Cookies.Append("Authorization-Token", token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict, Expires = DateTime.UtcNow.AddHours(1) });
-                    return Ok(new { message = _localizer["RegisterSuccess"].ToString(), token });
-                }
-
-                return BadRequest(_localizer[res.Error].ToString());
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, _localizer["UnknownError"].ToString());
-            }
-
+            var res = await _patientService.AddUserAsync(value, Response.Cookies);
+            return StatusCode(res.StatusCode, res);
         }
 
+        
         [Authorize(Roles = "SuperAdmin")]
         [HttpPost("RegisterAdmin")]
         public async Task<IActionResult> RegisterAdminAsync([FromBody] UserRegisterDto value)
         {
-            try
-            {
-                var res = await _adminService.AddUserAsync(value);
-                if (string.IsNullOrEmpty(res.Error))
-                {
-                    return Ok(new { message = _localizer["RegisterSuccess"].ToString() });
-                }
-
-                return BadRequest(_localizer[res.Error].ToString());
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, _localizer["UnknownError"].ToString());
-            }
-
+            var res = await _adminService.AddUserAsync(value, Response.Cookies);
+            return StatusCode(res.StatusCode, res);
         }
 
 
         [HttpPost("RegisterDentist")]
         public async Task<IActionResult> RegisterDentistAsync([FromBody] UserRegisterDto value)
         {
-            try
-            {
-                var res = await _dentistService.AddUserAsync(value);
-                if (string.IsNullOrEmpty(res.Error))
-                {
-                    var token = AuthHelper.TokenDentist(res.Id, TimeSpan.FromHours(1));
-                    Response.Cookies.Append("Authorization-Token", token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict, Expires = DateTime.UtcNow.AddHours(1) });
-                    return Ok(new { message = _localizer["RegisterSuccess"].ToString(), token });
-                }
-                return BadRequest(_localizer[res.Error].ToString());
-
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, _localizer["UnknownError"].ToString());
-            }
+            var res = await _dentistService.AddUserAsync(value, Response.Cookies);
+            return StatusCode(res.StatusCode, res);
         }
 
 
         [HttpPut("VerifyAccount")]
         [Authorize]
-        public async Task<IActionResult> VerifyMyAccount([FromBody]string otp)
+        public async Task<IActionResult> VerifyMyAccount([FromBody] string otp)
         {
-            try
-            {
-                string? user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(user_id))
-                    return Unauthorized();
+            string? user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(user_id))
+                return Unauthorized();
 
-                int user_id_int = int.Parse(user_id);
-                ResponseDTO res = await _userService.VerifyAccount(otp, user_id_int);
-
-                if (string.IsNullOrEmpty(res.Error))
-                {
-                    return Ok(new { message = _localizer["EmailVerificationSuccess"].ToString()});
-                }
-                return BadRequest(_localizer[res.Error].ToString());
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, _localizer["UnknownError"].ToString());
-            }
+            int user_id_int = int.Parse(user_id);
+            RegularResponse res = await _userService.VerifyAccount(otp, user_id_int);
+            return StatusCode(res.StatusCode, res);
         }
 
-        
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginDto value)
+        {
+            var res = await _userService.Login(value, Response.Cookies);
+            return StatusCode(res.StatusCode, res);
+        }
     }
 }
+

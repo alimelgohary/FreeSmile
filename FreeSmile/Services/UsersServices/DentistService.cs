@@ -3,6 +3,7 @@ using FreeSmile.DTOs;
 using FreeSmile.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using static FreeSmile.Services.AuthHelper;
 using static FreeSmile.Services.Helper;
 
 namespace FreeSmile.Services
@@ -22,67 +23,79 @@ namespace FreeSmile.Services
             _userService = userService;
         }
 
-        public async Task<ResponseDTO> AddUserAsync(UserRegisterDto userDto)
+        public async Task<RegularResponse> AddUserAsync(UserRegisterDto userDto, IResponseCookies cookies)
         {
+            RegularResponse response;
+            
             using var transaction = _context.Database.BeginTransaction();
             try
             {
-                // headache for checking .edu.eg
-                //int gradDegId = 1; // (1 = grad)
-                //if (!userDto.Email.EndsWith(".edu.eg") && userDto.DegreeRequested != gradDegId)
-                //{
-                //    responseDto.Id = -1;
-                //    responseDto.Error = _localizer["undergradedu"];
-                //    return responseDto;
-                //}
-
-
-                var responseDto = await _userService.AddUserAsync(userDto);
+                response = await _userService.AddUserAsync(userDto, cookies);
 
                 var dentist = new Dentist()
                 {
-                    DentistId = responseDto.Id
+                    DentistId = response.Id
                     // current university and current degree are defaulted at first
                 };
                 await _context.AddAsync(dentist);
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return responseDto;
+                var tokenAge = MyConstants.REGISTER_TOKEN_AGE;
+                string token = GetToken(dentist.DentistId, tokenAge, Role.Dentist);
+                cookies.Append(MyConstants.AUTH_COOKIE_KEY, token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict, MaxAge = tokenAge });
+
+                response = new()
+                {
+                    Id = dentist.DentistId,
+                    StatusCode = StatusCodes.Status200OK,
+                    Token = token,
+                    Message = _localizer["RegisterSuccess"],
+                    NextPage = Pages.verifyEmail.ToString()
+                };
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 transaction.Rollback();
-                throw;
+                response = new()
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Error = _localizer["UnknownError"],
+                    NextPage = Pages.registerDentist.ToString()
+                };
             }
+            return response;
 
         }
-        public async Task<ResponseDTO> AddVerificationRequestAsync(VerificationDto verificationDto, int ownerId)
+        public async Task<RegularResponse> AddVerificationRequestAsync(VerificationDto verificationDto, int ownerId)
         {
             try
             {
                 if (await _context.VerificationRequests.AnyAsync(v => v.OwnerId == ownerId))
-                    return new ResponseDTO()
+                    return new RegularResponse()
                     {
-                        Id = -1,
-                        Error = _localizer["AlreadyRequested"]
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        Error = _localizer["AlreadyRequested"],
+                        NextPage = Pages.pendingVerificationAcceptance.ToString()
                     };
 
                 User? user = await _context.Users.FindAsync(ownerId);
-                
+
                 if (user is null)
-                    return new ResponseDTO()
+                    return new RegularResponse()
                     {
-                        Id = -1,
-                        Error = _localizer["UserNotFound"]
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        Error = _localizer["UserNotFound"],
+                        NextPage = Pages.registerDentist.ToString()
                     };
                 
                 if (user.IsVerified != true)
-                    return new ResponseDTO()
+                    return new RegularResponse()
                     {
-                        Id = -1,
-                        Error = _localizer["VerifyEmailFirst"]
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        Error = _localizer["VerifyEmailFirst"],
+                        NextPage = Pages.verifyEmail.ToString()
                     };
 
                 var natExt = Path.GetExtension(verificationDto.NatIdPhoto.FileName);
@@ -107,23 +120,35 @@ namespace FreeSmile.Services
 
                 await _context.SaveChangesAsync();
 
-                return new ResponseDTO()
+                return new RegularResponse()
                 {
-                    Id = -1,
-                    Error = ""
+                    Id = user.Id,
+                    StatusCode = StatusCodes.Status200OK,
+                    Message = _localizer["verificationrequestsuccess"],
                 };
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw;
+
+                return new RegularResponse()
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Error = _localizer["UnknownError"]
+                };
             }
         }
 
-        public Task<ResponseDTO> VerifyAccount(string otp, int user_id)
+        public Task<RegularResponse> VerifyAccount(string otp, int user_id)
         {
             return _userService.VerifyAccount(otp, user_id);
         }
+
+        public async Task<RegularResponse> Login(UserLoginDto value, IResponseCookies cookies)
+        {
+            return await _userService.Login(value, cookies);
+        }
+
     }
 }
 

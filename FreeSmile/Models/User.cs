@@ -37,6 +37,7 @@ namespace FreeSmile.Models
         public virtual Admin Admin { get; set; } = null!;
         public virtual Dentist Dentist { get; set; } = null!;
         public virtual Patient Patient { get; set; } = null!;
+        public virtual SuperAdmin SuperAdmin { get; set; } = null!;
         public virtual ICollection<Message> MessageReceivers { get; set; }
         public virtual ICollection<Message> MessageSenders { get; set; }
         public virtual ICollection<Notification> Notifications { get; set; }

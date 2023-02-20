@@ -3,6 +3,7 @@ using FreeSmile.DTOs;
 using FreeSmile.Models;
 using Microsoft.Extensions.Localization;
 using System.Transactions;
+using static FreeSmile.Services.AuthHelper;
 using static FreeSmile.Services.Helper;
 
 namespace FreeSmile.Services
@@ -22,37 +23,54 @@ namespace FreeSmile.Services
             _userService = userService;
         }
 
-        public async Task<ResponseDTO> AddUserAsync(UserRegisterDto userDto)
+        public async Task<RegularResponse> AddUserAsync(UserRegisterDto userDto, IResponseCookies cookies)
         {
-            ResponseDTO responseDto;
+            RegularResponse response;
             using var transaction = _context.Database.BeginTransaction();
             try
             {
-                responseDto = await _userService.AddUserAsync(userDto);
+                response = await _userService.AddUserAsync(userDto, cookies);
 
                 var admin = new Admin()
                 {
-                    AdminId = responseDto.Id
+                    AdminId = response.Id
                 };
                 await _context.AddAsync(admin);
                 await _context.SaveChangesAsync();
 
                 await transaction.CommitAsync();
-
-                return responseDto;
+                
+                response = new()
+                {
+                    Id = admin.AdminId,
+                    StatusCode = StatusCodes.Status200OK,
+                    Message = _localizer["RegisterSuccess"],
+                    NextPage = Pages.registerAdmin.ToString() // only superadmins can register admins so they will not verify them too && also no token is sent
+                };
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 transaction.Rollback();
-                throw;
+                response = new()
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Error = _localizer["UnknownError"],
+                    NextPage = Pages.registerAdmin.ToString()
+                };
             }
+            return response;
 
         }
 
-        public Task<ResponseDTO> VerifyAccount(string otp, int user_id)
+        public Task<RegularResponse> VerifyAccount(string otp, int user_id)
         {
             return _userService.VerifyAccount(otp, user_id);
+        }
+
+        public async Task<RegularResponse> Login(UserLoginDto value, IResponseCookies cookies)
+        {
+            return await _userService.Login(value, cookies);
         }
     }
 }

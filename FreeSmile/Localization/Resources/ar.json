@@ -34,4 +34,7 @@
   "otpnotmatch": "رمز التحقق غير صحيح",
   "emailverificationsuccess": "تم تفعيل البريد الإلكتروني بنجاح",
   "useralreadyverified": "لقد تم تفعيل بريدك الإلكتروني مسبقا",
+  "usernameoremail": "اسم المستخدم أو البريد الإلكتروني",
+  "incorrectcreds": "اسم المستخدم أو كلمة المرور غير صحيحة",
+  "loginsuccess": "تم تسجيل الدخول بنجاح"
 }

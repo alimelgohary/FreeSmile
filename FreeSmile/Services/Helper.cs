@@ -3,25 +3,12 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace FreeSmile.Services
 {
     public class Helper
     {
-        public static string GenerateToken(ClaimsIdentity claims, TimeSpan tokenAge)
-        {
-            JwtSecurityTokenHandler tokenHandler = new();
-            byte[] key = Encoding.ASCII.GetBytes(MyConstants.JWT_SECRET);
-            SecurityTokenDescriptor tokenDescriptor = new()
-            {
-
-                Subject = claims,
-                Expires = DateTime.UtcNow + tokenAge,
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-            };
-            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-        }
         public static string? GetEnvVariable(string key, bool closeIfNotFound)
         {
             var value = Environment.GetEnvironmentVariable(key);
@@ -44,10 +31,28 @@ namespace FreeSmile.Services
             using var stream = new FileStream(path, FileMode.Create);
             await file.CopyToAsync(stream);
         }
-        public struct ResponseDTO
+        
+        public struct RegularResponse
         {
-            public int Id;
-            public string Error;
+            public int Id { get; set; }
+            public string? Token { get; set; }
+            public string? Error { get; set; }
+            public string? Message { get; set; }
+            public string? NextPage { get; set; }
+            [JsonIgnore]
+            public int StatusCode { get; set; }
+        }
+        public enum Pages
+        {
+            home, // homeAdmin, homeDentist, homePatient, homeSuperAdmin
+            login,
+            register,
+            verifyEmail,
+            verifyDentist,
+            registerAdmin,
+            registerDentist,
+            registerPatient,
+            pendingVerificationAcceptance
         }
 
     }

@@ -27,26 +27,27 @@ namespace FreeSmile.Services
             _pepper = MyConstants.PEPPER;
 
         }
-        public async Task<ResponseDTO> AddUserAsync(UserRegisterDto userDto)
+        public async Task<RegularResponse> AddUserAsync(UserRegisterDto userDto, IResponseCookies cookies)
         {
             // Allow duplicate emails if user not verified yet
             _context.Users.RemoveRange(_context.Users.Where(x => x.Email == userDto.Email && x.IsVerified == false));
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             // Allow duplicate phones if user not verified yet
             _context.Users.RemoveRange(_context.Users.Where(x => x.Phone == userDto.Phone && x.IsVerified == false));
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
 
             var salt = CreateSalt();
-            var passEnc = Encrypt(userDto.Password, _pepper);
-            var passHashed = Hash256(passEnc, salt);
+            string storedPass = StorePassword(userDto.Password, salt);
+
 
             var otp = GenerateOtp();
             var user = new User()
             {
                 Username = userDto.Username,
                 Email = userDto.Email,
-                Password = passHashed,
+                Password = storedPass,
                 Salt = salt,
                 Phone = userDto.Phone,
                 Fullname = userDto.Fullname,
@@ -61,20 +62,26 @@ namespace FreeSmile.Services
 
             try
             {
-                SendEmail(userDto.Email, otp);
+                SendEmailOtp(userDto.Email, otp);
             }
             catch (Exception ex)
             {
                 _logger.LogError("Sending Email Error : " + ex.Message);
             }
-            return new ResponseDTO() { Id = user.Id, Error = "" };
+            return new RegularResponse() { Id = user.Id };
         }
 
-        private void SendEmail(string email, string otp)
+        private void SendEmailOtp(string email, string otp)
         {
             // TODO: Send email
-            throw new Exception();
+            throw new NotImplementedException();
             Console.WriteLine($"Sending email to {email} with otp: {otp}");
+        }
+
+        string StorePassword(string plainText, string salt)
+        {
+            var passEnc = Encrypt(plainText, _pepper);
+            return Hash256(passEnc, salt);
         }
 
         string GenerateOtp()
@@ -143,45 +150,142 @@ namespace FreeSmile.Services
             return salt;
         }
 
-        public async Task<ResponseDTO> VerifyAccount(string otp, int user_id)
+        public async Task<RegularResponse> VerifyAccount(string otp, int user_id)
         {
-            User? user = await _context.Users.FindAsync(user_id);
-            if (user is null)
-                return new ResponseDTO()
-                {
-                    Id = -1,
-                    Error = _localizer["UserNotFound"]
-                };
-
-            if (user.IsVerified)
-                return new ResponseDTO()
-                {
-                    Id = -1,
-                    Error = _localizer["UserAlreadyVerified"]
-                };
-
-            if (user.Otp != otp)
-                return new ResponseDTO()
-                {
-                    Id = -1,
-                    Error = _localizer["OtpNotMatch"]
-                };
-
-            if (user.OtpExp < DateTime.UtcNow)
-                return new ResponseDTO()
-                {
-                    Id = -1,
-                    Error = _localizer["OtpExpired"]
-                };
-
-            user.IsVerified = true;
-            await _context.SaveChangesAsync();
-
-            return new ResponseDTO()
+            try
             {
-                Id = user.Id,
-                Error = ""
-            };
+                User? user = await _context.Users.FindAsync(user_id);
+                if (user is null)
+                    return new RegularResponse()
+                    {
+                        StatusCode = 400,
+                        Error = _localizer["UserNotFound"],
+                        NextPage = Pages.login.ToString()
+                    };
+
+                AuthHelper.Role role = await GetCurrentRole(user.Id);
+
+                if (user.IsVerified)
+                    return new RegularResponse()
+                    {
+                        StatusCode = 400,
+                        Error = _localizer["UserAlreadyVerified"],
+                        NextPage = Pages.home.ToString() + role.ToString()
+                    };
+
+                if (user.Otp != otp)
+                    return new RegularResponse()
+                    {
+                        StatusCode = 400,
+                        Error = _localizer["OtpNotMatch"],
+                        NextPage = Pages.verifyEmail.ToString()
+                    };
+
+                if (user.OtpExp < DateTime.UtcNow)
+                    return new RegularResponse()
+                    {
+                        StatusCode = 400,
+                        Error = _localizer["OtpExpired"],
+                        NextPage = Pages.verifyEmail.ToString()
+                    };
+
+                user.IsVerified = true;
+                await _context.SaveChangesAsync();
+
+                string nextPage = (role == AuthHelper.Role.Dentist) ? Pages.verifyDentist.ToString() : Pages.home.ToString() + role.ToString();
+
+
+                return new RegularResponse()
+                {
+                    StatusCode = 200,
+                    Message = _localizer["EmailVerificationSuccess"],
+                    NextPage = nextPage
+                };
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+
+                return new RegularResponse()
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Error = _localizer["UnknownError"]
+                };
+            }
+        }
+
+        public async Task<RegularResponse> Login(UserLoginDto value, IResponseCookies cookies)
+        {
+            // Check email or username
+            // Check password
+            // Check redirect if not verified
+            try
+            {
+                User? user = await _context.Users.Where(x => x.Email == value.UsernameOrEmail || x.Username == value.UsernameOrEmail).FirstOrDefaultAsync();
+                if (user is null
+                 || StorePassword(value.Password, user.Salt) != user.Password)
+                    return new RegularResponse()
+                    {
+                        StatusCode = 400,
+                        Error = _localizer["IncorrectCreds"],
+                        NextPage = Pages.login.ToString()
+                    };
+
+                AuthHelper.Role role = await GetCurrentRole(user.Id);
+
+                TimeSpan loginTokenAge = MyConstants.LOGIN_TOKEN_AGE;
+
+                string token = AuthHelper.GetToken(user.Id, loginTokenAge, role);
+                cookies.Append(MyConstants.AUTH_COOKIE_KEY, token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict, MaxAge = loginTokenAge });
+
+                string nextPage = Pages.home.ToString() + role.ToString();
+
+                if (role == AuthHelper.Role.Dentist)
+                {
+                    var dentist = await _context.Dentists.FindAsync(user.Id);
+                    if (dentist.IsVerifiedDentist == false)
+                        nextPage = Pages.verifyDentist.ToString();
+                }
+
+                if (user.IsVerified == false)
+                    nextPage = Pages.verifyEmail.ToString();
+
+                return new RegularResponse()
+                {
+                    StatusCode = 200,
+                    Token = token,
+                    NextPage = nextPage,
+                    Message = _localizer["LoginSuccess"]
+                };
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+
+                return new RegularResponse()
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Error = _localizer["UnknownError"]
+                };
+            }
+        }
+        async Task<AuthHelper.Role> GetCurrentRole(int user_id)
+        {
+            AuthHelper.Role role = AuthHelper.Role.Patient;
+
+            if (await _context.SuperAdmins.AnyAsync(x => x.SuperAdminId == user_id))
+                role = AuthHelper.Role.SuperAdmin;
+
+            if (await _context.Dentists.AnyAsync(x => x.DentistId == user_id))
+                role = AuthHelper.Role.Dentist;
+
+            if (await _context.Patients.AnyAsync(x => x.PatientId == user_id))
+                role = AuthHelper.Role.Patient;
+
+            if (await _context.Admins.AnyAsync(x => x.AdminId == user_id))
+                role = AuthHelper.Role.Admin;
+
+            return role;
         }
     }
 }

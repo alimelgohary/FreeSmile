@@ -68,18 +68,18 @@ builder.Services.AddAuthentication(options =>
     options.Events = new JwtBearerEvents() {
         OnMessageReceived = context =>
         {
-            if (context.Request.Cookies.ContainsKey("Authorization-Token"))
+            if (context.Request.Cookies.ContainsKey(MyConstants.AUTH_COOKIE_KEY))
             {
-                context.Token = context.Request.Cookies["Authorization-Token"];
+                context.Token = context.Request.Cookies[MyConstants.AUTH_COOKIE_KEY];
             }
             return Task.CompletedTask;
         }
 };  
     //options.Events.OnMessageReceived = context =>
     //{
-    //    if (context.Request.Cookies.ContainsKey("Authorization-Token"))
+    //    if (context.Request.Cookies.ContainsKey(MyConstants.AUTH_COOKIE_KEY))
     //    {
-    //        context.Token = context.Request.Cookies["Authorization-Token"];
+    //        context.Token = context.Request.Cookies[MyConstants.AUTH_COOKIE_KEY];
     //    }
     //    return Task.CompletedTask;
     //};

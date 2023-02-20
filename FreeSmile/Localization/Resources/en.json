@@ -34,4 +34,7 @@
   "otpnotmatch": "OTP is incorrect",
   "emailverificationsuccess": "Email verified successfully",
   "useralreadyverified": "Your email is already verified",
+  "incorrectcreds": "Incorrect username or password",
+  "loginsuccess": "You have logged in successfully",
+  "usernameoremail": "Username or Email",
 }

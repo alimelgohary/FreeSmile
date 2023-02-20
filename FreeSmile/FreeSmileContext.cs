@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using FreeSmile.Models;
 using FreeSmile.Services;
-using static FreeSmile.Services.Helper;
 
 namespace FreeSmile
 {
@@ -39,6 +38,7 @@ namespace FreeSmile
         public virtual DbSet<ProductCat> ProductCats { get; set; } = null!;
         public virtual DbSet<Review> Reviews { get; set; } = null!;
         public virtual DbSet<SharingPatient> SharingPatients { get; set; } = null!;
+        public virtual DbSet<SuperAdmin> SuperAdmins { get; set; } = null!;
         public virtual DbSet<University> Universities { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
         public virtual DbSet<VerificationRequest> VerificationRequests { get; set; } = null!;
@@ -607,6 +607,20 @@ namespace FreeSmile
                     .WithOne(p => p.SharingPatient)
                     .HasForeignKey<SharingPatient>(d => d.SharingId)
                     .HasConstraintName("FK__sharingPa__shari__68D28DBC");
+            });
+
+            modelBuilder.Entity<SuperAdmin>(entity =>
+            {
+                entity.ToTable("superAdmins");
+
+                entity.Property(e => e.SuperAdminId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("super_admin_id");
+
+                entity.HasOne(d => d.SuperAdminNavigation)
+                    .WithOne(p => p.SuperAdmin)
+                    .HasForeignKey<SuperAdmin>(d => d.SuperAdminId)
+                    .HasConstraintName("FK__superAdmi__super__190BB0C3");
             });
 
             modelBuilder.Entity<University>(entity =>

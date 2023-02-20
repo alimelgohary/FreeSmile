@@ -21,32 +21,23 @@ namespace FreeSmile.Controllers
             _localizer = localizer;
             _dentistService = dentistService;
         }
-        
+
         [HttpPost("RequestVerification")]
         public async Task<IActionResult> AddVerificationRequestAsync([FromForm] VerificationDto value)
         {
-            try
-            {
-                string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if(string.IsNullOrEmpty(userId))
-                    return Unauthorized();
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
 
-                int userIdInt = int.Parse(userId);
-                ResponseDTO res = await _dentistService.AddVerificationRequestAsync(value, userIdInt);
+            int userIdInt = int.Parse(userId);
+            RegularResponse res = await _dentistService.AddVerificationRequestAsync(value, userIdInt);
 
-                if (string.IsNullOrEmpty(res.Error))
-                    return Ok(_localizer["VerificationRequestSuccess"].ToString());
-
-                return BadRequest(_localizer[res.Error].ToString());
-            }
-            catch (Exception)
-            {
-                return BadRequest(_localizer["UnknownError"].ToString());
-            }
+            return StatusCode(res.StatusCode, res);
         }
-        
-        
+
+        [HttpPost("Dummy2")]
+        public void DummyAction(UserLoginDto v) { }
         [HttpPost("Dummy")]
-        public void DummyAction(VerificationDto v){} // Only for including VerificationDto in Swagger
+        public void DummyAction2(VerificationDto v) { } // Only for including VerificationDto in Swagger
     }
 }
