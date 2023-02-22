@@ -169,7 +169,7 @@ namespace FreeSmile.Services
                     {
                         StatusCode = StatusCodes.Status400BadRequest,
                         Error = _localizer["OtpNotMatch"],
-                        NextPage = Pages.verifyEmail.ToString()
+                        NextPage = Pages.same.ToString()
                     };
 
                 if (user.OtpExp < DateTime.UtcNow)
@@ -177,7 +177,7 @@ namespace FreeSmile.Services
                     {
                         StatusCode = StatusCodes.Status400BadRequest,
                         Error = _localizer["OtpExpired"],
-                        NextPage = Pages.verifyEmail.ToString()
+                        NextPage = Pages.same.ToString()
                     };
 
                 user.IsVerified = true;
@@ -219,7 +219,7 @@ namespace FreeSmile.Services
                     {
                         StatusCode = StatusCodes.Status400BadRequest,
                         Error = _localizer["IncorrectCreds"],
-                        NextPage = Pages.login.ToString()
+                        NextPage = Pages.same.ToString()
                     };
 
                 AuthHelper.Role role = await GetCurrentRole(user.Id);

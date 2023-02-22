@@ -62,7 +62,7 @@ namespace FreeSmile.Services
                 {
                     StatusCode = StatusCodes.Status500InternalServerError,
                     Error = _localizer["UnknownError"],
-                    NextPage = Pages.registerDentist.ToString()
+                    NextPage = Pages.same.ToString()
                 };
             }
             return response;

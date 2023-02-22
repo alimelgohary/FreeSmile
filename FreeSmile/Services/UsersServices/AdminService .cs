@@ -45,7 +45,7 @@ namespace FreeSmile.Services
                     Id = admin.AdminId,
                     StatusCode = StatusCodes.Status200OK,
                     Message = _localizer["RegisterSuccess"],
-                    NextPage = Pages.registerAdmin.ToString() // only superadmins can register admins so they will not verify them too && also no token is sent
+                    NextPage = Pages.same.ToString() // only superadmins can register admins so they will not verify them too && also no token is sent
                 };
             }
             catch (Exception ex)
@@ -56,7 +56,7 @@ namespace FreeSmile.Services
                 {
                     StatusCode = StatusCodes.Status500InternalServerError,
                     Error = _localizer["UnknownError"],
-                    NextPage = Pages.registerAdmin.ToString()
+                    NextPage = Pages.same.ToString()
                 };
             }
             return response;
