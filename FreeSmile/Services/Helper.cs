@@ -42,6 +42,7 @@ namespace FreeSmile.Services
             [JsonIgnore]
             public int StatusCode { get; set; }
         }
+        
         public enum Pages
         {
             home, // homeAdmin, homeDentist, homePatient, homeSuperAdmin

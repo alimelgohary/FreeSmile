@@ -58,14 +58,9 @@ builder.Services.AddAuthentication(options =>
 {
     options.RequireHttpsMetadata = false;
     options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters
+    options.TokenValidationParameters = AuthHelper.tokenValidationParameters;
+    options.Events = new JwtBearerEvents()
     {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(MyConstants.JWT_SECRET)),
-        ValidateIssuer = false,
-        ValidateAudience = false
-    };
-    options.Events = new JwtBearerEvents() {
         OnMessageReceived = context =>
         {
             if (context.Request.Cookies.ContainsKey(MyConstants.AUTH_COOKIE_KEY))
@@ -74,15 +69,7 @@ builder.Services.AddAuthentication(options =>
             }
             return Task.CompletedTask;
         }
-};  
-    //options.Events.OnMessageReceived = context =>
-    //{
-    //    if (context.Request.Cookies.ContainsKey(MyConstants.AUTH_COOKIE_KEY))
-    //    {
-    //        context.Token = context.Request.Cookies[MyConstants.AUTH_COOKIE_KEY];
-    //    }
-    //    return Task.CompletedTask;
-    //};
+    };
 });
 #endregion
 
@@ -109,7 +96,7 @@ var supportedCultures = new[] { "en", "ar" };
 var localizationOptions = new RequestLocalizationOptions()
     .SetDefaultCulture(supportedCultures[0])
     .AddSupportedCultures(supportedCultures);
-app.UseRequestLocalization(localizationOptions); 
+app.UseRequestLocalization(localizationOptions);
 #endregion
 
 app.UseHttpsRedirection();
