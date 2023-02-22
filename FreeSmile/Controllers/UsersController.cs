@@ -73,6 +73,19 @@ namespace FreeSmile.Controllers
             var res = await _userService.Login(value, Response.Cookies);
             return StatusCode(res.StatusCode, res);
         }
+
+        [HttpPut("RequestOtp")]
+        [Authorize]
+        public async Task<IActionResult> RequestEmailOtp()
+        {
+            string? user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(user_id))
+                return Unauthorized();
+
+            int user_id_int = int.Parse(user_id);
+            RegularResponse res = await _userService.RequestEmailOtp(user_id_int);
+            return StatusCode(res.StatusCode, res);
+        }
     }
 }
 

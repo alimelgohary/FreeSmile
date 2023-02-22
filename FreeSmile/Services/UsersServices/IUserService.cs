@@ -9,6 +9,7 @@ namespace FreeSmile.Services
         public Task<RegularResponse> AddUserAsync(UserRegisterDto user, IResponseCookies cookies);
         public Task<RegularResponse> VerifyAccount(string otp, int user_id);
         public Task<RegularResponse> Login(UserLoginDto value, IResponseCookies cookies);
-        
+        public Task<RegularResponse> RequestEmailOtp(int user_id);
+
     }
 }

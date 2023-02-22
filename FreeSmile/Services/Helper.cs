@@ -52,7 +52,8 @@ namespace FreeSmile.Services
             registerAdmin,
             registerDentist,
             registerPatient,
-            pendingVerificationAcceptance
+            pendingVerificationAcceptance,
+            same
         }
 
     }

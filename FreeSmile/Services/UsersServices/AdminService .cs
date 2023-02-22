@@ -72,5 +72,9 @@ namespace FreeSmile.Services
         {
             return await _userService.Login(value, cookies);
         }
+        public async Task<RegularResponse> RequestEmailOtp(int user_id)
+        {
+            return await _userService.RequestEmailOtp(user_id);
+        }
     }
 }

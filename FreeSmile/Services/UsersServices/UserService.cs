@@ -6,9 +6,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Collections;
+using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
 using static FreeSmile.Services.Helper;
+using static System.Net.WebRequestMethods;
 
 namespace FreeSmile.Services
 {
@@ -41,8 +43,6 @@ namespace FreeSmile.Services
             var salt = CreateSalt();
             string storedPass = StorePassword(userDto.Password, salt);
 
-
-            var otp = GenerateOtp();
             var user = new User()
             {
                 Username = userDto.Username,
@@ -52,36 +52,27 @@ namespace FreeSmile.Services
                 Phone = userDto.Phone,
                 Fullname = userDto.Fullname,
                 Gender = userDto.Gender,
-                Bd = userDto.Birthdate,
-                Otp = otp,
-                OtpExp = DateTime.UtcNow.AddMinutes(10)
+                Bd = userDto.Birthdate
             };
 
             await _context.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            try
-            {
-                SendEmailOtp(userDto.Email, otp);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Sending Email Error : " + ex.Message);
-            }
             return new RegularResponse() { Id = user.Id };
         }
 
         private void SendEmailOtp(string email, string otp)
         {
             // TODO: Send email
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
             Console.WriteLine($"Sending email to {email} with otp: {otp}");
         }
 
         string StorePassword(string plainText, string salt)
         {
             var passEnc = Encrypt(plainText, _pepper);
-            return Hash256(passEnc, salt);
+            var hash = Hash256(passEnc, salt);
+            return hash;
         }
 
         string GenerateOtp()
@@ -158,7 +149,7 @@ namespace FreeSmile.Services
                 if (user is null)
                     return new RegularResponse()
                     {
-                        StatusCode = 400,
+                        StatusCode = StatusCodes.Status400BadRequest,
                         Error = _localizer["UserNotFound"],
                         NextPage = Pages.login.ToString()
                     };
@@ -168,7 +159,7 @@ namespace FreeSmile.Services
                 if (user.IsVerified)
                     return new RegularResponse()
                     {
-                        StatusCode = 400,
+                        StatusCode = StatusCodes.Status400BadRequest,
                         Error = _localizer["UserAlreadyVerified"],
                         NextPage = Pages.home.ToString() + role.ToString()
                     };
@@ -176,7 +167,7 @@ namespace FreeSmile.Services
                 if (user.Otp != otp)
                     return new RegularResponse()
                     {
-                        StatusCode = 400,
+                        StatusCode = StatusCodes.Status400BadRequest,
                         Error = _localizer["OtpNotMatch"],
                         NextPage = Pages.verifyEmail.ToString()
                     };
@@ -184,7 +175,7 @@ namespace FreeSmile.Services
                 if (user.OtpExp < DateTime.UtcNow)
                     return new RegularResponse()
                     {
-                        StatusCode = 400,
+                        StatusCode = StatusCodes.Status400BadRequest,
                         Error = _localizer["OtpExpired"],
                         NextPage = Pages.verifyEmail.ToString()
                     };
@@ -197,7 +188,7 @@ namespace FreeSmile.Services
 
                 return new RegularResponse()
                 {
-                    StatusCode = 200,
+                    StatusCode = StatusCodes.Status200OK,
                     Message = _localizer["EmailVerificationSuccess"],
                     NextPage = nextPage
                 };
@@ -226,7 +217,7 @@ namespace FreeSmile.Services
                  || StorePassword(value.Password, user.Salt) != user.Password)
                     return new RegularResponse()
                     {
-                        StatusCode = 400,
+                        StatusCode = StatusCodes.Status400BadRequest,
                         Error = _localizer["IncorrectCreds"],
                         NextPage = Pages.login.ToString()
                     };
@@ -252,7 +243,7 @@ namespace FreeSmile.Services
 
                 return new RegularResponse()
                 {
-                    StatusCode = 200,
+                    StatusCode = StatusCodes.Status200OK,
                     Token = token,
                     NextPage = nextPage,
                     Message = _localizer["LoginSuccess"]
@@ -286,6 +277,58 @@ namespace FreeSmile.Services
                 role = AuthHelper.Role.Admin;
 
             return role;
+        }
+
+        public async Task<RegularResponse> RequestEmailOtp(int user_id)
+        {
+            try
+            {
+                User? user = await _context.Users.FindAsync(user_id);
+                if (user is null)
+                    return new RegularResponse()
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        Error = _localizer["UserNotFound"],
+                        NextPage = Pages.login.ToString()
+                    };
+
+                user.Otp = GenerateOtp();
+                user.OtpExp = DateTime.UtcNow + MyConstants.OTP_AGE;
+
+                await _context.SaveChangesAsync();
+                
+                try
+                {
+                    SendEmailOtp(user.Email, user.Otp);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("Sending Email Error : " + ex.Message);
+                    return new RegularResponse()
+                    {
+                        StatusCode = StatusCodes.Status500InternalServerError,
+                        Message = _localizer["ErrorSendingEmail"],
+                        NextPage = Pages.same.ToString()
+                    };
+                }
+                
+                return new RegularResponse()
+                {
+                    StatusCode = StatusCodes.Status200OK,
+                    Message = _localizer["SentOtpSuccessfully"],
+                    NextPage = Pages.same.ToString()
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+
+                return new RegularResponse()
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Error = _localizer["UnknownError"]
+                };
+            }
         }
     }
 }
