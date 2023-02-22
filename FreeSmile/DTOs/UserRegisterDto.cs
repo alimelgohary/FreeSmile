@@ -28,6 +28,7 @@ namespace FreeSmile.DTOs
         [DisplayName(nameof(Password))]
         [Required(ErrorMessage = "required")]
         [StringLength(50, MinimumLength = 10, ErrorMessage = "maxMinchar")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-+=:\[\]?\._;])[A-Za-z\d\s!@#$%^&*()\-+=:\[\]?\._;~`']{4,}$", ErrorMessage = "passwordregex")]
         public string Password { get; set; } = null!;
 
         [DisplayName(nameof(Phone))]
