@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Localization;
 using FreeSmile.DTOs;
 using FreeSmile.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace FreeSmile.Controllers
 {
@@ -26,7 +27,7 @@ namespace FreeSmile.Controllers
         public IActionResult GetUniversityList()
         {
             string lang = Thread.CurrentThread.CurrentCulture.Name;
-            var universities = _context.Universities.Select(u => new { id = u.UniversityId, name = u.Lang(lang) }).ToList();
+            var universities = _context.Universities.AsEnumerable().OrderBy(x=> x.Lang(lang)).Select(u => new { id = u.UniversityId, name = u.Lang(lang) });
             return Ok(universities);
         }
         
@@ -42,7 +43,7 @@ namespace FreeSmile.Controllers
         public IActionResult GetGovernatesList()
         {
             string lang = Thread.CurrentThread.CurrentCulture.Name;
-            var govs = _context.Governates.Select(x => new { id = x.GovId, name = x.Lang(lang) }).ToList();
+            var govs = _context.Governates.AsEnumerable().OrderBy(x => x.Lang(lang)).Select(x => new { id = x.GovId, name = x.Lang(lang) }).ToList();
             return Ok(govs);
         }
 
@@ -50,7 +51,7 @@ namespace FreeSmile.Controllers
         public IActionResult GetTypesList()
         {
             string lang = Thread.CurrentThread.CurrentCulture.Name;
-            var types = _context.CaseTypes.Select(x => new { id = x.CaseTypeId, name = x.Lang(lang) }).ToList();
+            var types = _context.CaseTypes.AsEnumerable().OrderBy(x => x.Lang(lang)).Select(x => new { id = x.CaseTypeId, name = x.Lang(lang) }).ToList();
             return Ok(types);
         }
         
@@ -58,7 +59,7 @@ namespace FreeSmile.Controllers
         public IActionResult GetArticleCatsList()
         {
             string lang = Thread.CurrentThread.CurrentCulture.Name;
-            var artCats = _context.ArticleCats.Select(x => new { id = x.ArticleCatId, name = x.Lang(lang) }).ToList();
+            var artCats = _context.ArticleCats.AsEnumerable().OrderBy(x => x.Lang(lang)).Select(x => new { id = x.ArticleCatId, name = x.Lang(lang) }).ToList();
             return Ok(artCats);
         }
 
@@ -66,7 +67,7 @@ namespace FreeSmile.Controllers
         public IActionResult GetProductCatsList()
         {
             string lang = Thread.CurrentThread.CurrentCulture.Name;
-            var productCats = _context.ProductCats.Select(x => new { id = x.ProductCatId, name = x.Lang(lang) }).ToList();
+            var productCats = _context.ProductCats.AsEnumerable().OrderBy(x => x.Lang(lang)).Select(x => new { id = x.ProductCatId, name = x.Lang(lang) }).ToList();
             return Ok(productCats);
         }
 
@@ -74,7 +75,7 @@ namespace FreeSmile.Controllers
         public IActionResult GetNotificationTemplatesList()
         {
             string lang = Thread.CurrentThread.CurrentCulture.Name;
-            var productCats = _context.NotificationTemplates.Select(x => new { id = x.TempId, name = x.TempName, title = x.Lang(lang), body = x.LangBody(lang) }).ToList();
+            var productCats = _context.NotificationTemplates.AsEnumerable().OrderBy(x => x.Lang(lang)).Select(x => new { id = x.TempId, name = x.TempName, title = x.Lang(lang), body = x.LangBody(lang) }).ToList();
             return Ok(productCats);
         }
     }
