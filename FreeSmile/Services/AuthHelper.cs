@@ -3,8 +3,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.SignalR;
+using System.Net.Mail;
+using System.Net;
 
 namespace FreeSmile.Services
 {
@@ -13,6 +13,10 @@ namespace FreeSmile.Services
         private static string JWT_SECRET { get; } = Helper.GetEnvVariable("Jwt_Secret", false);
         
         private static string PEPPER { get; } = Helper.GetEnvVariable("PEPPER", true);
+        private static string FREESMILE_GMAIL_PASSWORD { get; } = Helper.GetEnvVariable("FreeSmileGmailPass", false);
+        private static string FREESMILE_GMAIL { get; } = Helper.GetEnvVariable("FreeSmileGmail", false);
+        private static string SmtpServer = "smtp.gmail.com";
+        private static int SmtpPort = 587;
 
         public static TokenValidationParameters tokenValidationParameters = new()
         {
@@ -21,7 +25,7 @@ namespace FreeSmile.Services
             ValidateIssuer = false,
             ValidateAudience = false
         };
-        
+
         public static string StorePassword(string plainText, string salt)
         {
             var passEnc = Encrypt(plainText, PEPPER);
@@ -177,7 +181,7 @@ namespace FreeSmile.Services
             return otp;
         }
 
-        public static string CreateSalt()
+        public static string GenerateSalt()
         {
             int length = 10;
             Random random = new Random();
@@ -185,6 +189,24 @@ namespace FreeSmile.Services
               .Select(s => s[random.Next(s.Length)]).ToArray());
 
             return salt;
+        }
+
+        public static void SendEmailOtp(string receiverEmail, string username, string otp, string subject, string lang)
+        {
+            MailMessage message = new MailMessage()
+            {
+                From = new MailAddress(FREESMILE_GMAIL),
+                To = { new MailAddress(receiverEmail) },
+                Subject = subject,
+                Body = string.Format(File.ReadAllText(@$"EmailTemplates\{lang}\otpemail.html"), username, MyConstants.OTP_AGE.Minutes, otp),
+                IsBodyHtml = true
+            };
+            SmtpClient client = new SmtpClient(SmtpServer, SmtpPort)
+            {
+                EnableSsl = true,
+                Credentials = new NetworkCredential(FREESMILE_GMAIL, FREESMILE_GMAIL_PASSWORD)
+            };
+            client.Send(message);
         }
     }
 }

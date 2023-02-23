@@ -2,14 +2,8 @@
 using FreeSmile.DTOs;
 using FreeSmile.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Localization;
-using System;
-using System.Collections;
-using System.Net.Mail;
-using System.Text;
 using static FreeSmile.Services.Helper;
-using static System.Net.WebRequestMethods;
 
 namespace FreeSmile.Services
 {
@@ -36,7 +30,7 @@ namespace FreeSmile.Services
             await _context.SaveChangesAsync();
 
 
-            var salt = AuthHelper.CreateSalt();
+            var salt = AuthHelper.GenerateSalt();
             string storedPass = AuthHelper.StorePassword(userDto.Password, salt);
 
             var user = new User()
@@ -55,13 +49,6 @@ namespace FreeSmile.Services
             await _context.SaveChangesAsync();
 
             return new RegularResponse() { Id = user.Id };
-        }
-
-        private void SendEmailOtp(string email, string otp)
-        {
-            // TODO: Send email
-            //throw new NotImplementedException();
-            Console.WriteLine($"Sending email to {email} with otp: {otp}");
         }
 
         public async Task<RegularResponse> VerifyAccount(string otp, int user_id)
@@ -116,7 +103,7 @@ namespace FreeSmile.Services
                     NextPage = nextPage
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
 
@@ -172,7 +159,7 @@ namespace FreeSmile.Services
                     Message = _localizer["LoginSuccess"]
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
 
@@ -219,10 +206,10 @@ namespace FreeSmile.Services
                 user.OtpExp = DateTime.UtcNow + MyConstants.OTP_AGE;
 
                 await _context.SaveChangesAsync();
-                
+
                 try
                 {
-                    SendEmailOtp(user.Email, user.Otp);
+                    AuthHelper.SendEmailOtp(user.Email, user.Username, user.Otp, _localizer["otpemailsubject"], _localizer["lang"]);
                 }
                 catch (Exception ex)
                 {
@@ -234,7 +221,7 @@ namespace FreeSmile.Services
                         NextPage = Pages.same.ToString()
                     };
                 }
-                
+
                 return new RegularResponse()
                 {
                     StatusCode = StatusCodes.Status200OK,

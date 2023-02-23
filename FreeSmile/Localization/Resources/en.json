@@ -40,4 +40,6 @@
   "passwordregex": "{0} must contain at least one uppercase, one lowercase, one number and one special character",
   "sentotpsuccessfully": "OTP sent successfully",
   "errorsendingemail": "We are sorry, there was an error sending the email, try again later",
+  "lang": "en",
+  "otpemailsubject": "FreeSmile Email Verification OTP",
 }
