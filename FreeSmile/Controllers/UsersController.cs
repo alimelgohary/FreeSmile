@@ -56,14 +56,14 @@ namespace FreeSmile.Controllers
 
         [HttpPut("VerifyAccount")]
         [Authorize]
-        public async Task<IActionResult> VerifyMyAccount([FromBody] string otp)
+        public async Task<IActionResult> VerifyMyAccount([FromBody] OtpDto dto)
         {
             string? user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(user_id))
                 return Unauthorized();
 
             int user_id_int = int.Parse(user_id);
-            RegularResponse res = await _userService.VerifyAccount(otp, user_id_int);
+            RegularResponse res = await _userService.VerifyAccount(dto.Otp, user_id_int);
             return StatusCode(res.StatusCode, res);
         }
 
@@ -84,6 +84,26 @@ namespace FreeSmile.Controllers
 
             int user_id_int = int.Parse(user_id);
             RegularResponse res = await _userService.RequestEmailOtp(user_id_int);
+            return StatusCode(res.StatusCode, res);
+        }
+
+        [HttpPut("ForgotPassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangeUnknownPasswordDto dto)
+        {
+            var res = await _userService.ChangePassword(dto);
+            return StatusCode(res.StatusCode, res);
+        }
+        
+        [Authorize]
+        [HttpPut("ChangePassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangeKnownPasswordDto dto)
+        {
+            string? user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(user_id))
+                return Unauthorized();
+
+            int user_id_int = int.Parse(user_id);
+            RegularResponse res = await _userService.ChangePassword(dto, user_id_int);
             return StatusCode(res.StatusCode, res);
         }
     }

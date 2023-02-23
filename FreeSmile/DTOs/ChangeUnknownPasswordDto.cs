@@ -1,11 +1,10 @@
 ﻿using FreeSmile.CustomValidations;
-using FreeSmile.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 
 namespace FreeSmile.DTOs
 {
-    public class UserLoginDto
+    public class ChangeUnknownPasswordDto : OtpDto
     {
         [Required(ErrorMessage = "required")]
         [DisplayName(nameof(UsernameOrEmail))]
@@ -13,8 +12,11 @@ namespace FreeSmile.DTOs
         [OrRegex("^[A-Za-z]+[A-Za-z0-9_]*[A-Za-z0-9]+$", "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", ErrorMessage = "mustbeemail")]
         public string UsernameOrEmail { get; set; } = null!;
 
-        [DisplayName(nameof(Password))]
+        [StringLength(50, MinimumLength = 10, ErrorMessage = "maxMinchar")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-+=:\[\]?\._;])[A-Za-z\d\s!@#$%^&*()\-+=:\[\]?\._;~`']{4,}$", ErrorMessage = "passwordregex")]
+        [DisplayName(nameof(NewPassword))]
         [Required(ErrorMessage = "required")]
-        public string Password { get; set; } = null!;
+        public string NewPassword { get; set; } = null!;
+        
     }
 }

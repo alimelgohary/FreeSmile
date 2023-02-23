@@ -240,5 +240,100 @@ namespace FreeSmile.Services
                 };
             }
         }
+        public async Task<RegularResponse> ChangePassword(ChangeUnknownPasswordDto request)
+        {
+            try
+            {
+                User? user = await _context.Users.Where(x => x.Email == request.UsernameOrEmail || x.Username == request.UsernameOrEmail).FirstOrDefaultAsync();
+                if (user is null)
+                    return new RegularResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK, //Don't provide the client with info
+                    };
+
+                AuthHelper.Role role = await GetCurrentRole(user.Id);
+
+                if (request.Otp != user.Otp)
+                    return new RegularResponse()
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        Error = _localizer["OtpNotMatch"],
+                        NextPage = Pages.same.ToString()
+                    };
+
+                if (user.OtpExp < DateTime.UtcNow)
+                    return new RegularResponse()
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        Error = _localizer["OtpExpired"],
+                        NextPage = Pages.same.ToString()
+                    };
+
+                user.Password = AuthHelper.StorePassword(request.NewPassword, user.Salt);
+                await _context.SaveChangesAsync();
+
+                return new RegularResponse()
+                {
+                    StatusCode = StatusCodes.Status200OK,
+                    Message = _localizer["PasswordChangedSuccessfully"],
+                    NextPage = Pages.login.ToString()
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+
+                return new RegularResponse()
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Error = _localizer["UnknownError"]
+                };
+            }
+        }
+
+        public async Task<RegularResponse> ChangePassword(ChangeKnownPasswordDto request, int user_id)
+        {
+            try
+            {
+                User? user = await _context.Users.FindAsync(user_id);
+                if (user is null)
+                    return new RegularResponse()
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        Error = _localizer["UserNotFound"],
+                        NextPage = Pages.login.ToString()
+                    };
+
+                AuthHelper.Role role = await GetCurrentRole(user.Id);
+
+                if (AuthHelper.StorePassword(request.CurrentPassword, user.Salt) != user.Password)
+                    return new RegularResponse()
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        Error = _localizer["IncorrectCurrentPassword"],
+                        NextPage = Pages.same.ToString()
+                    };
+
+                user.Password = AuthHelper.StorePassword(request.NewPassword, user.Salt);
+                await _context.SaveChangesAsync();
+
+                return new RegularResponse()
+                {
+                    StatusCode = StatusCodes.Status200OK,
+                    Message = _localizer["PasswordChangedSuccessfully"],
+                    NextPage = Pages.same.ToString()
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+
+                return new RegularResponse()
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Error = _localizer["UnknownError"]
+                };
+            }
+        }
     }
 }

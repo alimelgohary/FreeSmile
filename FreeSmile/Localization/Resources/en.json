@@ -42,4 +42,9 @@
   "errorsendingemail": "We are sorry, there was an error sending the email, try again later",
   "lang": "en",
   "otpemailsubject": "FreeSmile Email Verification OTP",
+  "currentpassword": "Current Password",
+  "newpassword": "New Password",
+  "otp": "OTP",
+  "incorrectcurrentpassword": "Current password is incorrect",
+  "passwordchangedsuccessfuly": "Password changed successfully",
 }

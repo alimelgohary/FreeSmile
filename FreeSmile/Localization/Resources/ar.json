@@ -41,5 +41,10 @@
   "sentotpsuccessfully": "تم إرسال رمز التحقق بنجاح",
   "errorsendingemail": "نأسف لحدوث خطأ أثناء إرسال البريد الإلكتروني، يرجى المحاولة مرة أخرى",
   "lang": "ar",
-  "otpemailsubject": "FreeSmile رمز التحقق من بريدك الألكتروني"
+  "otpemailsubject": "FreeSmile رمز التحقق من بريدك الألكتروني",
+  "currentpassword": "كلمة المرور الحالية",
+  "newpassword": "كلمة المرور الجديدة",
+  "otp": "رمز التحقق",
+  "incorrectcurrentpassword": "كلمة المرور الحالية غير صحيحة",
+  "passwordchangedsuccessfully": "تم تغيير كلمة المرور بنجاح",
 }

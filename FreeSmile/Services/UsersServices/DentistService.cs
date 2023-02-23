@@ -153,6 +153,15 @@ namespace FreeSmile.Services
         {
             return await _userService.RequestEmailOtp(user_id);
         }
+        public async Task<RegularResponse> ChangePassword(ChangeUnknownPasswordDto value)
+        {
+            return await _userService.ChangePassword(value);
+        }
+
+        public async Task<RegularResponse> ChangePassword(ChangeKnownPasswordDto value, int user_id_int)
+        {
+            return await _userService.ChangePassword(value, user_id_int);
+        }
     }
 }
 

@@ -1,6 +1,7 @@
 ﻿using FreeSmile.DTOs;
 using FreeSmile.Models;
 using static FreeSmile.Services.Helper;
+using static System.Net.WebRequestMethods;
 
 namespace FreeSmile.Services
 {
@@ -10,6 +11,8 @@ namespace FreeSmile.Services
         public Task<RegularResponse> VerifyAccount(string otp, int user_id);
         public Task<RegularResponse> Login(UserLoginDto value, IResponseCookies cookies);
         public Task<RegularResponse> RequestEmailOtp(int user_id);
+        public Task<RegularResponse> ChangePassword(ChangeUnknownPasswordDto value);
+        public Task<RegularResponse> ChangePassword(ChangeKnownPasswordDto value, int user_id_int);
 
     }
 }
