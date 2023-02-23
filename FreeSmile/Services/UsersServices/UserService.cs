@@ -251,8 +251,6 @@ namespace FreeSmile.Services
                         StatusCode = StatusCodes.Status200OK, //Don't provide the client with info
                     };
 
-                AuthHelper.Role role = await GetCurrentRole(user.Id);
-
                 if (request.Otp != user.Otp)
                     return new RegularResponse()
                     {

@@ -5,6 +5,7 @@ using System.Text;
 using System.Security.Cryptography;
 using System.Net.Mail;
 using System.Net;
+using System.Net.Mime;
 
 namespace FreeSmile.Services
 {
@@ -193,12 +194,16 @@ namespace FreeSmile.Services
 
         public static void SendEmailOtp(string receiverEmail, string username, string otp, string subject, string lang)
         {
+            var logoResource = new LinkedResource(@"EmailTemplates\logo.png", MediaTypeNames.Image.Jpeg);
+            string body = string.Format(File.ReadAllText(@$"EmailTemplates\{lang}\otpemail.html"), username, MyConstants.OTP_AGE.Minutes, otp, $"cid:{logoResource.ContentId}");
+            var alternateView = AlternateView.CreateAlternateViewFromString(body, null, MediaTypeNames.Text.Html);
+            alternateView.LinkedResources.Add(logoResource);
             MailMessage message = new MailMessage()
             {
                 From = new MailAddress(FREESMILE_GMAIL),
                 To = { new MailAddress(receiverEmail) },
                 Subject = subject,
-                Body = string.Format(File.ReadAllText(@$"EmailTemplates\{lang}\otpemail.html"), username, MyConstants.OTP_AGE.Minutes, otp),
+                AlternateViews = { alternateView },
                 IsBodyHtml = true
             };
             SmtpClient client = new SmtpClient(SmtpServer, SmtpPort)
