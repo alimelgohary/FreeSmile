@@ -38,7 +38,7 @@
   "loginsuccess": "You have logged in successfully",
   "usernameoremail": "Username or Email",
   "passwordregex": "{0} must contain at least one uppercase, one lowercase, one number and one special character",
-  "sentotpsuccessfully": "OTP sent successfully",
+  "sentotpsuccessfully": "OTP sent successfully, Check your spam/junk folder if you don't see it in your inbox",
   "errorsendingemail": "We are sorry, there was an error sending the email, try again later",
   "lang": "en",
   "otpemailsubject": "FreeSmile Email Verification OTP",
