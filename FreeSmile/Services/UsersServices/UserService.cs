@@ -335,5 +335,55 @@ namespace FreeSmile.Services
                 };
             }
         }
+        public async Task<RegularResponse> RequestEmailOtp(string usernameOrEmail)
+        {
+            try
+            {
+                User? user = await _context.Users.Where(x => x.Email == usernameOrEmail || x.Username == usernameOrEmail).FirstOrDefaultAsync();
+                if (user is null)
+                    return new RegularResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK // Don't provide info
+                    };
+
+                user.Otp = AuthHelper.GenerateOtp();
+                user.OtpExp = DateTime.UtcNow + MyConstants.OTP_AGE;
+
+                await _context.SaveChangesAsync();
+
+                try
+                {
+                    AuthHelper.SendEmailOtp(user.Email, user.Username, user.Otp, _localizer["otpemailsubject"], _localizer["lang"]);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("Sending Email Error : " + ex.Message);
+                    return new RegularResponse()
+                    {
+                        StatusCode = StatusCodes.Status500InternalServerError,
+                        Message = _localizer["ErrorSendingEmail"],
+                        NextPage = Pages.same.ToString()
+                    };
+                }
+
+                return new RegularResponse()
+                {
+                    StatusCode = StatusCodes.Status200OK,
+                    Message = _localizer["SentOtpSuccessfully"],
+                    NextPage = Pages.same.ToString()
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+
+                return new RegularResponse()
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Error = _localizer["UnknownError"]
+                };
+            }
+        }
     }
 }
+

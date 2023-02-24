@@ -75,16 +75,23 @@ namespace FreeSmile.Controllers
         }
 
         [HttpPut("RequestOtp")]
-        [Authorize]
-        public async Task<IActionResult> RequestEmailOtp()
+        public async Task<IActionResult> RequestEmailOtp([FromBody] RequestOtpDto? value)
         {
             string? user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(user_id))
-                return Unauthorized();
+            if (!string.IsNullOrEmpty(user_id))
+            {
+                int user_id_int = int.Parse(user_id);
+                RegularResponse res = await _userService.RequestEmailOtp(user_id_int);
+                return StatusCode(res.StatusCode, res);
+            }
 
-            int user_id_int = int.Parse(user_id);
-            RegularResponse res = await _userService.RequestEmailOtp(user_id_int);
-            return StatusCode(res.StatusCode, res);
+            if (!string.IsNullOrEmpty(value?.UsernameOrEmail))
+            {
+                RegularResponse res = await _userService.RequestEmailOtp(value.UsernameOrEmail);
+                return StatusCode(res.StatusCode, res);
+            }
+
+            return Unauthorized();
         }
 
         [HttpPut("ForgotPassword")]
