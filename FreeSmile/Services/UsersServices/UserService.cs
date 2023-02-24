@@ -91,6 +91,7 @@ namespace FreeSmile.Services
                     };
 
                 user.IsVerified = true;
+                user.OtpExp = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
 
                 string nextPage = (role == AuthHelper.Role.Dentist) ? Pages.verifyDentist.ToString() : Pages.home.ToString() + role.ToString();
@@ -268,6 +269,7 @@ namespace FreeSmile.Services
                     };
 
                 user.Password = AuthHelper.StorePassword(request.NewPassword, user.Salt);
+                user.OtpExp = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
 
                 return new RegularResponse()
