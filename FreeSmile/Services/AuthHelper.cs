@@ -22,7 +22,7 @@ namespace FreeSmile.Services
         public static TokenValidationParameters tokenValidationParameters = new()
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(JWT_SECRET!)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(JWT_SECRET)),
             ValidateIssuer = false,
             ValidateAudience = false
         };
@@ -151,7 +151,7 @@ namespace FreeSmile.Services
         private static string GenerateToken(ClaimsIdentity claims, TimeSpan tokenAge)
         {
             JwtSecurityTokenHandler tokenHandler = new();
-            byte[] key = Encoding.ASCII.GetBytes(JWT_SECRET!);
+            byte[] key = Encoding.ASCII.GetBytes(JWT_SECRET);
             SecurityTokenDescriptor tokenDescriptor = new()
             {
 
@@ -191,7 +191,7 @@ namespace FreeSmile.Services
             alternateView.LinkedResources.Add(logoResource);
             MailMessage message = new()
             {
-                From = new MailAddress(FREESMILE_GMAIL!),
+                From = new MailAddress(FREESMILE_GMAIL),
                 To = { new MailAddress(receiverEmail) },
                 Subject = subject,
                 AlternateViews = { alternateView },
