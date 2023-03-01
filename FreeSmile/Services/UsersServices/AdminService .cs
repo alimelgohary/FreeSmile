@@ -50,7 +50,7 @@ namespace FreeSmile.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError("{Message}", ex.Message);
                 transaction.Rollback();
                 response = new()
                 {

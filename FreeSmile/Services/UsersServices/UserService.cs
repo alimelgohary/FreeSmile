@@ -106,7 +106,7 @@ namespace FreeSmile.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError("{Message}", ex.Message);
 
                 return new RegularResponse()
                 {
@@ -171,7 +171,7 @@ namespace FreeSmile.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError("{Message}", ex.Message);
 
                 return new RegularResponse()
                 {
@@ -241,7 +241,7 @@ namespace FreeSmile.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError("{Message}", ex.Message);
 
                 return new RegularResponse()
                 {
@@ -290,7 +290,7 @@ namespace FreeSmile.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError("{Message}", ex.Message);
 
                 return new RegularResponse()
                 {
@@ -335,7 +335,7 @@ namespace FreeSmile.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError("{Message}", ex.Message);
 
                 return new RegularResponse()
                 {
@@ -384,7 +384,7 @@ namespace FreeSmile.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError("{Message}", ex.Message);
 
                 return new RegularResponse()
                 {

@@ -11,18 +11,18 @@ namespace FreeSmile.Services
 {
     public class AuthHelper
     {
-        private static string JWT_SECRET { get; } = Helper.GetEnvVariable("_Jwt_Secret", false);
+        private static string? JWT_SECRET { get; } = Helper.GetEnvVariable("_Jwt_Secret", false);
         
-        private static string PEPPER { get; } = Helper.GetEnvVariable("_PEPPER", true);
-        private static string FREESMILE_GMAIL_PASSWORD { get; } = Helper.GetEnvVariable("_FreeSmileGmailPass", false);
-        private static string FREESMILE_GMAIL { get; } = Helper.GetEnvVariable("_FreeSmileGmail", false);
-        private static string SmtpServer = "smtp.gmail.com";
-        private static int SmtpPort = 587;
+        private static string PEPPER { get; } = Helper.GetEnvVariable("_PEPPER", true)!;
+        private static string? FREESMILE_GMAIL_PASSWORD { get; } = Helper.GetEnvVariable("_FreeSmileGmailPass", false);
+        private static string? FREESMILE_GMAIL { get; } = Helper.GetEnvVariable("_FreeSmileGmail", false);
+        private static readonly string SmtpServer = "smtp.gmail.com";
+        private static readonly int SmtpPort = 587;
 
         public static TokenValidationParameters tokenValidationParameters = new()
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(JWT_SECRET)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(JWT_SECRET!)),
             ValidateIssuer = false,
             ValidateAudience = false
         };
@@ -37,7 +37,7 @@ namespace FreeSmile.Services
         static string Hash256(string password, string salt)
         {
             var str = password + salt;
-            StringBuilder Sb = new StringBuilder();
+            StringBuilder Sb = new();
 
             using (var hash = SHA256.Create())
             {
@@ -138,29 +138,20 @@ namespace FreeSmile.Services
 
         public static string GetToken(int user_id, TimeSpan tokenAge, Role role)
         {
-            string token;
-            switch (role)
+            string token = role switch
             {
-                case Role.Admin:
-                    token = GenerateToken(ADMIN_CLAIMS(user_id), tokenAge);
-                    break;
-                case Role.Dentist:
-                    token = GenerateToken(DENTIST_CLAIMS(user_id), tokenAge);
-                    break;
-                case Role.SuperAdmin:
-                    token = GenerateToken(SUPER_ADMIN_CLAIMS(user_id), tokenAge);
-                    break;
-                default:
-                    token = GenerateToken(PATIENT_CLAIMS(user_id), tokenAge);
-                    break;
-            }
+                Role.Admin => GenerateToken(ADMIN_CLAIMS(user_id), tokenAge),
+                Role.Dentist => GenerateToken(DENTIST_CLAIMS(user_id), tokenAge),
+                Role.SuperAdmin => GenerateToken(SUPER_ADMIN_CLAIMS(user_id), tokenAge),
+                _ => GenerateToken(PATIENT_CLAIMS(user_id), tokenAge),
+            };
             return token;
         }
 
         private static string GenerateToken(ClaimsIdentity claims, TimeSpan tokenAge)
         {
             JwtSecurityTokenHandler tokenHandler = new();
-            byte[] key = Encoding.ASCII.GetBytes(JWT_SECRET);
+            byte[] key = Encoding.ASCII.GetBytes(JWT_SECRET!);
             SecurityTokenDescriptor tokenDescriptor = new()
             {
 
@@ -185,7 +176,7 @@ namespace FreeSmile.Services
         public static string GenerateSalt()
         {
             int length = 10;
-            Random random = new Random();
+            Random random = new();
             var salt = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*", length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
 
@@ -198,15 +189,15 @@ namespace FreeSmile.Services
             string body = string.Format(File.ReadAllText(@$"EmailTemplates\{lang}\otpemail.html"), username, MyConstants.OTP_AGE.Minutes, otp, $"cid:{logoResource.ContentId}");
             var alternateView = AlternateView.CreateAlternateViewFromString(body, null, MediaTypeNames.Text.Html);
             alternateView.LinkedResources.Add(logoResource);
-            MailMessage message = new MailMessage()
+            MailMessage message = new()
             {
-                From = new MailAddress(FREESMILE_GMAIL),
+                From = new MailAddress(FREESMILE_GMAIL!),
                 To = { new MailAddress(receiverEmail) },
                 Subject = subject,
                 AlternateViews = { alternateView },
                 IsBodyHtml = true
             };
-            SmtpClient client = new SmtpClient(SmtpServer, SmtpPort)
+            SmtpClient client = new(SmtpServer, SmtpPort)
             {
                 EnableSsl = true,
                 Credentials = new NetworkCredential(FREESMILE_GMAIL, FREESMILE_GMAIL_PASSWORD)
