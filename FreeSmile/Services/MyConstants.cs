@@ -2,7 +2,7 @@
 {
     public class MyConstants
     {
-        public static string FREESMILE_CONNECTION { get; } = Helper.GetEnvVariable("FreeSmileDatabase", true);
+        public static string FREESMILE_CONNECTION { get; } = Helper.GetEnvVariable("_FreeSmileDatabase", true);
         
         public static TimeSpan REGISTER_TOKEN_AGE= TimeSpan.FromHours(1);
         public static TimeSpan LOGIN_TOKEN_AGE = TimeSpan.FromDays(1);

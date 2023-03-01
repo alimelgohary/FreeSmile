@@ -11,11 +11,11 @@ namespace FreeSmile.Services
 {
     public class AuthHelper
     {
-        private static string JWT_SECRET { get; } = Helper.GetEnvVariable("Jwt_Secret", false);
+        private static string JWT_SECRET { get; } = Helper.GetEnvVariable("_Jwt_Secret", false);
         
-        private static string PEPPER { get; } = Helper.GetEnvVariable("PEPPER", true);
-        private static string FREESMILE_GMAIL_PASSWORD { get; } = Helper.GetEnvVariable("FreeSmileGmailPass", false);
-        private static string FREESMILE_GMAIL { get; } = Helper.GetEnvVariable("FreeSmileGmail", false);
+        private static string PEPPER { get; } = Helper.GetEnvVariable("_PEPPER", true);
+        private static string FREESMILE_GMAIL_PASSWORD { get; } = Helper.GetEnvVariable("_FreeSmileGmailPass", false);
+        private static string FREESMILE_GMAIL { get; } = Helper.GetEnvVariable("_FreeSmileGmail", false);
         private static string SmtpServer = "smtp.gmail.com";
         private static int SmtpPort = 587;
 
