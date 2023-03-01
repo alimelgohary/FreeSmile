@@ -9,17 +9,6 @@ namespace FreeSmile.Models
         {
             if (language.ToLower() == "ar")
             {
-                return TitleAr;
-            }
-            else
-            {
-                return TitleEn;
-            }
-        }
-        public string LangBody(string language)
-        {
-            if (language.ToLower() == "ar")
-            {
                 return BodyAr;
             }
             else

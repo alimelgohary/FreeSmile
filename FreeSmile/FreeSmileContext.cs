@@ -24,6 +24,8 @@ namespace FreeSmile
         public virtual DbSet<ArticleCat> ArticleCats { get; set; } = null!;
         public virtual DbSet<Case> Cases { get; set; } = null!;
         public virtual DbSet<CaseType> CaseTypes { get; set; } = null!;
+        public virtual DbSet<Comment> Comments { get; set; } = null!;
+        public virtual DbSet<CommentReport> CommentReports { get; set; } = null!;
         public virtual DbSet<Dentist> Dentists { get; set; } = null!;
         public virtual DbSet<Governate> Governates { get; set; } = null!;
         public virtual DbSet<Listing> Listings { get; set; } = null!;
@@ -192,6 +194,64 @@ namespace FreeSmile
                     .HasColumnName("nameEn");
             });
 
+            modelBuilder.Entity<Comment>(entity =>
+            {
+                entity.ToTable("comments");
+
+                entity.Property(e => e.CommentId).HasColumnName("comment_id");
+
+                entity.Property(e => e.ArticleId).HasColumnName("article_id");
+
+                entity.Property(e => e.Body)
+                    .HasMaxLength(500)
+                    .HasColumnName("body");
+
+                entity.Property(e => e.TimeWritten)
+                    .HasColumnType("datetime")
+                    .HasColumnName("timeWritten")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.WriterId).HasColumnName("writer_id");
+
+                entity.HasOne(d => d.Article)
+                    .WithMany(p => p.Comments)
+                    .HasForeignKey(d => d.ArticleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__comments__articl__40E497F3");
+
+                entity.HasOne(d => d.Writer)
+                    .WithMany(p => p.Comments)
+                    .HasForeignKey(d => d.WriterId)
+                    .HasConstraintName("FK__comments__writer__3FF073BA");
+            });
+
+            modelBuilder.Entity<CommentReport>(entity =>
+            {
+                entity.HasKey(e => new { e.ReporterId, e.CommentId })
+                    .HasName("PK_comments_reports");
+
+                entity.ToTable("commentReports");
+
+                entity.Property(e => e.ReporterId).HasColumnName("reporter_id");
+
+                entity.Property(e => e.CommentId).HasColumnName("comment_id");
+
+                entity.Property(e => e.Reason)
+                    .HasMaxLength(100)
+                    .HasColumnName("reason");
+
+                entity.HasOne(d => d.Comment)
+                    .WithMany(p => p.CommentReports)
+                    .HasForeignKey(d => d.CommentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__commentRe__comme__44B528D7");
+
+                entity.HasOne(d => d.Reporter)
+                    .WithMany(p => p.CommentReports)
+                    .HasForeignKey(d => d.ReporterId)
+                    .HasConstraintName("FK__commentRe__repor__43C1049E");
+            });
+
             modelBuilder.Entity<Dentist>(entity =>
             {
                 entity.ToTable("dentists");
@@ -344,16 +404,24 @@ namespace FreeSmile
 
             modelBuilder.Entity<Notification>(entity =>
             {
-                entity.HasKey(e => new { e.OwnerId, e.NotificationId })
-                    .HasName("pk_notification");
-
                 entity.ToTable("notifications");
+
+                entity.Property(e => e.NotificationId).HasColumnName("notification_id");
+
+                entity.Property(e => e.ActorUsername)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("actor_username");
 
                 entity.Property(e => e.OwnerId).HasColumnName("owner_id");
 
-                entity.Property(e => e.NotificationId)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("notification_id");
+                entity.Property(e => e.PostTitle)
+                    .HasMaxLength(20)
+                    .HasColumnName("post_title");
+
+                entity.Property(e => e.Seen)
+                    .HasColumnName("seen")
+                    .HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.SentAt)
                     .HasColumnType("datetime")
@@ -365,46 +433,49 @@ namespace FreeSmile
                 entity.HasOne(d => d.Owner)
                     .WithMany(p => p.Notifications)
                     .HasForeignKey(d => d.OwnerId)
-                    .HasConstraintName("FK__notificat__owner__2AD55B43");
+                    .HasConstraintName("FK__notificat__owner__0C70CFB4");
 
                 entity.HasOne(d => d.Temp)
                     .WithMany(p => p.Notifications)
                     .HasForeignKey(d => d.TempId)
-                    .HasConstraintName("FK__notificat__temp___2CBDA3B5");
+                    .HasConstraintName("FK__notificat__temp___0F4D3C5F");
             });
 
             modelBuilder.Entity<NotificationTemplate>(entity =>
             {
                 entity.HasKey(e => e.TempId)
-                    .HasName("PK__notifica__FEEC6BDBC8A5C691");
+                    .HasName("PK__notifica__FEEC6BDB93C9075C");
 
                 entity.ToTable("notificationTemplates");
 
-                entity.HasIndex(e => e.TempName, "UQ__notifica__C40A32D14AADB99D")
+                entity.HasIndex(e => e.TempName, "UQ__notifica__C40A32D12594CD76")
                     .IsUnique();
 
                 entity.Property(e => e.TempId).HasColumnName("temp_id");
 
                 entity.Property(e => e.BodyAr)
-                    .HasMaxLength(50)
+                    .HasMaxLength(200)
                     .HasColumnName("bodyAr");
 
                 entity.Property(e => e.BodyEn)
-                    .HasMaxLength(50)
+                    .HasMaxLength(200)
                     .HasColumnName("bodyEn");
 
+                entity.Property(e => e.Icon)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("icon");
+
+                entity.Property(e => e.NextPage)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("nextPage")
+                    .HasDefaultValueSql("('same')");
+
                 entity.Property(e => e.TempName)
-                    .HasMaxLength(20)
+                    .HasMaxLength(30)
                     .IsUnicode(false)
                     .HasColumnName("temp_name");
-
-                entity.Property(e => e.TitleAr)
-                    .HasMaxLength(30)
-                    .HasColumnName("titleAr");
-
-                entity.Property(e => e.TitleEn)
-                    .HasMaxLength(30)
-                    .HasColumnName("titleEn");
             });
 
             modelBuilder.Entity<Patient>(entity =>
@@ -518,13 +589,12 @@ namespace FreeSmile
                     .WithMany(p => p.PostReports)
                     .HasForeignKey(d => d.PostId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__postRepor__post___324172E1");
+                    .HasConstraintName("FK__postRepor__post___226010D3");
 
                 entity.HasOne(d => d.Reporter)
                     .WithMany(p => p.PostReports)
                     .HasForeignKey(d => d.ReporterId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__postRepor__repor__314D4EA8");
+                    .HasConstraintName("FK__postRepor__repor__216BEC9A");
             });
 
             modelBuilder.Entity<ProductCat>(entity =>
@@ -730,6 +800,23 @@ namespace FreeSmile
                 entity.Property(e => e.VisibleContact).HasColumnName("visibleContact");
 
                 entity.Property(e => e.VisibleMail).HasColumnName("visibleMail");
+
+                entity.HasMany(d => d.Articles)
+                    .WithMany(p => p.Likers)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "ArticleLike",
+                        l => l.HasOne<Article>().WithMany().HasForeignKey("ArticleId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__articleLi__artic__3572E547"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("LikerId").HasConstraintName("FK__articleLi__liker__347EC10E"),
+                        j =>
+                        {
+                            j.HasKey("LikerId", "ArticleId").HasName("PK_post_likes");
+
+                            j.ToTable("articleLikes");
+
+                            j.IndexerProperty<int>("LikerId").HasColumnName("liker_id");
+
+                            j.IndexerProperty<int>("ArticleId").HasColumnName("article_id");
+                        });
 
                 entity.HasMany(d => d.Blockeds)
                     .WithMany(p => p.Blockers)

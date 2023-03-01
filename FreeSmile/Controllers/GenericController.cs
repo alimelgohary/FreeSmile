@@ -75,7 +75,7 @@ namespace FreeSmile.Controllers
         public IActionResult GetNotificationTemplatesList()
         {
             string lang = Thread.CurrentThread.CurrentCulture.Name;
-            var productCats = _context.NotificationTemplates.AsEnumerable().OrderBy(x => x.Lang(lang)).Select(x => new { id = x.TempId, name = x.TempName, title = x.Lang(lang), body = x.LangBody(lang) }).ToList();
+            var productCats = _context.NotificationTemplates.AsEnumerable().OrderBy(x => x.Lang(lang)).Select(x => new { id = x.TempId, name = x.TempName, body = x.Lang(lang), icon = x.Icon, nextPage = x.NextPage }).ToList();
             return Ok(productCats);
         }
     }

@@ -7,12 +7,15 @@ namespace FreeSmile.Models
     {
         public User()
         {
+            CommentReports = new HashSet<CommentReport>();
+            Comments = new HashSet<Comment>();
             MessageReceivers = new HashSet<Message>();
             MessageSenders = new HashSet<Message>();
             Notifications = new HashSet<Notification>();
             PostReports = new HashSet<PostReport>();
             Posts = new HashSet<Post>();
             Reviews = new HashSet<Review>();
+            Articles = new HashSet<Article>();
             Blockeds = new HashSet<User>();
             Blockers = new HashSet<User>();
         }
@@ -38,6 +41,8 @@ namespace FreeSmile.Models
         public virtual Dentist Dentist { get; set; } = null!;
         public virtual Patient Patient { get; set; } = null!;
         public virtual SuperAdmin SuperAdmin { get; set; } = null!;
+        public virtual ICollection<CommentReport> CommentReports { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<Message> MessageReceivers { get; set; }
         public virtual ICollection<Message> MessageSenders { get; set; }
         public virtual ICollection<Notification> Notifications { get; set; }
@@ -45,6 +50,7 @@ namespace FreeSmile.Models
         public virtual ICollection<Post> Posts { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
 
+        public virtual ICollection<Article> Articles { get; set; }
         public virtual ICollection<User> Blockeds { get; set; }
         public virtual ICollection<User> Blockers { get; set; }
     }
