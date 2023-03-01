@@ -49,7 +49,8 @@ namespace FreeSmile.Services
             registerDentist,
             registerPatient,
             pendingVerificationAcceptance,
-            same
+            same,
+            postFullPage // postFullPage{post_id}
         }
 
     }

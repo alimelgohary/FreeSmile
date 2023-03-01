@@ -6,10 +6,10 @@ namespace FreeSmile.CustomValidations
 {
     public class OrRegexAttribute : RequiredAttribute //For validation to work
     {
-        public string[] regexes{ get; set; }
+        public string[] Regexes{ get; set; }
         public OrRegexAttribute(params string[] regexes)
         {
-            this.regexes = regexes;
+            this.Regexes = regexes;
         }
         
         public override bool IsValid(object value)
@@ -18,7 +18,7 @@ namespace FreeSmile.CustomValidations
             if (valueStr is null)
                 return true;
             
-            foreach (var regex in regexes)
+            foreach (var regex in Regexes)
             {
                 Regex re = new Regex(regex);
                 

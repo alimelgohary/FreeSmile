@@ -223,7 +223,7 @@ namespace FreeSmile.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("Sending Email Error : " + ex.Message);
+                    _logger.LogError("Sending Email Error : {Message}", ex.Message);
                     return new RegularResponse()
                     {
                         StatusCode = StatusCodes.Status500InternalServerError,
@@ -366,7 +366,7 @@ namespace FreeSmile.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("Sending Email Error : " + ex.Message);
+                    _logger.LogError("Sending Email Error : {Message}", ex.Message);
                     return new RegularResponse()
                     {
                         StatusCode = StatusCodes.Status500InternalServerError,
