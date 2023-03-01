@@ -146,7 +146,16 @@ namespace FreeSmile.Services
                 {
                     var dentist = await _context.Dentists.FindAsync(user.Id);
                     if (dentist.IsVerifiedDentist == false)
-                        nextPage = Pages.verifyDentist.ToString();
+                    {
+                        if (!_context.VerificationRequests.Any(req => req.OwnerId == user.Id))
+                        {
+                            nextPage = Pages.verifyDentist.ToString();
+                        }
+                        else
+                        {
+                            nextPage = Pages.pendingVerificationAcceptance.ToString();
+                        }
+                    }
                 }
 
                 if (user.IsVerified == false)

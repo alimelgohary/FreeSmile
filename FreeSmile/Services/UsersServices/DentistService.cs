@@ -77,7 +77,7 @@ namespace FreeSmile.Services
                     {
                         StatusCode = StatusCodes.Status400BadRequest,
                         Error = _localizer["AlreadyRequested"],
-                        NextPage = Pages.pendingVerificationAcceptance.ToString()
+                        NextPage = Pages.same.ToString()
                     };
 
                 User? user = await _context.Users.FindAsync(ownerId);
