@@ -20,7 +20,7 @@ namespace FreeSmile.CustomValidations
             
             foreach (var regex in Regexes)
             {
-                Regex re = new Regex(regex);
+                Regex re = new(regex);
                 
                 if (re.IsMatch(valueStr!))
                     return true;
