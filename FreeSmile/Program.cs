@@ -12,7 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var corsPolicy = "_myAllowSpecificOrigins";
 #region Logging
 builder.Services.AddLogging();
 var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
@@ -22,7 +22,20 @@ builder.Host.UseSerilog((ctx, lc) => lc
 #endregion
 
 builder.Services.AddControllers();
-builder.Services.AddCors();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: corsPolicy,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://freesmile.me",
+                                             "https://freesmile.me",
+                                             "http://www.freesmile.me",
+                                             "https://www.freesmile.me")
+                                .AllowCredentials()
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                      });
+});
 
 #region Localization1
 builder.Services.AddLocalization();
@@ -101,7 +114,7 @@ app.UseRequestLocalization(localizationOptions);
 #endregion
 
 app.UseHttpsRedirection();
-app.UseCors(c => c.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+app.UseCors(corsPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
 
