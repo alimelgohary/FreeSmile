@@ -22,6 +22,7 @@ builder.Host.UseSerilog((ctx, lc) => lc
 #endregion
 
 builder.Services.AddControllers();
+builder.Services.AddCors();
 
 #region Localization1
 builder.Services.AddLocalization();
@@ -100,7 +101,7 @@ app.UseRequestLocalization(localizationOptions);
 #endregion
 
 app.UseHttpsRedirection();
-
+app.UseCors(c => c.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 app.UseAuthentication();
 app.UseAuthorization();
 
