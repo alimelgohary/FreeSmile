@@ -258,7 +258,9 @@ namespace FreeSmile.Services
                 if (user is null)
                     return new RegularResponse()
                     {
-                        StatusCode = StatusCodes.Status200OK, //Don't provide the client with info
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        Error = _localizer["UserNotFound"],
+                        NextPage = Pages.login.ToString()
                     };
 
                 if (request.Otp != user.Otp)
@@ -377,7 +379,9 @@ namespace FreeSmile.Services
                 if (user is null)
                     return new RegularResponse()
                     {
-                        StatusCode = StatusCodes.Status200OK // Don't provide info
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        Error = _localizer["UserNotFound"],
+                        NextPage = Pages.same.ToString()
                     };
 
                 user.Otp = AuthHelper.GenerateOtp();
