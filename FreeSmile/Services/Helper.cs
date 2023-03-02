@@ -50,7 +50,18 @@ namespace FreeSmile.Services
             registerPatient,
             pendingVerificationAcceptance,
             same,
-            postFullPage // postFullPage{post_id}
+            postFullPage // postFullPage{post_id}  postFullPage25 postFullPage5154
+        }
+        public enum NotificationTemplates
+        {
+            Incorrect_Info,
+            Photos_Not_Clear,
+            Missing_Photos,
+            Verification_Success,
+            Article_Like,
+            Article_Comment,
+            Reset_Password,
+            Changed_Password
         }
 
     }
