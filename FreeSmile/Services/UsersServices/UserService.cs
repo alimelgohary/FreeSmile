@@ -281,6 +281,19 @@ namespace FreeSmile.Services
                 user.OtpExp = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
 
+                try
+                {
+                    user.Notifications.Add(new()
+                    {
+                        Temp = _context.NotificationTemplates.Where(x => x.TempName == NotificationTemplates.Reset_Password.ToString()).FirstOrDefault()
+                    });
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("{Message}", ex.Message);
+                }
+
                 return new RegularResponse()
                 {
                     StatusCode = StatusCodes.Status200OK,
@@ -325,6 +338,18 @@ namespace FreeSmile.Services
 
                 user.Password = AuthHelper.StorePassword(request.NewPassword, user.Salt);
                 await _context.SaveChangesAsync();
+
+                try
+                {
+                    user.Notifications.Add(new() {
+                        Temp = _context.NotificationTemplates.Where(x => x.TempName == NotificationTemplates.Changed_Password.ToString()).FirstOrDefault()
+                    });
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("{Message}", ex.Message);
+                }
 
                 return new RegularResponse()
                 {
