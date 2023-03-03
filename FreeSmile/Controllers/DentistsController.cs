@@ -35,8 +35,6 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
         }
 
-        [HttpPost("Dummy2")]
-        public void DummyAction(UserLoginDto v) { }
         [HttpPost("Dummy")]
         public void DummyAction2(VerificationDto v) { } // Only for including VerificationDto in Swagger
     }
