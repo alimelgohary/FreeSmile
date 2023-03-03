@@ -43,7 +43,7 @@ namespace FreeSmile.Services
 
                 var tokenAge = MyConstants.REGISTER_TOKEN_AGE;
                 string token = GetToken(dentist.DentistId, tokenAge, Role.Dentist);
-                cookies.Append(MyConstants.AUTH_COOKIE_KEY, token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict, MaxAge = tokenAge });
+                cookies.Append(MyConstants.AUTH_COOKIE_KEY, token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.None, MaxAge = tokenAge, Secure = true });
 
                 response = new()
                 {

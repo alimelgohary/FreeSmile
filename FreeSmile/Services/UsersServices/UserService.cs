@@ -138,7 +138,7 @@ namespace FreeSmile.Services
                 TimeSpan loginTokenAge = MyConstants.LOGIN_TOKEN_AGE;
 
                 string token = AuthHelper.GetToken(user.Id, loginTokenAge, role);
-                cookies.Append(MyConstants.AUTH_COOKIE_KEY, token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict, MaxAge = loginTokenAge });
+                cookies.Append(MyConstants.AUTH_COOKIE_KEY, token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.None, MaxAge = loginTokenAge, Secure = true });
 
                 string nextPage = Pages.home.ToString() + role.ToString();
 
