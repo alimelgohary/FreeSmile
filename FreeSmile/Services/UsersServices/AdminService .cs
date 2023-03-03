@@ -91,5 +91,35 @@ namespace FreeSmile.Services
         {
             return await _userService.RequestEmailOtp(usernameOrEmail);
         }
+
+        public async Task<bool> IsNotSuspended(int id)
+        {
+            return await _userService.IsNotSuspended(id);
+        }
+
+        public async Task<bool> IsNotSuspended(string usernameOrEmail)
+        {
+            return await _userService.IsNotSuspended(usernameOrEmail);
+        }
+
+        public async Task<bool> IsVerifiedEmail(int id)
+        {
+            return await _userService.IsVerifiedEmail(id);
+        }
+
+        public async Task<bool> IsVerifiedEmail(string usernameOrEmail)
+        {
+            return await _userService.IsVerifiedEmail(usernameOrEmail);
+        }
+
+        public async Task<bool> InitialChecks(string usernameOrEmail)
+        {
+            return await _userService.InitialChecks(usernameOrEmail);
+        }
+
+        public async Task<bool> InitialChecks(int id)
+        {
+            return await _userService.InitialChecks(id);
+        }
     }
 }

@@ -422,6 +422,55 @@ namespace FreeSmile.Services
                 };
             }
         }
+
+        public async Task<bool> IsNotSuspended(int id)
+        {
+            User? user = await _context.Users.FindAsync(id);
+            if (user is null)
+                return true;
+            if (user.Suspended)
+                return false;
+            return true;
+        }
+        public async Task<bool> IsNotSuspended(string usernameOrEmail)
+        {
+            User? user = await _context.Users.Where(x=> x.Username == usernameOrEmail || x.Email == usernameOrEmail).FirstOrDefaultAsync();
+            if (user is null)
+                return true;
+            if (user.Suspended)
+                return false;
+            return true;
+        }
+        public async Task<bool> IsVerifiedEmail(int id)
+        {
+            User? user = await _context.Users.FindAsync(id);
+            if (user is null)
+                return true;
+            if (user.IsVerified)
+                return true;
+            return false;
+        }
+        public async Task<bool> IsVerifiedEmail(string usernameOrEmail)
+        {
+            User? user = await _context.Users.Where(x => x.Username == usernameOrEmail || x.Email == usernameOrEmail).FirstOrDefaultAsync();
+            if (user is null)
+                return true;
+            if (user.IsVerified)
+                return true;
+            return false;
+        }
+
+        public async Task<bool> InitialChecks(string usernameOrEmail)
+        {
+            return await IsVerifiedEmail(usernameOrEmail)
+                && await IsNotSuspended(usernameOrEmail);
+        }
+
+        public async Task<bool> InitialChecks(int id)
+        {
+            return await IsVerifiedEmail(id)
+                && await IsNotSuspended(id);
+        }
     }
 }
 

@@ -166,6 +166,60 @@ namespace FreeSmile.Services
         {
             return await _userService.RequestEmailOtp(usernameOrEmail);
         }
+        public async Task<bool> IsNotSuspended(int id)
+        {
+            return await _userService.IsNotSuspended(id);
+        }
+
+        public async Task<bool> IsNotSuspended(string usernameOrEmail)
+        {
+            return await _userService.IsNotSuspended(usernameOrEmail);
+        }
+
+        public async Task<bool> IsVerifiedEmail(int id)
+        {
+            return await _userService.IsVerifiedEmail(id);
+        }
+
+        public async Task<bool> IsVerifiedEmail(string usernameOrEmail)
+        {
+            return await _userService.IsVerifiedEmail(usernameOrEmail);
+        }
+
+        public async Task<bool> IsVerifiedDentist(int id)
+        {
+            Dentist? dentist = await _context.Dentists.FindAsync(id);
+            if (dentist is null)
+                return true;
+            if (dentist.IsVerifiedDentist)
+                return true;
+            return false;
+        }
+
+        public async Task<bool> IsVerifiedDentist(string usernameOrEmail)
+        {
+            Dentist? dentist = await _context.Dentists.Where(x => x.DentistNavigation.Username == usernameOrEmail
+                                                               || x.DentistNavigation.Email == usernameOrEmail)
+                                                      .FirstOrDefaultAsync();
+            if (dentist is null)
+                return true;
+            if (dentist.IsVerifiedDentist)
+                return true;
+            return false;
+        }
+
+        public async Task<bool> InitialChecks(string usernameOrEmail)
+        {
+            return await _userService.InitialChecks(usernameOrEmail)
+                && await IsVerifiedDentist(usernameOrEmail);
+        }
+
+        public async Task<bool> InitialChecks(int id)
+        {
+            return await _userService.InitialChecks(id)
+                && await IsVerifiedDentist(id);
+        }
+
     }
 }
 
