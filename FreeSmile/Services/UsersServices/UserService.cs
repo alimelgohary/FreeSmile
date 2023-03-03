@@ -287,7 +287,7 @@ namespace FreeSmile.Services
                 {
                     user.Notifications.Add(new()
                     {
-                        Temp = _context.NotificationTemplates.Where(x => x.TempName == NotificationTemplates.Reset_Password.ToString()).FirstOrDefault()
+                        Temp = await _context.NotificationTemplates.Where(x => x.TempName == NotificationTemplates.Reset_Password.ToString()).FirstOrDefaultAsync()
                     });
                     await _context.SaveChangesAsync();
                 }
@@ -344,7 +344,7 @@ namespace FreeSmile.Services
                 try
                 {
                     user.Notifications.Add(new() {
-                        Temp = _context.NotificationTemplates.Where(x => x.TempName == NotificationTemplates.Changed_Password.ToString()).FirstOrDefault()
+                        Temp = await _context.NotificationTemplates.Where(x => x.TempName == NotificationTemplates.Changed_Password.ToString()).FirstOrDefaultAsync()
                     });
                     await _context.SaveChangesAsync();
                 }
