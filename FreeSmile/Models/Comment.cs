@@ -12,7 +12,7 @@ namespace FreeSmile.Models
 
         public int CommentId { get; set; }
         public string Body { get; set; } = null!;
-        public DateTime? TimeWritten { get; set; }
+        public DateTime TimeWritten { get; set; }
         public int WriterId { get; set; }
         public int ArticleId { get; set; }
 

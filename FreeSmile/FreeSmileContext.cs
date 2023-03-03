@@ -209,7 +209,7 @@ namespace FreeSmile
                 entity.Property(e => e.TimeWritten)
                     .HasColumnType("datetime")
                     .HasColumnName("timeWritten")
-                    .HasDefaultValueSql("(getdate())");
+                    .HasDefaultValueSql("(getutcdate())");
 
                 entity.Property(e => e.WriterId).HasColumnName("writer_id");
 
@@ -387,7 +387,7 @@ namespace FreeSmile
                 entity.Property(e => e.SentAt)
                     .HasColumnType("datetime")
                     .HasColumnName("sentAt")
-                    .HasDefaultValueSql("(getdate())");
+                    .HasDefaultValueSql("(getutcdate())");
 
                 entity.HasOne(d => d.Receiver)
                     .WithMany(p => p.MessageReceivers)
@@ -426,7 +426,7 @@ namespace FreeSmile
                 entity.Property(e => e.SentAt)
                     .HasColumnType("datetime")
                     .HasColumnName("sentAt")
-                    .HasDefaultValueSql("(getdate())");
+                    .HasDefaultValueSql("(getutcdate())");
 
                 entity.Property(e => e.TempId).HasColumnName("temp_id");
 
@@ -537,7 +537,7 @@ namespace FreeSmile
                 entity.Property(e => e.TimeWritten)
                     .HasColumnType("datetime")
                     .HasColumnName("timeWritten")
-                    .HasDefaultValueSql("(getdate())");
+                    .HasDefaultValueSql("(getutcdate())");
 
                 entity.Property(e => e.Title)
                     .HasMaxLength(20)
@@ -791,6 +791,8 @@ namespace FreeSmile
                     .IsUnicode(false)
                     .HasColumnName("salt")
                     .IsFixedLength();
+
+                entity.Property(e => e.Suspended).HasColumnName("suspended");
 
                 entity.Property(e => e.Username)
                     .HasMaxLength(50)

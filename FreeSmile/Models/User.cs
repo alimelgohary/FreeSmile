@@ -36,6 +36,7 @@ namespace FreeSmile.Models
         public string? ProfilePicture { get; set; }
         public string? Otp { get; set; }
         public DateTime? OtpExp { get; set; }
+        public bool Suspended { get; set; }
 
         public virtual Admin Admin { get; set; } = null!;
         public virtual Dentist Dentist { get; set; } = null!;
