@@ -47,4 +47,5 @@
   "otp": "OTP",
   "incorrectcurrentpassword": "Current password is incorrect",
   "passwordchangedsuccessfuly": "Password changed successfully",
+  "emailalreadyverified": "Your email is already verified",
 }

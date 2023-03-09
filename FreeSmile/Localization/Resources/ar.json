@@ -47,4 +47,5 @@
   "otp": "رمز التحقق",
   "incorrectcurrentpassword": "كلمة المرور الحالية غير صحيحة",
   "passwordchangedsuccessfully": "تم تغيير كلمة المرور بنجاح",
+  "emailalreadyverified": "لقد تم بالفعل تفعيل بريدك الإلكتروني",
 }

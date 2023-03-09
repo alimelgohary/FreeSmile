@@ -3,6 +3,7 @@ using FreeSmile.DTOs;
 using FreeSmile.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using static FreeSmile.Services.AuthHelper;
 using static FreeSmile.Services.Helper;
 
 namespace FreeSmile.Services
@@ -30,8 +31,8 @@ namespace FreeSmile.Services
             await _context.SaveChangesAsync();
 
 
-            var salt = AuthHelper.GenerateSalt();
-            string storedPass = AuthHelper.StorePassword(userDto.Password, salt);
+            var salt = GenerateSalt();
+            string storedPass = StorePassword(userDto.Password, salt);
 
             var user = new User()
             {
@@ -62,7 +63,7 @@ namespace FreeSmile.Services
                         nextPage : Pages.login.ToString()
                     );
 
-                AuthHelper.Role role = await GetCurrentRole(user.Id);
+                Role role = await GetCurrentRole(user.Id);
 
                 if (user.IsVerified)
                     return RegularResponse.BadRequestError(
@@ -84,7 +85,7 @@ namespace FreeSmile.Services
                 user.OtpExp = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
 
-                string nextPage = (role == AuthHelper.Role.Dentist) ? Pages.verifyDentist.ToString() : Pages.home.ToString() + role.ToString();
+                string nextPage = (role == Role.Dentist) ? Pages.verifyDentist.ToString() : Pages.home.ToString() + role.ToString();
 
 
                 return RegularResponse.Success(
@@ -109,21 +110,21 @@ namespace FreeSmile.Services
             {
                 User? user = await _context.Users.Where(x => x.Email == value.UsernameOrEmail || x.Username == value.UsernameOrEmail).FirstOrDefaultAsync();
                 if (user is null
-                 || AuthHelper.StorePassword(value.Password, user.Salt) != user.Password)
+                 || StorePassword(value.Password, user.Salt) != user.Password)
                     return RegularResponse.BadRequestError(
                         error : _localizer["IncorrectCreds"]
                     );
 
-                AuthHelper.Role role = await GetCurrentRole(user.Id);
+                Role role = await GetCurrentRole(user.Id);
 
                 TimeSpan loginTokenAge = MyConstants.LOGIN_TOKEN_AGE;
 
-                string token = AuthHelper.GetToken(user.Id, loginTokenAge, role);
+                string token = GetToken(user.Id, loginTokenAge, role);
                 cookies.Append(MyConstants.AUTH_COOKIE_KEY, token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.None, MaxAge = loginTokenAge, Secure = true });
 
                 string nextPage = Pages.home.ToString() + role.ToString();
 
-                if (role == AuthHelper.Role.Dentist)
+                if (role == Role.Dentist)
                 {
                     var dentist = await _context.Dentists.FindAsync(user.Id);
                     if (dentist.IsVerifiedDentist == false)
@@ -155,21 +156,21 @@ namespace FreeSmile.Services
                 return RegularResponse.UnknownError(_localizer);
             }
         }
-        async Task<AuthHelper.Role> GetCurrentRole(int user_id)
+        async Task<Role> GetCurrentRole(int user_id)
         {
-            AuthHelper.Role role = AuthHelper.Role.Patient;
+            Role role = Role.Patient;
 
             if (await _context.SuperAdmins.AnyAsync(x => x.SuperAdminId == user_id))
-                role = AuthHelper.Role.SuperAdmin;
+                role = Role.SuperAdmin;
 
             if (await _context.Dentists.AnyAsync(x => x.DentistId == user_id))
-                role = AuthHelper.Role.Dentist;
+                role = Role.Dentist;
 
             if (await _context.Patients.AnyAsync(x => x.PatientId == user_id))
-                role = AuthHelper.Role.Patient;
+                role = Role.Patient;
 
             if (await _context.Admins.AnyAsync(x => x.AdminId == user_id))
-                role = AuthHelper.Role.Admin;
+                role = Role.Admin;
 
             return role;
         }
@@ -185,14 +186,40 @@ namespace FreeSmile.Services
                         nextPage : Pages.login.ToString()
                     );
 
-                user.Otp = AuthHelper.GenerateOtp();
+                if (user.IsVerified)
+                {
+                    Role role = await GetCurrentRole(user.Id);
+                    string nextPage = Pages.home.ToString() + role.ToString();
+                    if (role == Role.Dentist)
+                    {
+                        var dentist = await _context.Dentists.FindAsync(user.Id);
+                        if (dentist.IsVerifiedDentist == false)
+                        {
+                            if (!_context.VerificationRequests.Any(req => req.OwnerId == user.Id))
+                            {
+                                nextPage = Pages.verifyDentist.ToString();
+                            }
+                            else
+                            {
+                                nextPage = Pages.pendingVerificationAcceptance.ToString();
+                            }
+                        }
+                    }
+                    return RegularResponse.BadRequestError(
+                        error: _localizer["emailalreadyverified"],
+                        nextPage: nextPage
+                    );
+                }
+                    
+
+                user.Otp = GenerateOtp();
                 user.OtpExp = DateTime.UtcNow + MyConstants.OTP_AGE;
 
                 await _context.SaveChangesAsync();
 
                 try
                 {
-                    AuthHelper.SendEmailOtp(user.Email, user.Username, user.Otp, _localizer["otpemailsubject"], _localizer["lang"]);
+                    SendEmailOtp(user.Email, user.Username, user.Otp, _localizer["otpemailsubject"], _localizer["lang"]);
                 }
                 catch (Exception ex)
                 {
@@ -238,7 +265,7 @@ namespace FreeSmile.Services
                         error : _localizer["OtpExpired"]
                     );
 
-                user.Password = AuthHelper.StorePassword(request.NewPassword, user.Salt);
+                user.Password = StorePassword(request.NewPassword, user.Salt);
                 user.OtpExp = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
 
@@ -279,14 +306,14 @@ namespace FreeSmile.Services
                         nextPage : Pages.login.ToString()
                     );
 
-                AuthHelper.Role role = await GetCurrentRole(user.Id);
+                Role role = await GetCurrentRole(user.Id);
 
-                if (AuthHelper.StorePassword(request.CurrentPassword, user.Salt) != user.Password)
+                if (StorePassword(request.CurrentPassword, user.Salt) != user.Password)
                     return RegularResponse.BadRequestError(
                         error : _localizer["IncorrectCurrentPassword"]
                     );
 
-                user.Password = AuthHelper.StorePassword(request.NewPassword, user.Salt);
+                user.Password = StorePassword(request.NewPassword, user.Salt);
                 await _context.SaveChangesAsync();
 
                 try
@@ -322,14 +349,14 @@ namespace FreeSmile.Services
                         error : _localizer["UserNotFound"]
                     );
 
-                user.Otp = AuthHelper.GenerateOtp();
+                user.Otp = GenerateOtp();
                 user.OtpExp = DateTime.UtcNow + MyConstants.OTP_AGE;
 
                 await _context.SaveChangesAsync();
 
                 try
                 {
-                    AuthHelper.SendEmailOtp(user.Email, user.Username, user.Otp, _localizer["otpemailsubject"], _localizer["lang"]);
+                    SendEmailOtp(user.Email, user.Username, user.Otp, _localizer["otpemailsubject"], _localizer["lang"]);
                 }
                 catch (Exception ex)
                 {
