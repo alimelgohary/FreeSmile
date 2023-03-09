@@ -14,10 +14,10 @@ namespace FreeSmile.Controllers
     [ApiController]
     public class GenericController : ControllerBase
     {
-        private readonly IStringLocalizer<UsersController> _localizer;
+        private readonly IStringLocalizer<GenericController> _localizer;
         private readonly FreeSmileContext _context;
 
-        public GenericController(IStringLocalizer<UsersController> localizer, FreeSmileContext context)
+        public GenericController(IStringLocalizer<GenericController> localizer, FreeSmileContext context)
         {
             _localizer = localizer;
             _context = context;
