@@ -51,4 +51,6 @@
   "verifydentistfirst": "You must verify your dentist account first",
   "usersuspended": "Your account is banned.",
   "pendingverificationacceptance": "Waiting for verification approval, We will send you an email when your account is verified",
+  "natidphoto": "National ID Photo",
+  "proofofdegreephoto": "Proof of Degree Photo",
 }

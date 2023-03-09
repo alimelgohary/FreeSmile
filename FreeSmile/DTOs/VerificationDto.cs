@@ -9,22 +9,24 @@ namespace FreeSmile.DTOs
 {
     public class VerificationDto
     {
-        [Required]
         [DisplayName("university")]
+        [Required(ErrorMessage = "required")]
         [ForeignKey(nameof(University), "university_id", ErrorMessage = "invalidchoice")]
-        public int CurrentUniversity { get; set; }
+        public int? CurrentUniversity { get; set; }
 
-        [Required]
         [DisplayName("degree")]
+        [Required(ErrorMessage = "required")]
         [ForeignKey(nameof(AcademicDegree), "deg_id", ErrorMessage = "invalidchoice")]
-        public int DegreeRequested { get; set; }
+        public int? DegreeRequested { get; set; }
 
-        
+        [DisplayName(nameof(NatIdPhoto))]
+        [Required(ErrorMessage = "required")]
         [MaxFileSize(2, ErrorMessage = "TooLarge")]
         [AllowedExtensions(new[] {".jpg", ".jpeg", ".png", ".jpe", ".jfif", ".bmp" , ".pdf"}, ErrorMessage = "imagespdfonly")]
         public IFormFile NatIdPhoto { get; set; } = null!;
 
-
+        [DisplayName(nameof(ProofOfDegreePhoto))]
+        [Required(ErrorMessage = "required")]
         [MaxFileSize(2, ErrorMessage = "TooLarge")]
         [AllowedExtensions(new[] {".jpg", ".jpeg", ".png", ".jpe", ".jfif", ".bmp" , ".pdf"}, ErrorMessage = "imagespdfonly")]
         public IFormFile ProofOfDegreePhoto { get; set; } = null!;
