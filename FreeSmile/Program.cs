@@ -96,7 +96,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<FreeSmileContext>(optionsBuilder =>
     optionsBuilder.UseSqlServer(MyConstants.FREESMILE_CONNECTION)
 );
-builder.Services.AddScoped<ActionFilterChecks>();
+
+builder.Services.AddScoped<ValidUser>();
+builder.Services.AddScoped<NotSuspended>();
+builder.Services.AddScoped<VerifiedEmail>();
+builder.Services.AddScoped<VerifiedIfDentist>();
+
 
 var app = builder.Build();
 

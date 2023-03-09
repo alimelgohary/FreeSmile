@@ -50,4 +50,5 @@
   "emailalreadyverified": "لقد تم بالفعل تفعيل بريدك الإلكتروني",
   "verifydentistfirst": "يجب تفعيل حسابك كطبيب أولا",
   "usersuspended": "تم حظر حسابك",
+  "pendingverificationacceptance": "بانتظار الموافقة على طلب التحقق، سوف يتم إرسال بريد إلكتروني عند الموافقة",
 }
