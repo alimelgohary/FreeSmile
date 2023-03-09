@@ -2,7 +2,7 @@
   "username": "Username",
   "required": "{0} field is Required",
   "id": "Id",
-  "usernameregex": "{0} must be alphanumeric and underscore only",
+  "usernameregex": "{0} must begin with a letter and must be alphanumeric and underscore only",
   "password": "Password",
   "email": "Email",
   "mustbeemail": "You must provide a valid {0}",
