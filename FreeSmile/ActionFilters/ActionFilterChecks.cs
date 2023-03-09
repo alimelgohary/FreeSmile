@@ -8,7 +8,7 @@ using Microsoft.Extensions.Localization;
 using System.Security.Claims;
 using static FreeSmile.Services.Helper;
 
-namespace FreeSmile.Controllers
+namespace FreeSmile.ActionFilters
 {
     public class ActionFilterChecks : IAsyncActionFilter
     {
@@ -32,7 +32,7 @@ namespace FreeSmile.Controllers
             _dentistService = dentistService;
             _userService = userService;
         }
-        
+
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
@@ -50,7 +50,7 @@ namespace FreeSmile.Controllers
 
             int user_id_int = int.Parse(user_id);
 
-            if(! _context.Users.Any(user => user.Id == user_id_int))
+            if (!_context.Users.Any(user => user.Id == user_id_int))
             {
                 RegularResponse res = RegularResponse.BadRequestError(
                                          error: _localizer["UserNotFound"],
@@ -76,7 +76,7 @@ namespace FreeSmile.Controllers
                 {
                     RegularResponse res = RegularResponse.BadRequestError(
                                              error: _localizer["VerifyEmailFirst"],
-                                             nextPage : Pages.verifyEmail.ToString()
+                                             nextPage: Pages.verifyEmail.ToString()
                                           );
 
                     context.Result = new ObjectResult(res) { StatusCode = res.StatusCode };
@@ -117,7 +117,7 @@ namespace FreeSmile.Controllers
                 }
             }
 
-            
+
             var result = await next();
         }
     }
