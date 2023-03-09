@@ -48,4 +48,6 @@
   "incorrectcurrentpassword": "كلمة المرور الحالية غير صحيحة",
   "passwordchangedsuccessfully": "تم تغيير كلمة المرور بنجاح",
   "emailalreadyverified": "لقد تم بالفعل تفعيل بريدك الإلكتروني",
+  "verifydentistfirst": "يجب تفعيل حسابك كطبيب أولا",
+  "usersuspended": "تم حظر حسابك",
 }

@@ -10,6 +10,7 @@ using Serilog;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using FreeSmile.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 var corsPolicy = "_myAllowSpecificOrigins";
@@ -95,7 +96,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<FreeSmileContext>(optionsBuilder =>
     optionsBuilder.UseSqlServer(MyConstants.FREESMILE_CONNECTION)
 );
-
+builder.Services.AddScoped<ActionFilterChecks>();
 
 var app = builder.Build();
 
