@@ -108,11 +108,7 @@ namespace FreeSmile.Services
             {
                 _logger.LogError("{Message}", ex.Message);
 
-                return new RegularResponse()
-                {
-                    StatusCode = StatusCodes.Status500InternalServerError,
-                    Error = _localizer["UnknownError"]
-                };
+                return RegularResponse.UnknownError(_localizer);
             }
         }
 
@@ -173,11 +169,7 @@ namespace FreeSmile.Services
             {
                 _logger.LogError("{Message}", ex.Message);
 
-                return new RegularResponse()
-                {
-                    StatusCode = StatusCodes.Status500InternalServerError,
-                    Error = _localizer["UnknownError"]
-                };
+                return RegularResponse.UnknownError(_localizer);
             }
         }
         async Task<AuthHelper.Role> GetCurrentRole(int user_id)
@@ -243,11 +235,7 @@ namespace FreeSmile.Services
             {
                 _logger.LogError("{Message}", ex.Message);
 
-                return new RegularResponse()
-                {
-                    StatusCode = StatusCodes.Status500InternalServerError,
-                    Error = _localizer["UnknownError"]
-                };
+                return RegularResponse.UnknownError(_localizer);
             }
         }
         public async Task<RegularResponse> ChangePassword(ChangeUnknownPasswordDto request)
@@ -307,11 +295,7 @@ namespace FreeSmile.Services
             {
                 _logger.LogError("{Message}", ex.Message);
 
-                return new RegularResponse()
-                {
-                    StatusCode = StatusCodes.Status500InternalServerError,
-                    Error = _localizer["UnknownError"]
-                };
+                return RegularResponse.UnknownError(_localizer);
             }
         }
 
@@ -364,11 +348,7 @@ namespace FreeSmile.Services
             {
                 _logger.LogError("{Message}", ex.Message);
 
-                return new RegularResponse()
-                {
-                    StatusCode = StatusCodes.Status500InternalServerError,
-                    Error = _localizer["UnknownError"]
-                };
+                return RegularResponse.UnknownError(_localizer);
             }
         }
         public async Task<RegularResponse> RequestEmailOtp(string usernameOrEmail)
@@ -415,11 +395,7 @@ namespace FreeSmile.Services
             {
                 _logger.LogError("{Message}", ex.Message);
 
-                return new RegularResponse()
-                {
-                    StatusCode = StatusCodes.Status500InternalServerError,
-                    Error = _localizer["UnknownError"]
-                };
+                return RegularResponse.UnknownError(_localizer);
             }
         }
 

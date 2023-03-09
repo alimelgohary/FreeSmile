@@ -52,12 +52,7 @@ namespace FreeSmile.Services
             {
                 _logger.LogError("{Message}", ex.Message);
                 transaction.Rollback();
-                response = new()
-                {
-                    StatusCode = StatusCodes.Status500InternalServerError,
-                    Error = _localizer["UnknownError"],
-                    NextPage = Pages.same.ToString()
-                };
+                response = RegularResponse.UnknownError(_localizer);
             }
             return response;
 

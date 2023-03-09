@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 
 namespace FreeSmile.Services
 {
@@ -27,7 +28,7 @@ namespace FreeSmile.Services
             await file.CopyToAsync(stream);
         }
         
-        public struct RegularResponse
+        public class RegularResponse
         {
             public int Id { get; set; }
             public string? Token { get; set; }
@@ -36,6 +37,38 @@ namespace FreeSmile.Services
             public string? NextPage { get; set; }
             [JsonIgnore]
             public int StatusCode { get; set; }
+
+            public static RegularResponse UnknownError(IStringLocalizer _localizer)
+            {
+                return new RegularResponse()
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Error = _localizer["UnknownError"],
+                    NextPage = Pages.same.ToString()
+                };
+            }
+            public static RegularResponse Success(int id = 0, string? token = null, string? message = null, string? nextPage = "same")
+            {
+                return new RegularResponse()
+                {
+                    Id = id,
+                    Token = token,
+                    Message = message,
+                    NextPage = nextPage,
+                    StatusCode = StatusCodes.Status200OK,
+                };
+            }
+            public static RegularResponse BadReequestError(int id = 0, string? error = null, string? nextPage = "same")
+            {
+                return new RegularResponse()
+                {
+                    Id = id,
+                    Error = error,
+                    NextPage = nextPage,
+                    StatusCode = StatusCodes.Status400BadRequest,
+                };
+            }
+
         }
         
         public enum Pages
