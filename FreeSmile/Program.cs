@@ -97,10 +97,12 @@ builder.Services.AddDbContext<FreeSmileContext>(optionsBuilder =>
     optionsBuilder.UseSqlServer(MyConstants.FREESMILE_CONNECTION)
 );
 
+#region ActionFilters
 builder.Services.AddScoped<ValidUser>();
 builder.Services.AddScoped<NotSuspended>();
 builder.Services.AddScoped<VerifiedEmail>();
 builder.Services.AddScoped<VerifiedIfDentist>();
+#endregion
 
 
 var app = builder.Build();
