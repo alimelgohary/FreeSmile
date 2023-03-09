@@ -50,6 +50,15 @@ namespace FreeSmile.Controllers
 
             int user_id_int = int.Parse(user_id);
 
+            if(! _context.Users.Any(user => user.Id == user_id_int))
+            {
+                RegularResponse res = RegularResponse.BadRequestError(
+                                         error: _localizer["UserNotFound"],
+                                         nextPage: Pages.login.ToString()
+                                      );
+                context.Result = new ObjectResult(res) { StatusCode = res.StatusCode };
+                return;
+            }
             Dentist? dentist = _context.Dentists.Find(user_id_int);
             if (dentist is not null)
             {
