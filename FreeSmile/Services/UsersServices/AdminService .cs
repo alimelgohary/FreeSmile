@@ -39,14 +39,12 @@ namespace FreeSmile.Services
                 await _context.SaveChangesAsync();
 
                 await transaction.CommitAsync();
-                
-                response = new()
-                {
-                    Id = admin.AdminId,
-                    StatusCode = StatusCodes.Status200OK,
-                    Message = _localizer["RegisterSuccess"],
-                    NextPage = Pages.same.ToString() // only superadmins can register admins so they will not verify them too && also no token is sent
-                };
+
+                response = RegularResponse.Success(
+                    id: admin.AdminId,
+                    message : _localizer["RegisterSuccess"],
+                    nextPage : Pages.same.ToString() // only superadmins can register admins so they will not verify them too && also no token is sent
+                );
             }
             catch (Exception ex)
             {

@@ -45,14 +45,11 @@ namespace FreeSmile.Services
                 string token = GetToken(dentist.DentistId, tokenAge, Role.Dentist);
                 cookies.Append(MyConstants.AUTH_COOKIE_KEY, token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.None, MaxAge = tokenAge, Secure = true });
 
-                response = new()
-                {
-                    Id = dentist.DentistId,
-                    StatusCode = StatusCodes.Status200OK,
-                    Token = token,
-                    Message = _localizer["RegisterSuccess"],
-                    NextPage = Pages.verifyEmail.ToString()
-                };
+                response = RegularResponse.Success(
+                    id: dentist.DentistId,
+                    token: token,
+                    message: _localizer["RegisterSuccess"],
+                    nextPage: Pages.verifyEmail.ToString());
             }
             catch (Exception ex)
             {
@@ -68,31 +65,16 @@ namespace FreeSmile.Services
             try
             {
                 if (await _context.VerificationRequests.AnyAsync(v => v.OwnerId == ownerId))
-                    return new RegularResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Error = _localizer["AlreadyRequested"],
-                        NextPage = Pages.same.ToString()
-                    };
+                    return RegularResponse.BadRequestError(id: ownerId, error: _localizer["AlreadyRequested"]);
 
                 User? user = await _context.Users.FindAsync(ownerId);
 
                 if (user is null)
-                    return new RegularResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Error = _localizer["UserNotFound"],
-                        NextPage = Pages.registerDentist.ToString()
-                    };
+                    return RegularResponse.BadRequestError(error: _localizer["UserNotFound"], nextPage: Pages.registerDentist.ToString());
                 
                 if (user.IsVerified != true)
-                    return new RegularResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Error = _localizer["VerifyEmailFirst"],
-                        NextPage = Pages.verifyEmail.ToString()
-                    };
-
+                    return RegularResponse.BadRequestError(error: _localizer["VerifyEmailFirst"], nextPage: Pages.verifyEmail.ToString());
+                
                 var natExt = Path.GetExtension(verificationDto.NatIdPhoto.FileName);
                 var natRelativePath = Path.Combine("Images", "verificationRequests", $"{ownerId}nat{natExt}");
                 var natFullPath = Path.Combine(Directory.GetCurrentDirectory(), natRelativePath);
@@ -115,12 +97,7 @@ namespace FreeSmile.Services
 
                 await _context.SaveChangesAsync();
 
-                return new RegularResponse()
-                {
-                    Id = user.Id,
-                    StatusCode = StatusCodes.Status200OK,
-                    Message = _localizer["verificationrequestsuccess"],
-                };
+                return RegularResponse.Success(id: user.Id, message: _localizer["verificationrequestsuccess"], nextPage: Pages.pendingVerificationAcceptance.ToString());
             }
             catch (Exception ex)
             {

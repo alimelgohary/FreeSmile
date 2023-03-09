@@ -45,14 +45,12 @@ namespace FreeSmile.Services
                 string token = GetToken(patient.PatientId, tokenAge, Role.Patient);
                 cookies.Append(MyConstants.AUTH_COOKIE_KEY, token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.None, MaxAge = tokenAge, Secure = true });
 
-                response = new()
-                {
-                    Id = patient.PatientId,
-                    StatusCode = StatusCodes.Status200OK,
-                    Token = token,
-                    Message = _localizer["RegisterSuccess"],
-                    NextPage = Pages.verifyEmail.ToString()
-                };
+                response = RegularResponse.Success(
+                    id : patient.PatientId,
+                    token : token,
+                    message: _localizer["RegisterSuccess"],
+                    nextPage: Pages.verifyEmail.ToString()
+                );
             }
             catch (Exception ex)
             {

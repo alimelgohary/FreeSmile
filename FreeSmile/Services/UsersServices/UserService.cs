@@ -57,38 +57,28 @@ namespace FreeSmile.Services
             {
                 User? user = await _context.Users.FindAsync(user_id);
                 if (user is null)
-                    return new RegularResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Error = _localizer["UserNotFound"],
-                        NextPage = Pages.login.ToString()
-                    };
+                    return RegularResponse.BadRequestError(
+                        error : _localizer["UserNotFound"],
+                        nextPage : Pages.login.ToString()
+                    );
 
                 AuthHelper.Role role = await GetCurrentRole(user.Id);
 
                 if (user.IsVerified)
-                    return new RegularResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Error = _localizer["UserAlreadyVerified"],
-                        NextPage = Pages.home.ToString() + role.ToString()
-                    };
+                    return RegularResponse.BadRequestError(
+                        error : _localizer["UserAlreadyVerified"],
+                        nextPage : Pages.home.ToString() + role.ToString()
+                    );
 
                 if (user.Otp != otp)
-                    return new RegularResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Error = _localizer["OtpNotMatch"],
-                        NextPage = Pages.same.ToString()
-                    };
+                    return RegularResponse.BadRequestError(
+                        error : _localizer["OtpNotMatch"]
+                    );
 
                 if (user.OtpExp < DateTime.UtcNow)
-                    return new RegularResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Error = _localizer["OtpExpired"],
-                        NextPage = Pages.same.ToString()
-                    };
+                    return RegularResponse.BadRequestError(
+                        error : _localizer["OtpExpired"]
+                    );
 
                 user.IsVerified = true;
                 user.OtpExp = DateTime.UtcNow;
@@ -97,12 +87,10 @@ namespace FreeSmile.Services
                 string nextPage = (role == AuthHelper.Role.Dentist) ? Pages.verifyDentist.ToString() : Pages.home.ToString() + role.ToString();
 
 
-                return new RegularResponse()
-                {
-                    StatusCode = StatusCodes.Status200OK,
-                    Message = _localizer["EmailVerificationSuccess"],
-                    NextPage = nextPage
-                };
+                return RegularResponse.Success(
+                    message : _localizer["EmailVerificationSuccess"],
+                    nextPage: nextPage
+                );
             }
             catch (Exception ex)
             {
@@ -122,12 +110,9 @@ namespace FreeSmile.Services
                 User? user = await _context.Users.Where(x => x.Email == value.UsernameOrEmail || x.Username == value.UsernameOrEmail).FirstOrDefaultAsync();
                 if (user is null
                  || AuthHelper.StorePassword(value.Password, user.Salt) != user.Password)
-                    return new RegularResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Error = _localizer["IncorrectCreds"],
-                        NextPage = Pages.same.ToString()
-                    };
+                    return RegularResponse.BadRequestError(
+                        error : _localizer["IncorrectCreds"]
+                    );
 
                 AuthHelper.Role role = await GetCurrentRole(user.Id);
 
@@ -157,13 +142,11 @@ namespace FreeSmile.Services
                 if (user.IsVerified == false)
                     nextPage = Pages.verifyEmail.ToString();
 
-                return new RegularResponse()
-                {
-                    StatusCode = StatusCodes.Status200OK,
-                    Token = token,
-                    NextPage = nextPage,
-                    Message = _localizer["LoginSuccess"]
-                };
+                return RegularResponse.Success(
+                    token : token,
+                    nextPage : nextPage,
+                    message : _localizer["LoginSuccess"]
+                );
             }
             catch (Exception ex)
             {
@@ -197,12 +180,10 @@ namespace FreeSmile.Services
             {
                 User? user = await _context.Users.FindAsync(user_id);
                 if (user is null)
-                    return new RegularResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Error = _localizer["UserNotFound"],
-                        NextPage = Pages.login.ToString()
-                    };
+                    return RegularResponse.BadRequestError(
+                        error : _localizer["UserNotFound"],
+                        nextPage : Pages.login.ToString()
+                    );
 
                 user.Otp = AuthHelper.GenerateOtp();
                 user.OtpExp = DateTime.UtcNow + MyConstants.OTP_AGE;
@@ -224,12 +205,10 @@ namespace FreeSmile.Services
                     };
                 }
 
-                return new RegularResponse()
-                {
-                    StatusCode = StatusCodes.Status200OK,
-                    Message = _localizer["SentOtpSuccessfully"],
-                    NextPage = Pages.same.ToString()
-                };
+                return RegularResponse.Success(
+                    message : _localizer["SentOtpSuccessfully"],
+                    nextPage : Pages.same.ToString()
+                );
             }
             catch (Exception ex)
             {
@@ -244,28 +223,20 @@ namespace FreeSmile.Services
             {
                 User? user = await _context.Users.Where(x => x.Email == request.UsernameOrEmail || x.Username == request.UsernameOrEmail).FirstOrDefaultAsync();
                 if (user is null)
-                    return new RegularResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Error = _localizer["UserNotFound"],
-                        NextPage = Pages.login.ToString()
-                    };
+                    return RegularResponse.BadRequestError(
+                        error : _localizer["UserNotFound"],
+                        nextPage : Pages.login.ToString()
+                    );
 
                 if (request.Otp != user.Otp)
-                    return new RegularResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Error = _localizer["OtpNotMatch"],
-                        NextPage = Pages.same.ToString()
-                    };
+                    return RegularResponse.BadRequestError(
+                        error : _localizer["OtpNotMatch"]
+                    );
 
                 if (user.OtpExp < DateTime.UtcNow)
-                    return new RegularResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Error = _localizer["OtpExpired"],
-                        NextPage = Pages.same.ToString()
-                    };
+                    return RegularResponse.BadRequestError(
+                        error : _localizer["OtpExpired"]
+                    );
 
                 user.Password = AuthHelper.StorePassword(request.NewPassword, user.Salt);
                 user.OtpExp = DateTime.UtcNow;
@@ -284,12 +255,10 @@ namespace FreeSmile.Services
                     _logger.LogError("{Message}", ex.Message);
                 }
 
-                return new RegularResponse()
-                {
-                    StatusCode = StatusCodes.Status200OK,
-                    Message = _localizer["PasswordChangedSuccessfully"],
-                    NextPage = Pages.login.ToString()
-                };
+                return RegularResponse.Success(
+                    message: _localizer["PasswordChangedSuccessfully"],
+                    nextPage : Pages.login.ToString()
+                );
             }
             catch (Exception ex)
             {
@@ -305,22 +274,17 @@ namespace FreeSmile.Services
             {
                 User? user = await _context.Users.FindAsync(user_id);
                 if (user is null)
-                    return new RegularResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Error = _localizer["UserNotFound"],
-                        NextPage = Pages.login.ToString()
-                    };
+                    return RegularResponse.BadRequestError(
+                        error : _localizer["UserNotFound"],
+                        nextPage : Pages.login.ToString()
+                    );
 
                 AuthHelper.Role role = await GetCurrentRole(user.Id);
 
                 if (AuthHelper.StorePassword(request.CurrentPassword, user.Salt) != user.Password)
-                    return new RegularResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Error = _localizer["IncorrectCurrentPassword"],
-                        NextPage = Pages.same.ToString()
-                    };
+                    return RegularResponse.BadRequestError(
+                        error : _localizer["IncorrectCurrentPassword"]
+                    );
 
                 user.Password = AuthHelper.StorePassword(request.NewPassword, user.Salt);
                 await _context.SaveChangesAsync();
@@ -337,12 +301,9 @@ namespace FreeSmile.Services
                     _logger.LogError("{Message}", ex.Message);
                 }
 
-                return new RegularResponse()
-                {
-                    StatusCode = StatusCodes.Status200OK,
-                    Message = _localizer["PasswordChangedSuccessfully"],
-                    NextPage = Pages.same.ToString()
-                };
+                return RegularResponse.Success(
+                        message: _localizer["PasswordChangedSuccessfully"]
+                );
             }
             catch (Exception ex)
             {
@@ -357,12 +318,9 @@ namespace FreeSmile.Services
             {
                 User? user = await _context.Users.Where(x => x.Email == usernameOrEmail || x.Username == usernameOrEmail).FirstOrDefaultAsync();
                 if (user is null)
-                    return new RegularResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Error = _localizer["UserNotFound"],
-                        NextPage = Pages.same.ToString()
-                    };
+                    return RegularResponse.BadRequestError(
+                        error : _localizer["UserNotFound"]
+                    );
 
                 user.Otp = AuthHelper.GenerateOtp();
                 user.OtpExp = DateTime.UtcNow + MyConstants.OTP_AGE;
@@ -384,12 +342,10 @@ namespace FreeSmile.Services
                     };
                 }
 
-                return new RegularResponse()
-                {
-                    StatusCode = StatusCodes.Status200OK,
-                    Message = _localizer["SentOtpSuccessfully"],
-                    NextPage = Pages.same.ToString()
-                };
+                return RegularResponse.Success(
+                    message: _localizer["SentOtpSuccessfully"],
+                    nextPage: Pages.same.ToString()
+                );
             }
             catch (Exception ex)
             {
