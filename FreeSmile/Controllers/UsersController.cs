@@ -5,6 +5,7 @@ using FreeSmile.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using static FreeSmile.Services.Helper;
+using FreeSmile.ActionFilters;
 
 namespace FreeSmile.Controllers
 {
@@ -54,15 +55,14 @@ namespace FreeSmile.Controllers
         }
 
 
-        [HttpPut("VerifyAccount")]
         [Authorize]
+        [ServiceFilter(typeof(ValidUser))]
+        [HttpPut("VerifyAccount")]
         public async Task<IActionResult> VerifyMyAccount([FromBody] OtpDto dto)
         {
-            string? user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(user_id))
-                return Unauthorized();
-
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
+
             RegularResponse res = await _userService.VerifyAccount(dto.Otp, user_id_int);
             return StatusCode(res.StatusCode, res);
         }
@@ -102,14 +102,16 @@ namespace FreeSmile.Controllers
         }
         
         [Authorize]
+        [ServiceFilter(typeof(ValidUser), Order = 1)]
+        [ServiceFilter(typeof(NotSuspended), Order = 2)]
+        [ServiceFilter(typeof(VerifiedEmail), Order = 3)]
+        [ServiceFilter(typeof(VerifiedIfDentist), Order = 4)]
         [HttpPut("ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangeKnownPasswordDto dto)
         {
-            string? user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(user_id))
-                return Unauthorized();
-
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
+
             RegularResponse res = await _userService.ChangePassword(dto, user_id_int);
             return StatusCode(res.StatusCode, res);
         }

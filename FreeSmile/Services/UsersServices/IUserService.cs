@@ -15,13 +15,5 @@ namespace FreeSmile.Services
         public Task<RegularResponse> ChangePassword(ChangeUnknownPasswordDto value);
         public Task<RegularResponse> ChangePassword(ChangeKnownPasswordDto value, int user_id_int);
         public Task<RegularResponse> RequestEmailOtp(string usernameOrEmail);
-        public Task<bool> IsNotSuspended(int id);
-        public Task<bool> IsNotSuspended(string usernameOrEmail);
-        public Task<bool> IsVerifiedEmail(int id);
-        public Task<bool> IsVerifiedEmail(string usernameOrEmail);
-        public Task<bool> InitialChecks(string usernameOrEmail);
-        public Task<bool> InitialChecks(int id);
-
-
     }
 }

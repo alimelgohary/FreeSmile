@@ -67,14 +67,8 @@ namespace FreeSmile.Services
                 if (await _context.VerificationRequests.AnyAsync(v => v.OwnerId == ownerId))
                     return RegularResponse.BadRequestError(id: ownerId, error: _localizer["AlreadyRequested"]);
 
-                User? user = await _context.Users.FindAsync(ownerId);
+                User? user = await _context.Users.FindAsync(ownerId)!;
 
-                if (user is null)
-                    return RegularResponse.BadRequestError(error: _localizer["UserNotFound"], nextPage: Pages.registerDentist.ToString());
-                
-                if (user.IsVerified != true)
-                    return RegularResponse.BadRequestError(error: _localizer["VerifyEmailFirst"], nextPage: Pages.verifyEmail.ToString());
-                
                 var natExt = Path.GetExtension(verificationDto.NatIdPhoto.FileName);
                 var natRelativePath = Path.Combine("Images", "verificationRequests", $"{ownerId}nat{natExt}");
                 var natFullPath = Path.Combine(Directory.GetCurrentDirectory(), natRelativePath);
@@ -92,7 +86,7 @@ namespace FreeSmile.Services
                         OwnerId = ownerId,
                         NatIdPhoto = natRelativePath,
                         ProofOfDegreePhoto = proofRelativePath,
-                        DegreeRequested = verificationDto.DegreeRequested
+                        DegreeRequested = (int)verificationDto.DegreeRequested!
                     });
 
                 await _context.SaveChangesAsync();
@@ -134,60 +128,6 @@ namespace FreeSmile.Services
         {
             return await _userService.RequestEmailOtp(usernameOrEmail);
         }
-        public async Task<bool> IsNotSuspended(int id)
-        {
-            return await _userService.IsNotSuspended(id);
-        }
-
-        public async Task<bool> IsNotSuspended(string usernameOrEmail)
-        {
-            return await _userService.IsNotSuspended(usernameOrEmail);
-        }
-
-        public async Task<bool> IsVerifiedEmail(int id)
-        {
-            return await _userService.IsVerifiedEmail(id);
-        }
-
-        public async Task<bool> IsVerifiedEmail(string usernameOrEmail)
-        {
-            return await _userService.IsVerifiedEmail(usernameOrEmail);
-        }
-
-        public async Task<bool> IsVerifiedDentist(int id)
-        {
-            Dentist? dentist = await _context.Dentists.FindAsync(id);
-            if (dentist is null)
-                return true;
-            if (dentist.IsVerifiedDentist)
-                return true;
-            return false;
-        }
-
-        public async Task<bool> IsVerifiedDentist(string usernameOrEmail)
-        {
-            Dentist? dentist = await _context.Dentists.Where(x => x.DentistNavigation.Username == usernameOrEmail
-                                                               || x.DentistNavigation.Email == usernameOrEmail)
-                                                      .FirstOrDefaultAsync();
-            if (dentist is null)
-                return true;
-            if (dentist.IsVerifiedDentist)
-                return true;
-            return false;
-        }
-
-        public async Task<bool> InitialChecks(string usernameOrEmail)
-        {
-            return await _userService.InitialChecks(usernameOrEmail)
-                && await IsVerifiedDentist(usernameOrEmail);
-        }
-
-        public async Task<bool> InitialChecks(int id)
-        {
-            return await _userService.InitialChecks(id)
-                && await IsVerifiedDentist(id);
-        }
-
     }
 }
 

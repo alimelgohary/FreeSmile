@@ -57,13 +57,8 @@ namespace FreeSmile.Services
             try
             {
                 User? user = await _context.Users.FindAsync(user_id);
-                if (user is null)
-                    return RegularResponse.BadRequestError(
-                        error : _localizer["UserNotFound"],
-                        nextPage : Pages.login.ToString()
-                    );
-
-                Role role = await GetCurrentRole(user.Id);
+                
+                Role role = await GetCurrentRole(user!.Id);
 
                 if (user.IsVerified)
                     return RegularResponse.BadRequestError(
@@ -195,7 +190,7 @@ namespace FreeSmile.Services
                         var dentist = await _context.Dentists.FindAsync(user.Id);
                         if (dentist.IsVerifiedDentist == false)
                         {
-                            if (!_context.VerificationRequests.Any(req => req.OwnerId == user.Id))
+                            if (!_context.VerificationRequests.Any(req => req.Owner == dentist))
                             {
                                 nextPage = Pages.verifyDentist.ToString();
                             }
@@ -300,13 +295,8 @@ namespace FreeSmile.Services
             try
             {
                 User? user = await _context.Users.FindAsync(user_id);
-                if (user is null)
-                    return RegularResponse.BadRequestError(
-                        error : _localizer["UserNotFound"],
-                        nextPage : Pages.login.ToString()
-                    );
 
-                Role role = await GetCurrentRole(user.Id);
+                Role role = await GetCurrentRole(user!.Id);
 
                 if (StorePassword(request.CurrentPassword, user.Salt) != user.Password)
                     return RegularResponse.BadRequestError(
@@ -380,55 +370,6 @@ namespace FreeSmile.Services
 
                 return RegularResponse.UnknownError(_localizer);
             }
-        }
-
-        public async Task<bool> IsNotSuspended(int id)
-        {
-            User? user = await _context.Users.FindAsync(id);
-            if (user is null)
-                return true;
-            if (user.Suspended)
-                return false;
-            return true;
-        }
-        public async Task<bool> IsNotSuspended(string usernameOrEmail)
-        {
-            User? user = await _context.Users.Where(x=> x.Username == usernameOrEmail || x.Email == usernameOrEmail).FirstOrDefaultAsync();
-            if (user is null)
-                return true;
-            if (user.Suspended)
-                return false;
-            return true;
-        }
-        public async Task<bool> IsVerifiedEmail(int id)
-        {
-            User? user = await _context.Users.FindAsync(id);
-            if (user is null)
-                return true;
-            if (user.IsVerified)
-                return true;
-            return false;
-        }
-        public async Task<bool> IsVerifiedEmail(string usernameOrEmail)
-        {
-            User? user = await _context.Users.Where(x => x.Username == usernameOrEmail || x.Email == usernameOrEmail).FirstOrDefaultAsync();
-            if (user is null)
-                return true;
-            if (user.IsVerified)
-                return true;
-            return false;
-        }
-
-        public async Task<bool> InitialChecks(string usernameOrEmail)
-        {
-            return await IsVerifiedEmail(usernameOrEmail)
-                && await IsNotSuspended(usernameOrEmail);
-        }
-
-        public async Task<bool> InitialChecks(int id)
-        {
-            return await IsVerifiedEmail(id)
-                && await IsNotSuspended(id);
         }
     }
 }

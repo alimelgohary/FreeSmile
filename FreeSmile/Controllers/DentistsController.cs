@@ -5,6 +5,7 @@ using FreeSmile.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using static FreeSmile.Services.Helper;
+using FreeSmile.ActionFilters;
 
 namespace FreeSmile.Controllers
 {
@@ -23,14 +24,16 @@ namespace FreeSmile.Controllers
         }
 
         [HttpPost("RequestVerification")]
+        [ServiceFilter(typeof(ValidUser), Order = 1)]
+        [ServiceFilter(typeof(NotSuspended), Order = 2)]
+        [ServiceFilter(typeof(VerifiedEmail), Order = 3)]
+
         public async Task<IActionResult> AddVerificationRequestAsync([FromForm] VerificationDto value)
         {
-            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
 
-            int userIdInt = int.Parse(userId);
-            RegularResponse res = await _dentistService.AddVerificationRequestAsync(value, userIdInt);
+            RegularResponse res = await _dentistService.AddVerificationRequestAsync(value, user_id_int);
 
             return StatusCode(res.StatusCode, res);
         }
