@@ -34,7 +34,7 @@ namespace FreeSmile.Services
             public string? Token { get; set; }
             public string? Error { get; set; }
             public string? Message { get; set; }
-            public string? NextPage { get; set; }
+            public string? NextPage { get; set; } = Pages.same.ToString();
             [JsonIgnore]
             public int StatusCode { get; set; }
 
@@ -43,11 +43,10 @@ namespace FreeSmile.Services
                 return new RegularResponse()
                 {
                     StatusCode = StatusCodes.Status500InternalServerError,
-                    Error = _localizer["UnknownError"],
-                    NextPage = Pages.same.ToString()
+                    Error = _localizer["UnknownError"]
                 };
             }
-            public static RegularResponse Success(int id = 0, string? token = null, string? message = null, string? nextPage = "same")
+            public static RegularResponse Success(int id = 0, string? token = null, string? message = null, string? nextPage)
             {
                 return new RegularResponse()
                 {
@@ -55,17 +54,17 @@ namespace FreeSmile.Services
                     Token = token,
                     Message = message,
                     NextPage = nextPage,
-                    StatusCode = StatusCodes.Status200OK,
+                    StatusCode = StatusCodes.Status200OK
                 };
             }
-            public static RegularResponse BadReequestError(int id = 0, string? error = null, string? nextPage = "same")
+            public static RegularResponse BadRequestError(int id = 0, string? error = null, string? nextPage)
             {
                 return new RegularResponse()
                 {
                     Id = id,
                     Error = error,
                     NextPage = nextPage,
-                    StatusCode = StatusCodes.Status400BadRequest,
+                    StatusCode = StatusCodes.Status400BadRequest
                 };
             }
 
