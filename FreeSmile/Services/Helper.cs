@@ -83,7 +83,7 @@ namespace FreeSmile.Services
             registerPatient,
             pendingVerificationAcceptance,
             same,
-            postFullPage // postFullPage{post_id}  postFullPage25 postFullPage5154
+            postFullPage_ // postFullPage_{post_id}  postFullPage25 postFullPage5154
         }
         public enum NotificationTemplates
         {
