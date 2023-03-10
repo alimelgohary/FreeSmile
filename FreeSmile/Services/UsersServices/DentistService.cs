@@ -86,7 +86,8 @@ namespace FreeSmile.Services
                         OwnerId = ownerId,
                         NatIdPhoto = natRelativePath,
                         ProofOfDegreePhoto = proofRelativePath,
-                        DegreeRequested = (int)verificationDto.DegreeRequested!
+                        DegreeRequested = (int)verificationDto.DegreeRequested!,
+                        UniversityRequested = (int)verificationDto.UniversityRequested!
                     });
 
                 await _context.SaveChangesAsync();

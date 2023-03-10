@@ -9,8 +9,10 @@ namespace FreeSmile.Models
         public string NatIdPhoto { get; set; } = null!;
         public string ProofOfDegreePhoto { get; set; } = null!;
         public int DegreeRequested { get; set; }
+        public int UniversityRequested { get; set; }
 
         public virtual AcademicDegree DegreeRequestedNavigation { get; set; } = null!;
         public virtual Dentist Owner { get; set; } = null!;
+        public virtual University UniversityRequestedNavigation { get; set; } = null!;
     }
 }

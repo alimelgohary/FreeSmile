@@ -858,7 +858,7 @@ namespace FreeSmile
             modelBuilder.Entity<VerificationRequest>(entity =>
             {
                 entity.HasKey(e => e.OwnerId)
-                    .HasName("PK__verifica__3C4FBEE4EDBC849E");
+                    .HasName("PK__verifica__3C4FBEE440E22A1D");
 
                 entity.ToTable("verificationRequests");
 
@@ -878,16 +878,23 @@ namespace FreeSmile
                     .IsUnicode(false)
                     .HasColumnName("proof_of_degree_photo");
 
+                entity.Property(e => e.UniversityRequested).HasColumnName("university_requested");
+
                 entity.HasOne(d => d.DegreeRequestedNavigation)
                     .WithMany(p => p.VerificationRequests)
                     .HasForeignKey(d => d.DegreeRequested)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__verificat__degre__08162EEB");
+                    .HasConstraintName("FK__verificat__degre__049AA3C2");
 
                 entity.HasOne(d => d.Owner)
                     .WithOne(p => p.VerificationRequest)
                     .HasForeignKey<VerificationRequest>(d => d.OwnerId)
-                    .HasConstraintName("FK__verificat__owner__07220AB2");
+                    .HasConstraintName("FK__verificat__owner__03A67F89");
+
+                entity.HasOne(d => d.UniversityRequestedNavigation)
+                    .WithMany(p => p.VerificationRequests)
+                    .HasForeignKey(d => d.UniversityRequested)
+                    .HasConstraintName("FK__verificat__unive__058EC7FB");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -8,6 +8,7 @@ namespace FreeSmile.Models
         public University()
         {
             Dentists = new HashSet<Dentist>();
+            VerificationRequests = new HashSet<VerificationRequest>();
         }
 
         public int UniversityId { get; set; }
@@ -17,5 +18,6 @@ namespace FreeSmile.Models
 
         public virtual Governate Gov { get; set; } = null!;
         public virtual ICollection<Dentist> Dentists { get; set; }
+        public virtual ICollection<VerificationRequest> VerificationRequests { get; set; }
     }
 }

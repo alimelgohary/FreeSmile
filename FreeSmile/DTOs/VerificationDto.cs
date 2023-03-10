@@ -9,12 +9,12 @@ namespace FreeSmile.DTOs
 {
     public class VerificationDto
     {
-        [DisplayName("university")]
+        [DisplayName(nameof(UniversityRequested))]
         [Required(ErrorMessage = "required")]
         [ForeignKey(nameof(University), "university_id", ErrorMessage = "invalidchoice")]
-        public int? CurrentUniversity { get; set; }
+        public int? UniversityRequested { get; set; }
 
-        [DisplayName("degree")]
+        [DisplayName(nameof(DegreeRequested))]
         [Required(ErrorMessage = "required")]
         [ForeignKey(nameof(AcademicDegree), "deg_id", ErrorMessage = "invalidchoice")]
         public int? DegreeRequested { get; set; }

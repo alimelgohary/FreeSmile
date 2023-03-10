@@ -52,5 +52,7 @@
   "usersuspended": "تم حظر حسابك",
   "pendingverificationacceptance": "بانتظار الموافقة على طلب التحقق، سوف يتم إرسال بريد إلكتروني عند الموافقة",
   "natidphoto": "صورة بطاقة الرقم القومي",
-  "proofofdegreephoto": "صورة إثبات الدرجة الوظيفية"
+  "proofofdegreephoto": "صورة إثبات الدرجة الوظيفية",
+  "universityrequested": "الجامعة المطلوبة",
+  "degreerequested": "الدرجة الوظيفية المطلوبة",
 }
