@@ -110,6 +110,9 @@ namespace FreeSmile.Services
                         error : _localizer["IncorrectCreds"]
                     );
 
+                if(user.Suspended)
+                    return RegularResponse.BadRequestError(error: _localizer["UserSuspended"]);
+
                 Role role = await GetCurrentRole(user.Id);
 
                 TimeSpan loginTokenAge = MyConstants.LOGIN_TOKEN_AGE;
@@ -180,6 +183,9 @@ namespace FreeSmile.Services
                         error : _localizer["UserNotFound"],
                         nextPage : Pages.login.ToString()
                     );
+                
+                if (user.Suspended)
+                    return RegularResponse.BadRequestError(error: _localizer["UserSuspended"]);
 
                 if (user.IsVerified)
                 {
@@ -249,6 +255,9 @@ namespace FreeSmile.Services
                         error : _localizer["UserNotFound"],
                         nextPage : Pages.login.ToString()
                     );
+                
+                if (user.Suspended)
+                    return RegularResponse.BadRequestError(error: _localizer["UserSuspended"]);
 
                 if (request.Otp != user.Otp)
                     return RegularResponse.BadRequestError(
@@ -338,6 +347,9 @@ namespace FreeSmile.Services
                     return RegularResponse.BadRequestError(
                         error : _localizer["UserNotFound"]
                     );
+                
+                if (user.Suspended)
+                    return RegularResponse.BadRequestError(error: _localizer["UserSuspended"]);
 
                 user.Otp = GenerateOtp();
                 user.OtpExp = DateTime.UtcNow + MyConstants.OTP_AGE;

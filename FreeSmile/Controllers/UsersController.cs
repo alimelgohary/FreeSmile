@@ -39,6 +39,9 @@ namespace FreeSmile.Controllers
 
         
         [Authorize(Roles = "SuperAdmin")]
+        [ServiceFilter(typeof(ValidUser), Order = 1)]
+        [ServiceFilter(typeof(NotSuspended), Order = 2)]
+        [ServiceFilter(typeof(VerifiedEmail), Order = 3)]
         [HttpPost("RegisterAdmin")]
         public async Task<IActionResult> RegisterAdminAsync([FromBody] UserRegisterDto value)
         {
@@ -56,7 +59,8 @@ namespace FreeSmile.Controllers
 
 
         [Authorize]
-        [ServiceFilter(typeof(ValidUser))]
+        [ServiceFilter(typeof(ValidUser), Order = 1)]
+        [ServiceFilter(typeof(NotSuspended), Order = 2)]
         [HttpPut("VerifyAccount")]
         public async Task<IActionResult> VerifyMyAccount([FromBody] OtpDto dto)
         {
