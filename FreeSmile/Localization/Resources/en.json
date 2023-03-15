@@ -54,5 +54,6 @@
   "natidphoto": "National ID Photo",
   "proofofdegreephoto": "Proof of Degree Photo",
   "universityrequested": "University Requested",
-  "degreerequested": "Academic Degree Requested"
+  "degreerequested": "Academic Degree Requested",
+  "mustbedate": "You must provide a valid {0}",
 }

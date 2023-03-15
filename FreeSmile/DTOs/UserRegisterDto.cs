@@ -48,6 +48,7 @@ namespace FreeSmile.DTOs
 
         [DisplayName(nameof(Birthdate))]
         [Age(5, 120, ErrorMessage ="ageminmax")]
-        public DateTime? Birthdate { get; set; }
+        [ValidDate(ErrorMessage = "mustBeDate")]
+        public string? Birthdate { get; set; }
     }
 }

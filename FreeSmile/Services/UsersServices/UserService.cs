@@ -43,7 +43,7 @@ namespace FreeSmile.Services
                 Phone = userDto.Phone,
                 Fullname = userDto.Fullname,
                 Gender = userDto.Gender,
-                Bd = userDto.Birthdate
+                Bd = userDto.Birthdate is null ? null : DateTime.Parse(userDto.Birthdate)
             };
 
             await _context.AddAsync(user);

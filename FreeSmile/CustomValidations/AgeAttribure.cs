@@ -13,22 +13,23 @@ namespace FreeSmile.CustomValidations
             RequiredAgeMax = requiredAgeMax;
             RequiredAgeMin = requiredAgeMin;
         }
-        
+
         public override bool IsValid(object value)
         {
             if (value is null)
                 return true;
-            
-            DateTime dt = (DateTime)value;
+
+            if (!DateTime.TryParse(value.ToString(), out DateTime dt))
+                return true;
+
             var spanMin = TimeSpan.FromDays(365 * RequiredAgeMin);
-            var spanMax= TimeSpan.FromDays(365 * RequiredAgeMax);
+            var spanMax = TimeSpan.FromDays(365 * RequiredAgeMax);
             var objAge = (DateTime.UtcNow - dt);
             if (objAge >= spanMin && objAge <= spanMax)
                 return true;
 
             return false;
-            
-        }
 
+        }
     }
 }
