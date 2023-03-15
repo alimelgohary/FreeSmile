@@ -37,7 +37,7 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
         }
 
-        
+
         [Authorize(Roles = "SuperAdmin")]
         [ServiceFilter(typeof(ValidUser), Order = 1)]
         [ServiceFilter(typeof(NotSuspended), Order = 2)]
@@ -104,7 +104,7 @@ namespace FreeSmile.Controllers
             var res = await _userService.ChangePassword(dto);
             return StatusCode(res.StatusCode, res);
         }
-        
+
         [Authorize]
         [ServiceFilter(typeof(ValidUser), Order = 1)]
         [ServiceFilter(typeof(NotSuspended), Order = 2)]
@@ -117,6 +117,20 @@ namespace FreeSmile.Controllers
             int user_id_int = int.Parse(user_id);
 
             RegularResponse res = await _userService.ChangePassword(dto, user_id_int);
+            return StatusCode(res.StatusCode, res);
+        }
+
+        [ServiceFilter(typeof(ValidUser), Order = 1)]
+        [ServiceFilter(typeof(NotSuspended), Order = 2)]
+        [ServiceFilter(typeof(VerifiedEmail), Order = 3)]
+        [ServiceFilter(typeof(VerifiedIfDentist), Order = 4)]
+        [HttpGet("IsAllowedToHome")]
+        public async Task<IActionResult> RedirectToHome()
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+
+            RegularResponse res = await _userService.RedirectToHome(user_id_int);
             return StatusCode(res.StatusCode, res);
         }
     }

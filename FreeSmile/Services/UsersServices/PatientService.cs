@@ -89,5 +89,10 @@ namespace FreeSmile.Services
         {
             return await _userService.RequestEmailOtp(usernameOrEmail);
         }
+
+        public async Task<RegularResponse> RedirectToHome(int user_id)
+        {
+            return await _userService.RedirectToHome(user_id);
+        }
     }
 }

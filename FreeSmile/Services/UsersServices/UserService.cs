@@ -383,6 +383,14 @@ namespace FreeSmile.Services
                 return RegularResponse.UnknownError(_localizer);
             }
         }
+
+        public async Task<RegularResponse> RedirectToHome(int user_id)
+        {
+            Role role = await GetCurrentRole(user_id);
+            return RegularResponse.Success(
+                nextPage: Pages.home.ToString() + role.ToString()
+            );
+        }
     }
 }
 

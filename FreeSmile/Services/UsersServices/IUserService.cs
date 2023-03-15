@@ -15,5 +15,6 @@ namespace FreeSmile.Services
         public Task<RegularResponse> ChangePassword(ChangeUnknownPasswordDto value);
         public Task<RegularResponse> ChangePassword(ChangeKnownPasswordDto value, int user_id_int);
         public Task<RegularResponse> RequestEmailOtp(string usernameOrEmail);
+        public Task<RegularResponse> RedirectToHome(int user_id);
     }
 }
