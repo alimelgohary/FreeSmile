@@ -8,7 +8,7 @@ namespace FreeSmile.Services
         public static string? GetEnvVariable(string key, bool closeIfNotFound)
         {
             var value = Environment.GetEnvironmentVariable(key);
-            if (string.IsNullOrEmpty(value) && closeIfNotFound) 
+            if (string.IsNullOrEmpty(value)) 
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine($"Fatal Error: {key} is not found in Environment Variables.");
