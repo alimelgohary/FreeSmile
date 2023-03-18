@@ -228,7 +228,7 @@ namespace FreeSmile.Services
                     return new RegularResponse()
                     {
                         StatusCode = StatusCodes.Status500InternalServerError,
-                        Message = _localizer["ErrorSendingEmail"],
+                        Error = _localizer["ErrorSendingEmail"],
                         NextPage = Pages.same.ToString()
                     };
                 }
@@ -366,7 +366,7 @@ namespace FreeSmile.Services
                     return new RegularResponse()
                     {
                         StatusCode = StatusCodes.Status500InternalServerError,
-                        Message = _localizer["ErrorSendingEmail"],
+                        Error = _localizer["ErrorSendingEmail"],
                         NextPage = Pages.same.ToString()
                     };
                 }
