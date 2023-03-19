@@ -99,7 +99,7 @@ namespace FreeSmile.Controllers
         }
 
         [HttpPut("ForgotPassword")]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangeUnknownPasswordDto dto)
+        public async Task<IActionResult> ChangePassword([FromBody] ResetPasswordDto dto)
         {
             var res = await _userService.ChangePassword(dto);
             return StatusCode(res.StatusCode, res);

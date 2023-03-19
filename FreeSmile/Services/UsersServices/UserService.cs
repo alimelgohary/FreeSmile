@@ -245,7 +245,7 @@ namespace FreeSmile.Services
                 return RegularResponse.UnknownError(_localizer);
             }
         }
-        public async Task<RegularResponse> ChangePassword(ChangeUnknownPasswordDto request)
+        public async Task<RegularResponse> ChangePassword(ResetPasswordDto request)
         {
             try
             {

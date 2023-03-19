@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace FreeSmile.DTOs
 {
-    public class ChangeUnknownPasswordDto : OtpDto
+    public class ResetPasswordDto : OtpDto
     {
         [Required(ErrorMessage = "required")]
         [DisplayName(nameof(UsernameOrEmail))]
