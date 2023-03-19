@@ -133,6 +133,12 @@ namespace FreeSmile.Controllers
             RegularResponse res = await _userService.RedirectToHome(user_id_int);
             return StatusCode(res.StatusCode, res);
         }
+
+        [HttpGet("Logout")]
+        public void Logout()
+        {
+            Response.Cookies.Delete(MyConstants.AUTH_COOKIE_KEY);
+        }
     }
 }
 
