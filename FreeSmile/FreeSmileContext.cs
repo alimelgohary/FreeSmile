@@ -623,6 +623,9 @@ namespace FreeSmile
             {
                 entity.ToTable("reviews");
 
+                entity.HasIndex(e => e.ReviewerId, "UQ__reviews__443D5A0646779C24")
+                    .IsUnique();
+
                 entity.Property(e => e.ReviewId).HasColumnName("review_id");
 
                 entity.Property(e => e.Opinion)
@@ -634,9 +637,9 @@ namespace FreeSmile
                 entity.Property(e => e.ReviewerId).HasColumnName("reviewer_id");
 
                 entity.HasOne(d => d.Reviewer)
-                    .WithMany(p => p.Reviews)
-                    .HasForeignKey(d => d.ReviewerId)
-                    .HasConstraintName("FK__reviews__reviewe__28B808A7");
+                    .WithOne(p => p.Review)
+                    .HasForeignKey<Review>(d => d.ReviewerId)
+                    .HasConstraintName("FK__reviews__reviewe__11F49EE0");
             });
 
             modelBuilder.Entity<SharingPatient>(entity =>
