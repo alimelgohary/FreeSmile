@@ -8,6 +8,7 @@ using static FreeSmile.Services.Helper;
 using System.Reflection.Metadata.Ecma335;
 using FreeSmile.ActionFilters;
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace FreeSmile.Controllers
 {
@@ -22,16 +23,16 @@ namespace FreeSmile.Controllers
             _localizer = localizer;
             _context = context;
         }
-
+        [SwaggerOperation(Summary = "Returns numberOfPosts, numberOfDentists, numberOfPatients")]
         [HttpGet("GetStats")]
         public IActionResult GetStats()
         {
             int numberOfDentists = _context.Dentists.Count();
             int numberOfPatients = _context.Patients.Count();
             int numberOfPosts = _context.Posts.Count();
-            return Ok(new { numberOfDentists, numberOfPatients, numberOfPosts });
+            return Ok(new { numberOfPosts, numberOfDentists, numberOfPatients });
         }
-
+        [SwaggerOperation(Summary = "Gets total count of reviews and the average rating as double, For Ex: 4.33")]
         [HttpGet("GetReviewsOverview")]
         public IActionResult GetReviewsOverview()
         {
@@ -44,8 +45,8 @@ namespace FreeSmile.Controllers
 
             return Ok(new { reviewsCount, averageRating });
         }
-
-        [HttpGet("GetReviews")]
+        [SwaggerOperation(Summary = "Returns most recent 10 reviews in this structure {reviewer (string), rating (int) (1 : 5) , opinion (string)}")]
+        [HttpGet("GetTopTenReviews")]
         public IActionResult GetReviews()
         {
             return Ok(_context.Reviews.OrderByDescending(y => y.ReviewId).Take(10).Select(
@@ -55,7 +56,5 @@ namespace FreeSmile.Controllers
                     opinion = x.Opinion
                 }));
         }
-
-        
     }
 }
