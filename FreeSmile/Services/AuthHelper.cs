@@ -191,7 +191,7 @@ namespace FreeSmile.Services
             alternateView.LinkedResources.Add(logoResource);
             MailMessage message = new()
             {
-                From = new MailAddress(FREESMILE_GMAIL),
+                From = new MailAddress(FREESMILE_GMAIL, "Free Smile"),
                 To = { new MailAddress(receiverEmail) },
                 Subject = subject,
                 AlternateViews = { alternateView },
