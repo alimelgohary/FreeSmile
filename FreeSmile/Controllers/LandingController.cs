@@ -32,7 +32,7 @@ namespace FreeSmile.Controllers
             int numberOfPosts = _context.Posts.Count();
             return Ok(new { numberOfPosts, numberOfDentists, numberOfPatients });
         }
-        [SwaggerOperation(Summary = "Gets total count of reviews and the average rating as double, For Ex: 4.33")]
+        [SwaggerOperation(Summary = "Gets { reviewsCount, averageRating (double) } For Ex: 4.33")]
         [HttpGet("GetReviewsOverview")]
         public IActionResult GetReviewsOverview()
         {
@@ -50,6 +50,18 @@ namespace FreeSmile.Controllers
         public IActionResult GetReviews()
         {
             return Ok(_context.Reviews.OrderByDescending(y => y.ReviewId).Take(10).Select(
+                x => new {
+                    reviewer = x.Reviewer.Username,
+                    rating = x.Rating,
+                    opinion = x.Opinion
+                }));
+        }
+
+        [SwaggerOperation(Summary = "Takes a page number and returns 5 reviews in this structure {reviewer (string), rating (int) (1 : 5) , opinion (string)}")]
+        [HttpGet("GetReviews")]
+        public IActionResult GetReviews(int page)
+        {
+            return Ok(_context.Reviews.OrderByDescending(y => y.ReviewId).Skip(5 * (page - 1)).Take(5).Select(
                 x => new {
                     reviewer = x.Reviewer.Username,
                     rating = x.Rating,
