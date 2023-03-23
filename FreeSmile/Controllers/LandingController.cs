@@ -57,7 +57,7 @@ namespace FreeSmile.Controllers
                 }));
         }
 
-        [SwaggerOperation(Summary = "Takes a page number and returns 5 reviews in this structure {reviewer (string), rating (int) (1 : 5) , opinion (string)}")]
+        [SwaggerOperation(Summary = "Takes a page number (GetReviews?page={id}) and returns 5 reviews in this structure {reviewer (string), rating (int) (1 : 5) , opinion (string)}")]
         [HttpGet("GetReviews")]
         public IActionResult GetReviews(int page)
         {

@@ -79,6 +79,7 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
         }
 
+        [SwaggerOperation(summary: "either send empty request {} if logged in (to verify email for first time) or send {\"usernameOrEmail\":\"\"} if user forgets password")]
         [HttpPut("RequestOtp")]
         public async Task<IActionResult> RequestEmailOtp([FromBody] RequestOtpDto? value)
         {
