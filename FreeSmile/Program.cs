@@ -91,7 +91,7 @@ builder.Services.AddAuthentication(options =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c => c.EnableAnnotations());
 
 builder.Services.AddDbContext<FreeSmileContext>(optionsBuilder =>
     optionsBuilder.UseSqlServer(MyConstants.FREESMILE_CONNECTION)
