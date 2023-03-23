@@ -56,4 +56,5 @@
   "universityrequested": "University Requested",
   "degreerequested": "Academic Degree Requested",
   "mustbedate": "You must provide a valid {0}",
+  "logoutsuccess": "You have logged out successfully",
 }

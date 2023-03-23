@@ -137,9 +137,14 @@ namespace FreeSmile.Controllers
         }
         [SwaggerOperation(summary: "Removes the token Cookie")]
         [HttpGet("Logout")]
-        public void Logout()
+        public IActionResult Logout()
         {
             Response.Cookies.Delete(MyConstants.AUTH_COOKIE_KEY);
+            return Ok(
+                RegularResponse.Success(
+                    message: _localizer["logoutsuccess"],
+                    nextPage: Pages.login.ToString()
+                ));
         }
     }
 }
