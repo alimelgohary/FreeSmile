@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using static FreeSmile.Services.Helper;
 using FreeSmile.ActionFilters;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace FreeSmile.Controllers
 {
@@ -23,11 +24,11 @@ namespace FreeSmile.Controllers
             _dentistService = dentistService;
         }
 
-        [HttpPost("RequestVerification")]
+        [SwaggerOperation(Summary = "content type: multipart/form-data, lets dentist send national id photo, proof photo to be checked by an admin for verification")]
         [ServiceFilter(typeof(ValidUser), Order = 1)]
         [ServiceFilter(typeof(NotSuspended), Order = 2)]
         [ServiceFilter(typeof(VerifiedEmail), Order = 3)]
-
+        [HttpPost("RequestVerification")]
         public async Task<IActionResult> AddVerificationRequestAsync([FromForm] VerificationDto value)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;

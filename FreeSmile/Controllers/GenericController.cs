@@ -7,6 +7,7 @@ using Microsoft.Extensions.Localization;
 using FreeSmile.DTOs;
 using FreeSmile.Services;
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace FreeSmile.Controllers
 {
@@ -22,7 +23,8 @@ namespace FreeSmile.Controllers
             _localizer = localizer;
             _context = context;
         }
-        
+
+        [SwaggerOperation(Summary = "Returns universities list as {id, name}")]
         [HttpGet("GetUniversities")]
         public IActionResult GetUniversityList()
         {
@@ -30,7 +32,7 @@ namespace FreeSmile.Controllers
             var universities = _context.Universities.AsEnumerable().OrderBy(x=> x.Lang(lang)).Select(u => new { id = u.UniversityId, name = u.Lang(lang) });
             return Ok(universities);
         }
-        
+        [SwaggerOperation(Summary = "returns academic degrees list as {id, name}")]
         [HttpGet("GetAcademicDegrees")]
         public IActionResult GetAcademicDegrees()
         {
@@ -38,7 +40,8 @@ namespace FreeSmile.Controllers
             var academicDegrees = _context.AcademicDegrees.Select(x => new { id = x.DegId, name = x.Lang(lang) }).ToList();
             return Ok(academicDegrees);
         }
-        
+
+        [SwaggerOperation(Summary = "returns governates list as {id, name}")]
         [HttpGet("GetGovernates")]
         public IActionResult GetGovernatesList()
         {
@@ -47,14 +50,16 @@ namespace FreeSmile.Controllers
             return Ok(govs);
         }
 
-        [HttpGet("GetTypes")]
+        [SwaggerOperation(Summary = "returns case types list as {id, name}")]
+        [HttpGet("GetCaseTypes")]
         public IActionResult GetTypesList()
         {
             string lang = Thread.CurrentThread.CurrentCulture.Name;
             var types = _context.CaseTypes.AsEnumerable().OrderBy(x => x.Lang(lang)).Select(x => new { id = x.CaseTypeId, name = x.Lang(lang) }).ToList();
             return Ok(types);
         }
-        
+
+        [SwaggerOperation(Summary = "returns article categories list as {id, name}")]
         [HttpGet("GetArticleCats")]
         public IActionResult GetArticleCatsList()
         {
@@ -63,14 +68,15 @@ namespace FreeSmile.Controllers
             return Ok(artCats);
         }
 
-        [HttpGet("GetProductCats")]
+        [SwaggerOperation(Summary = "returns listings (marketplace) categories list as {id, name}")]
+        [HttpGet("GetListingCats")]
         public IActionResult GetProductCatsList()
         {
             string lang = Thread.CurrentThread.CurrentCulture.Name;
             var productCats = _context.ProductCats.AsEnumerable().OrderBy(x => x.Lang(lang)).Select(x => new { id = x.ProductCatId, name = x.Lang(lang) }).ToList();
             return Ok(productCats);
         }
-
+        [SwaggerOperation(Summary = "(maybe useful for admin dashboard) returns notification templates list as {id, name, body, icon, nextPage}")]
         [HttpGet("GetNotificationTemplates")]
         public IActionResult GetNotificationTemplatesList()
         {

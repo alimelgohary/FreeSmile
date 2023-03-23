@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using static FreeSmile.Services.Helper;
 using FreeSmile.ActionFilters;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace FreeSmile.Controllers
 {
@@ -119,7 +120,7 @@ namespace FreeSmile.Controllers
             RegularResponse res = await _userService.ChangePassword(dto, user_id_int);
             return StatusCode(res.StatusCode, res);
         }
-
+        [SwaggerOperation(Summary = "gives error if token expired or suspended user or not verified email or not verified dentist, else it returns the suitable home according to user type for ex (nextpage = \"homeAdmin\")")]
         [ServiceFilter(typeof(ValidUser), Order = 1)]
         [ServiceFilter(typeof(NotSuspended), Order = 2)]
         [ServiceFilter(typeof(VerifiedEmail), Order = 3)]
@@ -133,7 +134,7 @@ namespace FreeSmile.Controllers
             RegularResponse res = await _userService.RedirectToHome(user_id_int);
             return StatusCode(res.StatusCode, res);
         }
-
+        [SwaggerOperation(summary: "Removes the token Cookie")]
         [HttpGet("Logout")]
         public void Logout()
         {
