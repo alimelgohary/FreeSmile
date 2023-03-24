@@ -139,12 +139,13 @@ namespace FreeSmile.Controllers
         [HttpGet("Logout")]
         public IActionResult Logout()
         {
-            Response.Cookies.Delete(MyConstants.AUTH_COOKIE_KEY);
+            Response.Cookies.Append(MyConstants.AUTH_COOKIE_KEY, string.Empty, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.None, Expires = DateTime.Now.AddDays(-5), Secure = true });
             return Ok(
                 RegularResponse.Success(
                     message: _localizer["logoutsuccess"],
                     nextPage: Pages.login.ToString()
-                ));
+                )
+            );
         }
     }
 }
