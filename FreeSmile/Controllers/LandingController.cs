@@ -1,13 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using FreeSmile.DTOs;
-using FreeSmile.Services;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using static FreeSmile.Services.Helper;
-using System.Reflection.Metadata.Ecma335;
-using FreeSmile.ActionFilters;
-using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace FreeSmile.Controllers
@@ -59,9 +51,9 @@ namespace FreeSmile.Controllers
 
         [SwaggerOperation(Summary = "Takes a page number (GetReviews?page={id}) and returns 5 reviews in this structure {reviewer (string), rating (int) (1 : 5) , opinion (string)}")]
         [HttpGet("GetReviews")]
-        public IActionResult GetReviews(int page)
+        public IActionResult GetReviews(int page, int size = 5)
         {
-            return Ok(_context.Reviews.OrderByDescending(y => y.ReviewId).Skip(5 * (page - 1)).Take(5).Select(
+            return Ok(_context.Reviews.OrderByDescending(y => y.ReviewId).Skip(size * --page).Take(size).Select(
                 x => new {
                     reviewer = x.Reviewer.Username,
                     rating = x.Rating,
