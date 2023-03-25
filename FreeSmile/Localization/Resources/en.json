@@ -46,7 +46,7 @@
   "newpassword": "New Password",
   "otp": "OTP",
   "incorrectcurrentpassword": "Current password is incorrect",
-  "passwordchangedsuccessfuly": "Password changed successfully",
+  "passwordchangedsuccessfully": "Password changed successfully",
   "emailalreadyverified": "Your email is already verified",
   "verifydentistfirst": "You must verify your dentist account first",
   "usersuspended": "Your account is banned.",
