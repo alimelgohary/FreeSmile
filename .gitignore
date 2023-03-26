@@ -5,6 +5,7 @@
 # Added By Ali
 launchSettings.json
 /FreeSmile/Images/
+/FreeSmile/tokens
 
 # User-specific files
 *.rsuser
@@ -364,4 +365,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/FreeSmile/tokens
+
