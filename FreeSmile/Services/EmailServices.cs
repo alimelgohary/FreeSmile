@@ -9,45 +9,35 @@ using Google.Apis.Util.Store;
 
 public class EmailServices
 {
-    public static bool SendEmail(EmailTemplate data)
+    public static void SendEmail(EmailTemplate data)
     {
-        try
+        string[] Scopes = { GmailService.Scope.GmailSend };
+        UserCredential credential;
+        using (var stream = new FileStream("tokens/client_secret.json", FileMode.Open, FileAccess.Read))
         {
-            string[] Scopes = { GmailService.Scope.GmailSend };
-            UserCredential credential;
-            using (var stream = new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
-            {
-                string credPath = "token_Send.json";
-                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                             GoogleClientSecrets.FromStream(stream).Secrets,
-                              Scopes,
-                              "user",
-                              CancellationToken.None,
-                              new FileDataStore(credPath, true)).Result;
-                Console.WriteLine("Credential file saved to: " + credPath);
-            }
-            
-            var service = new GmailService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = "free smile",
-            });
-            
-            string message = $"To: {data.To}\r\nSubject: {data.Subject}\r\nContent-Type: text/html;charset=utf-8\r\n\r\n{data.Body}";
-            var newMsg = new Google.Apis.Gmail.v1.Data.Message();
-            newMsg.Raw = Base64UrlEncode(message.ToString());
-            Google.Apis.Gmail.v1.Data.Message response = service.Users.Messages.Send(newMsg, "me").Execute();
+            string credPath = "tokens";
+            credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                         GoogleClientSecrets.FromStream(stream).Secrets,
+                          Scopes,
+                          "user",
+                          CancellationToken.None,
+                          new FileDataStore(credPath, true)).Result;
+            Console.WriteLine("Credential file saved to: " + credPath);
+        }
 
-            if (response != null)
-                return true;
-            else
-                return false;
-        }
-        catch (Exception e)
+        var service = new GmailService(new BaseClientService.Initializer()
         {
-            // log error
-            return false;
-        }
+            HttpClientInitializer = credential,
+            ApplicationName = "free smile",
+        });
+
+        string message = $"To: {data.To}\r\nSubject: {data.Subject}\r\nContent-Type: text/html;charset=utf-8\r\n\r\n{data.Body}";
+        var newMsg = new Google.Apis.Gmail.v1.Data.Message();
+        newMsg.Raw = Base64UrlEncode(message.ToString());
+        var response = service.Users.Messages.Send(newMsg, "me").Execute();
+
+        if (response == null)
+            throw new Exception("Gmail Api response is null");
 
     }
     private static string Base64UrlEncode(string input)
