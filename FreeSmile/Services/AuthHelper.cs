@@ -3,21 +3,14 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
-using System.Net.Mail;
-using System.Net;
-using System.Net.Mime;
 
 namespace FreeSmile.Services
 {
     public class AuthHelper
     {
         private static string? JWT_SECRET { get; } = Helper.GetEnvVariable("_Jwt_Secret", false);
-        
+
         private static string PEPPER { get; } = Helper.GetEnvVariable("_PEPPER", true)!;
-        private static string? FREESMILE_GMAIL_PASSWORD { get; } = Helper.GetEnvVariable("_FreeSmileGmailPass", false);
-        private static string? FREESMILE_GMAIL { get; } = Helper.GetEnvVariable("_FreeSmileGmail", false);
-        private static readonly string SmtpServer = "smtp.gmail.com";
-        private static readonly int SmtpPort = 587;
 
         public static TokenValidationParameters tokenValidationParameters = new()
         {
@@ -33,7 +26,7 @@ namespace FreeSmile.Services
             var hash = Hash256(passEnc, salt);
             return hash;
         }
-        
+
         static string Hash256(string password, string salt)
         {
             var str = password + salt;
@@ -79,7 +72,7 @@ namespace FreeSmile.Services
             byte[] decryptedBytes = decryptor.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
             return Encoding.UTF8.GetString(decryptedBytes);
         }
-        
+
         public enum Role
         {
             Admin,
@@ -87,7 +80,7 @@ namespace FreeSmile.Services
             Dentist,
             SuperAdmin
         }
-        
+
         private static List<Claim> COMMON_CLAIMS(int sub)
         {
             return new()
@@ -95,7 +88,7 @@ namespace FreeSmile.Services
                 new(ClaimTypes.NameIdentifier, sub.ToString()),
             };
         }
-        
+
         private static ClaimsIdentity PATIENT_CLAIMS(int sub)
         {
             return new(
@@ -105,7 +98,7 @@ namespace FreeSmile.Services
                     })
                 );
         }
-        
+
         private static ClaimsIdentity ADMIN_CLAIMS(int sub)
         {
             return new(
@@ -115,7 +108,7 @@ namespace FreeSmile.Services
                     })
                 );
         }
-        
+
         private static ClaimsIdentity DENTIST_CLAIMS(int sub)
         {
             return new(
@@ -125,7 +118,7 @@ namespace FreeSmile.Services
                     })
                 );
         }
-        
+
         private static ClaimsIdentity SUPER_ADMIN_CLAIMS(int sub)
         {
             return new(
@@ -181,28 +174,6 @@ namespace FreeSmile.Services
               .Select(s => s[random.Next(s.Length)]).ToArray());
 
             return salt;
-        }
-
-        public static void SendEmailOtp(string receiverEmail, string username, string otp, string subject, string lang)
-        {
-            var logoResource = new LinkedResource(@"EmailTemplates\logo.png", MediaTypeNames.Image.Jpeg);
-            string body = string.Format(File.ReadAllText(@$"EmailTemplates\{lang}\otpemail.html"), username, MyConstants.OTP_AGE.Minutes, otp, $"cid:{logoResource.ContentId}");
-            var alternateView = AlternateView.CreateAlternateViewFromString(body, null, MediaTypeNames.Text.Html);
-            alternateView.LinkedResources.Add(logoResource);
-            MailMessage message = new()
-            {
-                From = new MailAddress(FREESMILE_GMAIL, "Free Smile"),
-                To = { new MailAddress(receiverEmail) },
-                Subject = subject,
-                AlternateViews = { alternateView },
-                IsBodyHtml = true
-            };
-            SmtpClient client = new(SmtpServer, SmtpPort)
-            {
-                EnableSsl = true,
-                Credentials = new NetworkCredential(FREESMILE_GMAIL, FREESMILE_GMAIL_PASSWORD)
-            };
-            client.Send(message);
         }
     }
 }

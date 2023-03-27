@@ -4,6 +4,7 @@ using FreeSmile.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using static FreeSmile.Services.AuthHelper;
+using static FreeSmile.Services.EmailService;
 using static FreeSmile.Services.Helper;
 
 namespace FreeSmile.Services
@@ -57,23 +58,23 @@ namespace FreeSmile.Services
             try
             {
                 User? user = await _context.Users.FindAsync(user_id);
-                
+
                 Role role = await GetCurrentRole(user!.Id);
 
                 if (user.IsVerified)
                     return RegularResponse.BadRequestError(
-                        error : _localizer["UserAlreadyVerified"],
-                        nextPage : Pages.home.ToString() + role.ToString()
+                        error: _localizer["UserAlreadyVerified"],
+                        nextPage: Pages.home.ToString() + role.ToString()
                     );
 
                 if (user.Otp != otp)
                     return RegularResponse.BadRequestError(
-                        error : _localizer["OtpNotMatch"]
+                        error: _localizer["OtpNotMatch"]
                     );
 
                 if (user.OtpExp < DateTime.UtcNow)
                     return RegularResponse.BadRequestError(
-                        error : _localizer["OtpExpired"]
+                        error: _localizer["OtpExpired"]
                     );
 
                 user.IsVerified = true;
@@ -84,7 +85,7 @@ namespace FreeSmile.Services
 
 
                 return RegularResponse.Success(
-                    message : _localizer["EmailVerificationSuccess"],
+                    message: _localizer["EmailVerificationSuccess"],
                     nextPage: nextPage
                 );
             }
@@ -107,10 +108,10 @@ namespace FreeSmile.Services
                 if (user is null
                  || StorePassword(value.Password, user.Salt) != user.Password)
                     return RegularResponse.BadRequestError(
-                        error : _localizer["IncorrectCreds"]
+                        error: _localizer["IncorrectCreds"]
                     );
 
-                if(user.Suspended)
+                if (user.Suspended)
                     return RegularResponse.BadRequestError(error: _localizer["UserSuspended"]);
 
                 Role role = await GetCurrentRole(user.Id);
@@ -142,9 +143,9 @@ namespace FreeSmile.Services
                     nextPage = Pages.verifyEmail.ToString();
 
                 return RegularResponse.Success(
-                    token : token,
-                    nextPage : nextPage,
-                    message : _localizer["LoginSuccess"]
+                    token: token,
+                    nextPage: nextPage,
+                    message: _localizer["LoginSuccess"]
                 );
             }
             catch (Exception ex)
@@ -173,6 +174,100 @@ namespace FreeSmile.Services
             return role;
         }
 
+        public async Task<RegularResponse> ChangePassword(ResetPasswordDto request)
+        {
+            try
+            {
+                User? user = await _context.Users.Where(x => x.Email == request.UsernameOrEmail || x.Username == request.UsernameOrEmail).FirstOrDefaultAsync();
+                if (user is null)
+                    return RegularResponse.BadRequestError(
+                        error: _localizer["UserNotFound"],
+                        nextPage: Pages.login.ToString()
+                    );
+
+                if (user.Suspended)
+                    return RegularResponse.BadRequestError(error: _localizer["UserSuspended"]);
+
+                if (request.Otp != user.Otp)
+                    return RegularResponse.BadRequestError(
+                        error: _localizer["OtpNotMatch"]
+                    );
+
+                if (user.OtpExp < DateTime.UtcNow)
+                    return RegularResponse.BadRequestError(
+                        error: _localizer["OtpExpired"]
+                    );
+
+                user.Password = StorePassword(request.NewPassword, user.Salt);
+                user.OtpExp = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+
+                try
+                {
+                    user.Notifications.Add(new()
+                    {
+                        Temp = await _context.NotificationTemplates.Where(x => x.TempName == NotificationTemplates.Reset_Password.ToString()).FirstOrDefaultAsync()
+                    });
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("{Message}", ex.Message);
+                }
+
+                return RegularResponse.Success(
+                    message: _localizer["PasswordChangedSuccessfully"],
+                    nextPage: Pages.login.ToString()
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{Message}", ex.Message);
+
+                return RegularResponse.UnknownError(_localizer);
+            }
+        }
+
+        public async Task<RegularResponse> ChangePassword(ChangeKnownPasswordDto request, int user_id)
+        {
+            try
+            {
+                User? user = await _context.Users.FindAsync(user_id);
+
+                Role role = await GetCurrentRole(user!.Id);
+
+                if (StorePassword(request.CurrentPassword, user.Salt) != user.Password)
+                    return RegularResponse.BadRequestError(
+                        error: _localizer["IncorrectCurrentPassword"]
+                    );
+
+                user.Password = StorePassword(request.NewPassword, user.Salt);
+                await _context.SaveChangesAsync();
+
+                try
+                {
+                    user.Notifications.Add(new()
+                    {
+                        Temp = await _context.NotificationTemplates.Where(x => x.TempName == NotificationTemplates.Changed_Password.ToString()).FirstOrDefaultAsync()
+                    });
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("{Message}", ex.Message);
+                }
+
+                return RegularResponse.Success(
+                        message: _localizer["PasswordChangedSuccessfully"]
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{Message}", ex.Message);
+
+                return RegularResponse.UnknownError(_localizer);
+            }
+        }
         public async Task<RegularResponse> RequestEmailOtp(int user_id)
         {
             try
@@ -180,10 +275,10 @@ namespace FreeSmile.Services
                 User? user = await _context.Users.FindAsync(user_id);
                 if (user is null)
                     return RegularResponse.BadRequestError(
-                        error : _localizer["UserNotFound"],
-                        nextPage : Pages.login.ToString()
+                        error: _localizer["UserNotFound"],
+                        nextPage: Pages.login.ToString()
                     );
-                
+
                 if (user.Suspended)
                     return RegularResponse.BadRequestError(error: _localizer["UserSuspended"]);
 
@@ -211,7 +306,7 @@ namespace FreeSmile.Services
                         nextPage: nextPage
                     );
                 }
-                    
+
 
                 user.Otp = GenerateOtp();
                 user.OtpExp = DateTime.UtcNow + MyConstants.OTP_AGE;
@@ -220,7 +315,12 @@ namespace FreeSmile.Services
 
                 try
                 {
-                    SendEmailOtp(user.Email, user.Username, user.Otp, _localizer["otpemailsubject"], _localizer["lang"]);
+                    SendEmail(user.Email,
+                            _localizer["otpemailsubject"],
+                            MyConstants.otpemailfilename,
+                            _localizer["lang"],
+                    true,
+                            user.Username, MyConstants.OTP_AGE.Minutes, user.Otp);
                 }
                 catch (Exception ex)
                 {
@@ -234,101 +334,8 @@ namespace FreeSmile.Services
                 }
 
                 return RegularResponse.Success(
-                    message : _localizer["SentOtpSuccessfully"],
-                    nextPage : Pages.same.ToString()
-                );
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("{Message}", ex.Message);
-
-                return RegularResponse.UnknownError(_localizer);
-            }
-        }
-        public async Task<RegularResponse> ChangePassword(ResetPasswordDto request)
-        {
-            try
-            {
-                User? user = await _context.Users.Where(x => x.Email == request.UsernameOrEmail || x.Username == request.UsernameOrEmail).FirstOrDefaultAsync();
-                if (user is null)
-                    return RegularResponse.BadRequestError(
-                        error : _localizer["UserNotFound"],
-                        nextPage : Pages.login.ToString()
-                    );
-                
-                if (user.Suspended)
-                    return RegularResponse.BadRequestError(error: _localizer["UserSuspended"]);
-
-                if (request.Otp != user.Otp)
-                    return RegularResponse.BadRequestError(
-                        error : _localizer["OtpNotMatch"]
-                    );
-
-                if (user.OtpExp < DateTime.UtcNow)
-                    return RegularResponse.BadRequestError(
-                        error : _localizer["OtpExpired"]
-                    );
-
-                user.Password = StorePassword(request.NewPassword, user.Salt);
-                user.OtpExp = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
-
-                try
-                {
-                    user.Notifications.Add(new()
-                    {
-                        Temp = await _context.NotificationTemplates.Where(x => x.TempName == NotificationTemplates.Reset_Password.ToString()).FirstOrDefaultAsync()
-                    });
-                    await _context.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError("{Message}", ex.Message);
-                }
-
-                return RegularResponse.Success(
-                    message: _localizer["PasswordChangedSuccessfully"],
-                    nextPage : Pages.login.ToString()
-                );
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("{Message}", ex.Message);
-
-                return RegularResponse.UnknownError(_localizer);
-            }
-        }
-
-        public async Task<RegularResponse> ChangePassword(ChangeKnownPasswordDto request, int user_id)
-        {
-            try
-            {
-                User? user = await _context.Users.FindAsync(user_id);
-
-                Role role = await GetCurrentRole(user!.Id);
-
-                if (StorePassword(request.CurrentPassword, user.Salt) != user.Password)
-                    return RegularResponse.BadRequestError(
-                        error : _localizer["IncorrectCurrentPassword"]
-                    );
-
-                user.Password = StorePassword(request.NewPassword, user.Salt);
-                await _context.SaveChangesAsync();
-
-                try
-                {
-                    user.Notifications.Add(new() {
-                        Temp = await _context.NotificationTemplates.Where(x => x.TempName == NotificationTemplates.Changed_Password.ToString()).FirstOrDefaultAsync()
-                    });
-                    await _context.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError("{Message}", ex.Message);
-                }
-
-                return RegularResponse.Success(
-                        message: _localizer["PasswordChangedSuccessfully"]
+                    message: _localizer["SentOtpSuccessfully"],
+                    nextPage: Pages.same.ToString()
                 );
             }
             catch (Exception ex)
@@ -345,9 +352,9 @@ namespace FreeSmile.Services
                 User? user = await _context.Users.Where(x => x.Email == usernameOrEmail || x.Username == usernameOrEmail).FirstOrDefaultAsync();
                 if (user is null)
                     return RegularResponse.BadRequestError(
-                        error : _localizer["UserNotFound"]
+                        error: _localizer["UserNotFound"]
                     );
-                
+
                 if (user.Suspended)
                     return RegularResponse.BadRequestError(error: _localizer["UserSuspended"]);
 
@@ -358,7 +365,12 @@ namespace FreeSmile.Services
 
                 try
                 {
-                    SendEmailOtp(user.Email, user.Username, user.Otp, _localizer["otpemailsubject"], _localizer["lang"]);
+                    SendEmail(user.Email,
+                            _localizer["otpemailsubject"],
+                            MyConstants.otpemailfilename,
+                            _localizer["lang"],
+                    true,
+                            user.Username, MyConstants.OTP_AGE.Minutes, user.Otp);
                 }
                 catch (Exception ex)
                 {
