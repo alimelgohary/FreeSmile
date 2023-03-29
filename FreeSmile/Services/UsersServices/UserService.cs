@@ -334,7 +334,7 @@ namespace FreeSmile.Services
                 }
 
                 return RegularResponse.Success(
-                    message: _localizer["SentOtpSuccessfully"],
+                    message: _localizer["SentOtpSuccessfully", user.Email],
                     nextPage: Pages.same.ToString()
                 );
             }
@@ -384,7 +384,7 @@ namespace FreeSmile.Services
                 }
 
                 return RegularResponse.Success(
-                    message: _localizer["SentOtpSuccessfully"],
+                    message: _localizer["SentOtpSuccessfully", ObscureEmail(user.Email)],
                     nextPage: Pages.same.ToString()
                 );
             }
