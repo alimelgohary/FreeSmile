@@ -65,7 +65,7 @@ namespace FreeSmile.Services
             string message = $"From: \"Free Smile\" <freesmilemans@gmail.com>\r\n" +
                              $"Content-Type: text/html;charset=utf-8\r\n" +
                              $"To: {mailTo}\r\n" +
-                             $"Subject: {subject}\r\n\r\n" +
+                             $"Subject: =?utf-8?B?{Base64UrlEncode(subject)}?=\r\n\r\n" +  // Set subject encoding
                              $"{body}";
 
             var newMsg = new Google.Apis.Gmail.v1.Data.Message();
