@@ -21,7 +21,7 @@ namespace FreeSmile.Services
             _context = context;
             _localizer = localizer;
         }
-        public async Task<RegularResponse> AddUserAsync(UserRegisterDto userDto, IResponseCookies cookies)
+        public async Task<RegularResponse> AddUserAsync(UserRegisterDto userDto)
         {
             // Allow duplicate emails if user not verified yet
             _context.Users.RemoveRange(_context.Users.Where(x => x.Email == userDto.Email && x.IsVerified == false));
@@ -51,6 +51,114 @@ namespace FreeSmile.Services
             await _context.SaveChangesAsync();
 
             return new RegularResponse() { Id = user.Id };
+        }
+
+        public async Task<RegularResponse> AddPatientAsync(UserRegisterDto userDto, IResponseCookies cookies)
+        {
+            RegularResponse response;
+            using var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                response = await AddUserAsync(userDto);
+
+                var patient = new Patient()
+                {
+                    PatientId = response.Id
+                };
+                await _context.AddAsync(patient);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                var tokenAge = MyConstants.REGISTER_TOKEN_AGE;
+                string token = GetToken(patient.PatientId, tokenAge, Role.Patient);
+                cookies.Append(MyConstants.AUTH_COOKIE_KEY, token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.None, MaxAge = tokenAge, Secure = true });
+
+                response = RegularResponse.Success(
+                    id: patient.PatientId,
+                    token: token,
+                    message: _localizer["RegisterSuccess"],
+                    nextPage: Pages.verifyEmail.ToString()
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{Message}", ex.Message);
+                transaction.Rollback();
+                response = RegularResponse.UnknownError(_localizer);
+            }
+            return response;
+        }
+        
+        public async Task<RegularResponse> AddDentistAsync(UserRegisterDto userDto, IResponseCookies cookies)
+        {
+            RegularResponse response;
+
+            using var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                response = await AddUserAsync(userDto);
+
+                var dentist = new Dentist()
+                {
+                    DentistId = response.Id
+                    // current university and current degree are defaulted at first
+                };
+                await _context.AddAsync(dentist);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                var tokenAge = MyConstants.REGISTER_TOKEN_AGE;
+                string token = GetToken(dentist.DentistId, tokenAge, Role.Dentist);
+                cookies.Append(MyConstants.AUTH_COOKIE_KEY, token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.None, MaxAge = tokenAge, Secure = true });
+
+                response = RegularResponse.Success(
+                    id: dentist.DentistId,
+                    token: token,
+                    message: _localizer["RegisterSuccess"],
+                    nextPage: Pages.verifyEmail.ToString());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{Message}", ex.Message);
+                transaction.Rollback();
+                response = RegularResponse.UnknownError(_localizer);
+            }
+            return response;
+
+        }
+        
+        public async Task<RegularResponse> AddAdminAsync(UserRegisterDto userDto, IResponseCookies cookies)
+        {
+            RegularResponse response;
+            using var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                response = await AddUserAsync(userDto);
+
+                var admin = new Admin()
+                {
+                    AdminId = response.Id
+                };
+                await _context.AddAsync(admin);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                response = RegularResponse.Success(
+                    id: admin.AdminId,
+                    message: _localizer["RegisterSuccess"],
+                    nextPage: Pages.same.ToString() // only superadmins can register admins so they will not verify them too && also no token is sent
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{Message}", ex.Message);
+                transaction.Rollback();
+                response = RegularResponse.UnknownError(_localizer);
+            }
+            return response;
+
         }
 
         public async Task<RegularResponse> VerifyAccount(string otp, int user_id)

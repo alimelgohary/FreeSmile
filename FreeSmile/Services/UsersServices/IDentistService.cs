@@ -3,7 +3,7 @@ using static FreeSmile.Services.Helper;
 
 namespace FreeSmile.Services
 {
-    public interface IDentistService : IUserService
+    public interface IDentistService
     {
         public Task<RegularResponse> AddVerificationRequestAsync(VerificationDto verificationDto, int ownerId);
     }

@@ -3,7 +3,7 @@ using FreeSmile.Models;
 
 namespace FreeSmile.Services
 {
-    public interface IAdminService : IUserService
+    public interface IAdminService
     {
 
     }

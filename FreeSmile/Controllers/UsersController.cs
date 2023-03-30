@@ -34,7 +34,7 @@ namespace FreeSmile.Controllers
         [HttpPost("RegisterPatient")]
         public async Task<IActionResult> RegisterPatientAsync([FromBody] UserRegisterDto value)
         {
-            var res = await _patientService.AddUserAsync(value, Response.Cookies);
+            var res = await _userService.AddPatientAsync(value, Response.Cookies);
             return StatusCode(res.StatusCode, res);
         }
 
@@ -46,7 +46,7 @@ namespace FreeSmile.Controllers
         [HttpPost("RegisterAdmin")]
         public async Task<IActionResult> RegisterAdminAsync([FromBody] UserRegisterDto value)
         {
-            var res = await _adminService.AddUserAsync(value, Response.Cookies);
+            var res = await _userService.AddAdminAsync(value, Response.Cookies);
             return StatusCode(res.StatusCode, res);
         }
 
@@ -54,7 +54,7 @@ namespace FreeSmile.Controllers
         [HttpPost("RegisterDentist")]
         public async Task<IActionResult> RegisterDentistAsync([FromBody] UserRegisterDto value)
         {
-            var res = await _dentistService.AddUserAsync(value, Response.Cookies);
+            var res = await _userService.AddDentistAsync(value, Response.Cookies);
             return StatusCode(res.StatusCode, res);
         }
 
