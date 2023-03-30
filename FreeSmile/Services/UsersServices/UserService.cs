@@ -511,6 +511,43 @@ namespace FreeSmile.Services
                 nextPage: Pages.home.ToString() + role.ToString()
             );
         }
+
+        public async Task<RegularResponse> DeleteMyAccount(DeleteMyAccountDto value, int user_id, IResponseCookies cookies)
+        {
+            try
+            {
+                User? user = await _context.Users.FindAsync(user_id);
+
+                if (StorePassword(value.CurrentPassword, user.Salt) != user.Password)
+                    return RegularResponse.BadRequestError(
+                        error: _localizer["WrongPassword"],
+                        nextPage: Pages.same.ToString()
+                    );
+
+                // Delete All his posts first
+                var postsIds = _context.Posts.Where(x => x.WriterId == user_id).Select(x => x.PostId).ToList();
+                foreach (var item in postsIds)
+                {
+                    await _context.Database.ExecuteSqlRawAsync($"dbo.DeletePost {item};");
+                }
+
+                _context.Remove(user);
+                await _context.SaveChangesAsync();
+
+                cookies.Append(MyConstants.AUTH_COOKIE_KEY, string.Empty, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.None, Expires = DateTime.Now.AddDays(-5), Secure = true });
+
+                return RegularResponse.Success(
+                    message: _localizer["AccountDeleted"],
+                    nextPage: Pages.login.ToString()
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{Message}", ex.Message);
+
+                return RegularResponse.UnknownError(_localizer);
+            }
+        }
     }
 }
 

@@ -17,7 +17,7 @@ namespace FreeSmile.Services
         public Task<RegularResponse> RequestEmailOtp(string usernameOrEmail);
         public Task<RegularResponse> RedirectToHome(int user_id);
 
-        // TODO: DELETE: delete my account
+        public Task<RegularResponse> DeleteMyAccount(DeleteMyAccountDto value, int user_id, IResponseCookies cookies);
 
     }
 }

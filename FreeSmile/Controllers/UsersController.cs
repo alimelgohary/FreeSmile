@@ -147,6 +147,20 @@ namespace FreeSmile.Controllers
                 )
             );
         }
+
+        [SwaggerOperation(summary: "Takes your current password and deletes your account")]
+        [Authorize]
+        [ServiceFilter(typeof(ValidUser), Order = 1)]
+        [ServiceFilter(typeof(NotSuspended), Order = 2)]
+        [HttpDelete("DeleteMyAccount")]
+        public async Task<IActionResult> DeleteMyAccount([FromBody] DeleteMyAccountDto value)
+        {
+            string? user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int user_id_int = int.Parse(user_id!);
+            RegularResponse res = await _userService.DeleteMyAccount(value, user_id_int, Response.Cookies);
+            return StatusCode(res.StatusCode, res);
+            
+        }
     }
 }
 
