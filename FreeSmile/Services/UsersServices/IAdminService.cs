@@ -14,5 +14,6 @@ namespace FreeSmile.Services
         // TOOD: PUT: edit admin settings
         // TOOD: admin add, edit, delete casetype, listingCategory, articleCat, academic degree, university
         // TODO: DELETE: admin delete offensive reviews
+        // TODO: GET: reports of posts, comments  //TODO: PUT: suspend user by report
     }
 }
