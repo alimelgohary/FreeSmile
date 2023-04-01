@@ -15,14 +15,12 @@ namespace FreeSmile.Services
         private readonly ILogger<UsersController> _logger;
         private readonly IStringLocalizer<UsersController> _localizer;
         private readonly FreeSmileContext _context;
-        private readonly IUserService _userService;
 
-        public CommonService(ILogger<UsersController> logger, FreeSmileContext context, IStringLocalizer<UsersController> localizer, IUserService userService)
+        public CommonService(ILogger<UsersController> logger, FreeSmileContext context, IStringLocalizer<UsersController> localizer)
         {
             _logger = logger;
             _context = context;
             _localizer = localizer;
-            _userService = userService;
         }
 
         public async Task DeletePost(int id)
