@@ -2,6 +2,7 @@
 {
     public interface ICommonService
     {
+        public Task DeletePost(int id);
         // TODO: GET: Recent Messages
         // TODO: GET: Get messages history with someone
         // TODO: POST: send a message

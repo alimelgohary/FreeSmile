@@ -1,6 +1,7 @@
 ﻿using FreeSmile.Controllers;
 using FreeSmile.DTOs;
 using FreeSmile.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using System.Transactions;
@@ -24,6 +25,9 @@ namespace FreeSmile.Services
             _userService = userService;
         }
 
-        
+        public async Task DeletePost(int id)
+        {
+            await _context.Database.ExecuteSqlRawAsync($"dbo.DeletePost {id};");
+        }
     }
 }

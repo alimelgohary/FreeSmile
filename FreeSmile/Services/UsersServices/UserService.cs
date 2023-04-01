@@ -14,12 +14,14 @@ namespace FreeSmile.Services
         private readonly ILogger<UsersController> _logger;
         private readonly IStringLocalizer<UsersController> _localizer;
         private readonly FreeSmileContext _context;
+        private readonly ICommonService _commonService;
 
-        public UserService(ILogger<UsersController> logger, FreeSmileContext context, IStringLocalizer<UsersController> localizer)
+        public UserService(ILogger<UsersController> logger, FreeSmileContext context, IStringLocalizer<UsersController> localizer, ICommonService commonService)
         {
             _logger = logger;
             _context = context;
             _localizer = localizer;
+            _commonService = commonService;
         }
         public async Task<RegularResponse> AddUserAsync(UserRegisterDto userDto)
         {
@@ -263,6 +265,7 @@ namespace FreeSmile.Services
                 return RegularResponse.UnknownError(_localizer);
             }
         }
+
         async Task<Role> GetCurrentRole(int user_id)
         {
             Role role = Role.Patient;
@@ -376,6 +379,7 @@ namespace FreeSmile.Services
                 return RegularResponse.UnknownError(_localizer);
             }
         }
+
         public async Task<RegularResponse> RequestEmailOtp(int user_id)
         {
             try
@@ -453,6 +457,7 @@ namespace FreeSmile.Services
                 return RegularResponse.UnknownError(_localizer);
             }
         }
+
         public async Task<RegularResponse> RequestEmailOtp(string usernameOrEmail)
         {
             try
@@ -526,9 +531,9 @@ namespace FreeSmile.Services
 
                 // Delete All his posts first
                 var postsIds = _context.Posts.Where(x => x.WriterId == user_id).Select(x => x.PostId).ToList();
-                foreach (var item in postsIds)
+                foreach (var id in postsIds)
                 {
-                    await _context.Database.ExecuteSqlRawAsync($"dbo.DeletePost {item};");
+                    await _commonService.DeletePost(id);
                 }
 
                 _context.Remove(user);
