@@ -175,10 +175,5 @@ namespace FreeSmile.Services
 
             return salt;
         }
-        public static string ObscureEmail(string email)
-        {
-            var i = email.IndexOf('@');
-            return new StringBuilder().Append(email.First()).Append(new string('*', 5)).Append(email[i - 1]).Append(email.Substring(i)).ToString();
-        }
     }
 }

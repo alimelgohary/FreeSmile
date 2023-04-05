@@ -84,5 +84,11 @@ namespace FreeSmile.Services
               .Replace('/', '_')
               .Replace("=", "");
         }
+        public static string ObscureEmail(string email) // johndoe2023@gmail.com
+        {
+            var i = email.IndexOf('@');
+            // j*****3@gmail.com
+            return new StringBuilder().Append(email.First()).Append("*****").Append(email[i - 1]).Append(email.Substring(i)).ToString();
+        }
     }
 }
