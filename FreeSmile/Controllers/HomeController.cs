@@ -31,6 +31,7 @@ namespace FreeSmile.Controllers
             _patientService = patientService;
             _commonService = commonService;
         }
+        
         [SwaggerOperation(Summary = "Adds or updates user's review")]
         [HttpPost("AddUpdateReview")]
         public async Task<IActionResult> AddReviewAsync([FromBody] ReviewDto value)
@@ -54,6 +55,7 @@ namespace FreeSmile.Controllers
 
             return StatusCode(res.StatusCode, res);
         }
+        
         [SwaggerOperation(Summary = "Takes page number, size, and returns user's notifications (Check NotificationDto). It returns all notifications if page not specified")]
         [HttpGet("GetNotifications")]
         public async Task<IActionResult> GetNotificationsAsync(int page, int size = 10)
@@ -64,6 +66,18 @@ namespace FreeSmile.Controllers
             var notifications = await _commonService.GetNotificationsAsync(user_id_int, page, size);
 
             return Ok(notifications);
+        }
+
+        [SwaggerOperation(Summary = "Takes notification id and marks notification as seen")]
+        [HttpPut("NotificationSeen")]
+        public async Task<IActionResult> NotificationSeenAsync(int notification_id)
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+
+            await _commonService.NotificationSeenAsync(notification_id, user_id_int);
+
+            return Ok();
         }
 
         #region DummyActions

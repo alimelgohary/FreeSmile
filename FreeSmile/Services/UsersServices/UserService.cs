@@ -214,7 +214,7 @@ namespace FreeSmile.Services
             // Check redirect if not verified
             try
             {
-                User? user = await _context.Users.Where(x => x.Email == value.UsernameOrEmail || x.Username == value.UsernameOrEmail).FirstOrDefaultAsync();
+                User? user = await _context.Users.FirstOrDefaultAsync(x => x.Email == value.UsernameOrEmail || x.Username == value.UsernameOrEmail);
                 if (user is null
                  || StorePassword(value.Password, user.Salt) != user.Password)
                     return RegularResponse.BadRequestError(
@@ -289,7 +289,7 @@ namespace FreeSmile.Services
         {
             try
             {
-                User? user = await _context.Users.Where(x => x.Email == request.UsernameOrEmail || x.Username == request.UsernameOrEmail).FirstOrDefaultAsync();
+                User? user = await _context.Users.FirstOrDefaultAsync(x => x.Email == request.UsernameOrEmail || x.Username == request.UsernameOrEmail);
                 if (user is null)
                     return RegularResponse.BadRequestError(
                         error: _localizer["UserNotFound"],
@@ -317,7 +317,7 @@ namespace FreeSmile.Services
                 {
                     user.Notifications.Add(new()
                     {
-                        Temp = await _context.NotificationTemplates.Where(x => x.TempName == NotificationTemplates.Reset_Password.ToString()).FirstOrDefaultAsync()
+                        Temp = await _context.NotificationTemplates.FirstOrDefaultAsync(x => x.TempName == NotificationTemplates.Reset_Password.ToString())
                     });
                     await _context.SaveChangesAsync();
                 }
@@ -359,7 +359,7 @@ namespace FreeSmile.Services
                 {
                     user.Notifications.Add(new()
                     {
-                        Temp = await _context.NotificationTemplates.Where(x => x.TempName == NotificationTemplates.Changed_Password.ToString()).FirstOrDefaultAsync()
+                        Temp = await _context.NotificationTemplates.FirstOrDefaultAsync(x => x.TempName == NotificationTemplates.Changed_Password.ToString())
                     });
                     await _context.SaveChangesAsync();
                 }
@@ -462,7 +462,7 @@ namespace FreeSmile.Services
         {
             try
             {
-                User? user = await _context.Users.Where(x => x.Email == usernameOrEmail || x.Username == usernameOrEmail).FirstOrDefaultAsync();
+                User? user = await _context.Users.FirstOrDefaultAsync(x => x.Email == usernameOrEmail || x.Username == usernameOrEmail);
                 if (user is null)
                     return RegularResponse.BadRequestError(
                         error: _localizer["UserNotFound"]

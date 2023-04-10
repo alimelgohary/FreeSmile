@@ -34,7 +34,7 @@ namespace FreeSmile.Services
         {
             try
             {
-                var oldReview = await _context.Reviews.Where(x => x.ReviewerId == user_id).FirstOrDefaultAsync();
+                var oldReview = await _context.Reviews.FirstOrDefaultAsync(x => x.ReviewerId == user_id);
 
                 if (oldReview is not null)
                 {
@@ -66,7 +66,7 @@ namespace FreeSmile.Services
         {
             try
             {
-                var review = await _context.Reviews.Where(x => x.ReviewerId == user_id).FirstOrDefaultAsync();
+                var review = await _context.Reviews.FirstOrDefaultAsync(x => x.ReviewerId == user_id);
 
                 if (review is not null)
                 {
@@ -83,31 +83,57 @@ namespace FreeSmile.Services
             }
         }
 
-
         public async Task<List<GetNotificationDto>> GetNotificationsAsync(int user_id, int page, int size)
         {
-            List<Notification> notifications;
-            List<GetNotificationDto> actualNotifications = new();
-            if(page == 0) //Get all notifications if page not specified
+            try
             {
-                notifications = await _context.Notifications.Where(x => x.OwnerId == user_id).OrderByDescending(x => x.NotificationId).Include(x => x.Temp).ToListAsync();
+                List<Notification> notifications;
+                List<GetNotificationDto> actualNotifications = new();
+                if (page == 0) //Get all notifications if page not specified
+                {
+                    notifications = await _context.Notifications.Where(x => x.OwnerId == user_id).OrderByDescending(x => x.NotificationId).Include(x => x.Temp).ToListAsync();
+                }
+                else
+                {
+                    notifications = await _context.Notifications.Where(x => x.OwnerId == user_id).OrderByDescending(x => x.NotificationId).Skip(size * --page).Take(size).Include(x => x.Temp).ToListAsync();
+                }
+                foreach (var notification in notifications)
+                {
+                    actualNotifications.Add(new GetNotificationDto()
+                    {
+                        NotificationId = notification.NotificationId,
+                        HumanizedTime = notification.SentAt.Humanize(culture: CultureInfo.CurrentCulture)!,
+                        Seen = (bool)notification.Seen!,
+                        Body = string.Format(notification.Temp.Lang(_localizer["lang"]), notification.ActorUsername, notification.PostTitle),
+                        NextPage = string.Format(notification.Temp.NextPage, notification.PostId),
+                        Icon = notification.Temp.Icon
+                    });
+                }
+                return actualNotifications;
             }
-            else
+            catch (Exception ex)
             {
-                notifications = await _context.Notifications.Where(x => x.OwnerId == user_id).OrderByDescending(x => x.NotificationId).Skip(size * --page).Take(size).Include(x => x.Temp).ToListAsync();
+                _logger.LogError("{Message}", ex.Message);
+                throw;
             }
-            foreach (var notification in notifications)
+        }
+
+        public async Task NotificationSeenAsync(int notification_id, int user_id_int)
+        {
+            try
             {
-                actualNotifications.Add(new GetNotificationDto() {
-                    NotificationId = notification.NotificationId,
-                    HumanizedTime = notification.SentAt.Humanize(culture: CultureInfo.CurrentCulture)!,
-                    Seen = (bool)notification.Seen!,
-                    Body = string.Format(notification.Temp.Lang(_localizer["lang"]), notification.ActorUsername, notification.PostTitle),
-                    NextPage = string.Format(notification.Temp.NextPage, notification.PostId),
-                    Icon = notification.Temp.Icon
-                });
+                Notification? notification = await _context.Notifications.FirstOrDefaultAsync(x => x.NotificationId == notification_id && x.OwnerId == user_id_int);
+                if (notification is not null)
+                {
+                    notification.Seen = true;
+                    await _context.SaveChangesAsync();
+                }
             }
-            return actualNotifications;
+            catch (Exception ex)
+            {
+                _logger.LogError("{Message}", ex.Message);
+                throw;
+            }
         }
     }
 }
