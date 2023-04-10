@@ -27,5 +27,58 @@ namespace FreeSmile.Services
         {
             await _context.Database.ExecuteSqlRawAsync($"dbo.DeletePost {id};");
         }
+
+        public async Task<RegularResponse> AddReviewAsync(ReviewDto value, int user_id)
+        {
+            try
+            {
+                var oldReview = await _context.Reviews.Where(x => x.ReviewerId == user_id).FirstOrDefaultAsync();
+
+                if (oldReview is not null)
+                {
+                    _context.Reviews.Remove(oldReview);
+                    await _context.SaveChangesAsync();
+                }
+
+                await _context.Reviews.AddAsync(
+                    new Review()
+                    {
+                        Rating = (byte)value.Rating!,
+                        Opinion = value.Opinion,
+                        ReviewerId = user_id
+                    });
+                await _context.SaveChangesAsync();
+
+                string message = oldReview is null ? "ReviewAddedSuccessfully" : "ReviewEditedSuccessfully";
+                return RegularResponse.Success(message: _localizer[message]);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{Message}", ex.Message);
+
+                return RegularResponse.UnknownError(_localizer);
+            }
+        }
+
+        public async Task<RegularResponse> DeleteReviewAsync(int user_id)
+        {
+            try
+            {
+                var review = await _context.Reviews.Where(x => x.ReviewerId == user_id).FirstOrDefaultAsync();
+
+                if (review is not null)
+                {
+                    _context.Reviews.Remove(review);
+                    await _context.SaveChangesAsync();
+                }
+                return RegularResponse.Success(message: _localizer["ReviewDeletedSuccessfully"]);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{Message}", ex.Message);
+
+                return RegularResponse.UnknownError(_localizer);
+            }
+        }
     }
 }

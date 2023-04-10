@@ -51,7 +51,7 @@ namespace FreeSmile.Controllers
 
         [SwaggerOperation(Summary = "Takes a page number (GetReviews?page={id}) and returns 5 reviews in this structure {reviewer (string), rating (int) (1 : 5) , opinion (string)}")]
         [HttpGet("GetReviews")]
-        public IActionResult GetReviews(int page, int size = 5)
+        public IActionResult GetReviews(int page = 1, int size = 5)
         {
             return Ok(_context.Reviews.OrderByDescending(y => y.ReviewId).Skip(size * --page).Take(size).Select(
                 x => new {

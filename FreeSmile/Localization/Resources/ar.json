@@ -59,4 +59,10 @@
   "logoutsuccess": "تم تسجيل الخروج بنجاح",
   "wrongpassword": "نأسف لكن كلمة المرور التي أدخلتها غير صحيحة",
   "accountdeleted": "تم حذف حسابك بنجاح، نراك قريبا",
+  "boundvalue": "يجب أن يكون {0} بين {1} و {2}",
+  "rating": "التقييم",
+  "opinion": "رأيك",
+  "reviewaddedsuccessfully": "تم إضافة التقييم بنجاح",
+  "revieweditedsuccessfully": "تم تعديل التقييم بنجاح",
+  "reviewdeletedsuccessfully": "تم مسح التقييم بنجاح"
 }

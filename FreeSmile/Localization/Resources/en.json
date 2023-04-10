@@ -59,4 +59,10 @@
   "logoutsuccess": "You have logged out successfully",
   "wrongpassword": "We're sorry your password is wrong",
   "accountdeleted": "Your account is deleted successfully, see you soon",
+  "boundvalue": "{0} must be between {1} and {2}",
+  "rating": "Rating",
+  "opinion": "Your opinion",
+  "reviewaddedsuccessfully": "Review added successfully",
+  "revieweditedsuccessfully": "Review edited successfully",
+  "reviewdeletedsuccessfully": "Review deleted successfully"
 }
