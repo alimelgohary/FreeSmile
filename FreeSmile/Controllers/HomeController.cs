@@ -5,7 +5,6 @@ using FreeSmile.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using static FreeSmile.Services.Helper;
-using System.Reflection.Metadata.Ecma335;
 using FreeSmile.ActionFilters;
 
 namespace FreeSmile.Controllers
