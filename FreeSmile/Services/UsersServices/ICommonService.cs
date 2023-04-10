@@ -9,13 +9,15 @@ namespace FreeSmile.Services
 
         public Task<RegularResponse> AddReviewAsync(ReviewDto value, int user_id);
         public Task<RegularResponse> DeleteReviewAsync(int user_id);
-        
+        public Task<List<GetNotificationDto>> GetNotificationsAsync(int user_id, int page, int size);
+
+
+        // TODO: GET: AddUpdate profile picture       // TODO: delete profile picture
         // TODO: GET: Recent Messages
         // TODO: GET: Get messages history with someone
         // TODO: POST: send a message
         // TOOD: PUT: seen request
         // TODO: PUT: Block user
         // TODO: POST: Report post
-        // TODO: GET: Notifications
     }
 }

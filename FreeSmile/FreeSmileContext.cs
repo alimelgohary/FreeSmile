@@ -415,6 +415,8 @@ namespace FreeSmile
 
                 entity.Property(e => e.OwnerId).HasColumnName("owner_id");
 
+                entity.Property(e => e.PostId).HasColumnName("post_id");
+
                 entity.Property(e => e.PostTitle)
                     .HasMaxLength(20)
                     .HasColumnName("post_title");

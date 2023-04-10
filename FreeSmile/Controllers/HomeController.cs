@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using static FreeSmile.Services.Helper;
 using FreeSmile.ActionFilters;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace FreeSmile.Controllers
 {
@@ -30,7 +31,7 @@ namespace FreeSmile.Controllers
             _patientService = patientService;
             _commonService = commonService;
         }
-
+        [SwaggerOperation(Summary = "Adds or updates user's review")]
         [HttpPost("AddUpdateReview")]
         public async Task<IActionResult> AddReviewAsync([FromBody] ReviewDto value)
         {
@@ -41,7 +42,8 @@ namespace FreeSmile.Controllers
 
             return StatusCode(res.StatusCode, res);
         }
-        
+
+        [SwaggerOperation(Summary = "Deletes user's review")]
         [HttpDelete("DeleteReview")]
         public async Task<IActionResult> DeleteReviewAsync()
         {
@@ -52,5 +54,22 @@ namespace FreeSmile.Controllers
 
             return StatusCode(res.StatusCode, res);
         }
+        [SwaggerOperation(Summary = "Takes page number, size, and returns user's notifications (Check NotificationDto). It returns all notifications if page not specified")]
+        [HttpGet("GetNotifications")]
+        public async Task<IActionResult> GetNotificationsAsync(int page, int size = 10)
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+
+            var notifications = await _commonService.GetNotificationsAsync(user_id_int, page, size);
+
+            return Ok(notifications);
+        }
+
+        #region DummyActions
+        [HttpPost("Dummy")]
+        public void Dummy1(GetNotificationDto v) { } // Only for including NotificationDto in Swagger
+        #endregion
+
     }
 }

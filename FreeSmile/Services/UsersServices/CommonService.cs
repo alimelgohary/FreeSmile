@@ -1,9 +1,11 @@
 ﻿using FreeSmile.Controllers;
 using FreeSmile.DTOs;
 using FreeSmile.Models;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
 using System.Transactions;
 using static FreeSmile.Services.AuthHelper;
 using static FreeSmile.Services.Helper;
@@ -79,6 +81,33 @@ namespace FreeSmile.Services
 
                 return RegularResponse.UnknownError(_localizer);
             }
+        }
+
+
+        public async Task<List<GetNotificationDto>> GetNotificationsAsync(int user_id, int page, int size)
+        {
+            List<Notification> notifications;
+            List<GetNotificationDto> actualNotifications = new();
+            if(page == 0) //Get all notifications if page not specified
+            {
+                notifications = await _context.Notifications.Where(x => x.OwnerId == user_id).OrderByDescending(x => x.NotificationId).Include(x => x.Temp).ToListAsync();
+            }
+            else
+            {
+                notifications = await _context.Notifications.Where(x => x.OwnerId == user_id).OrderByDescending(x => x.NotificationId).Skip(size * --page).Take(size).Include(x => x.Temp).ToListAsync();
+            }
+            foreach (var notification in notifications)
+            {
+                actualNotifications.Add(new GetNotificationDto() {
+                    NotificationId = notification.NotificationId,
+                    HumanizedTime = notification.SentAt.Humanize(culture: CultureInfo.CurrentCulture)!,
+                    Seen = (bool)notification.Seen!,
+                    Body = string.Format(notification.Temp.Lang(_localizer["lang"]), notification.ActorUsername, notification.PostTitle),
+                    NextPage = string.Format(notification.Temp.NextPage, notification.PostId),
+                    Icon = notification.Temp.Icon
+                });
+            }
+            return actualNotifications;
         }
     }
 }

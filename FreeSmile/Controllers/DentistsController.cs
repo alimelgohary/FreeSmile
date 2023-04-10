@@ -40,10 +40,8 @@ namespace FreeSmile.Controllers
         }
 
         #region DummyActions
-        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpPost("Dummy")]
         public void DummyAction2(VerificationDto v) { } // Only for including VerificationDto in Swagger
-        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpPost("Dummy2")]
         public void DummyAction3(RegularResponse r) { } // Only for including api response in Swagger
         #endregion
