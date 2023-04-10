@@ -12,6 +12,12 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using FreeSmile.ActionFilters;
 
+Helper.CheckEnvironmentVariables("_Jwt_Secret",
+                                 "_PEPPER",
+                                 "_FreeSmileDatabase",
+                                 "_FreeSmileGmailPass",
+                                 "_FreeSmileGmail");
+
 var builder = WebApplication.CreateBuilder(args);
 var corsPolicy = "_myAllowSpecificOrigins";
 #region Logging

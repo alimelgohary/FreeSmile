@@ -1,22 +1,26 @@
 ﻿using Microsoft.Extensions.Localization;
+using Newtonsoft.Json.Linq;
 using System.Text.Json.Serialization;
 
 namespace FreeSmile.Services
 {
     public class Helper
     {
-        public static string? GetEnvVariable(string key, bool closeIfNotFound)
+        public static string GetEnvVariable(string key)
         {
-            var value = Environment.GetEnvironmentVariable(key);
-            if (string.IsNullOrEmpty(value)) 
+            return Environment.GetEnvironmentVariable(key)!;
+        }
+        public static void CheckEnvironmentVariables(params string[] keys)
+        {
+            foreach (var key in keys)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Fatal Error: {key} is not found in Environment Variables.");
-                
-                if (closeIfNotFound)
+                if (string.IsNullOrEmpty(GetEnvVariable(key)))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"Fatal Error: {key} is not found in Environment Variables.");
                     Environment.Exit(1);
+                }
             }
-            return value;
         }
 
         public async static Task SaveToDisk(IFormFile? file, string path)
@@ -27,7 +31,7 @@ namespace FreeSmile.Services
             using var stream = new FileStream(path, FileMode.Create);
             await file.CopyToAsync(stream);
         }
-        
+
         public class RegularResponse
         {
             public int Id { get; set; }

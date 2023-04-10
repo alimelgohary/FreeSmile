@@ -8,9 +8,9 @@ namespace FreeSmile.Services
 {
     public class AuthHelper
     {
-        private static string? JWT_SECRET { get; } = Helper.GetEnvVariable("_Jwt_Secret", false);
+        private static string JWT_SECRET { get; } = Helper.GetEnvVariable("_Jwt_Secret");
 
-        private static string PEPPER { get; } = Helper.GetEnvVariable("_PEPPER", true)!;
+        private static string PEPPER { get; } = Helper.GetEnvVariable("_PEPPER");
 
         public static TokenValidationParameters tokenValidationParameters = new()
         {

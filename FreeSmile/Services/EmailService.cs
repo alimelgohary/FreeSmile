@@ -10,8 +10,8 @@ namespace FreeSmile.Services
 {
     public class EmailService
     {
-        private static string? FREESMILE_GMAIL_PASSWORD { get; } = Helper.GetEnvVariable("_FreeSmileGmailPass", false);
-        private static string? FREESMILE_GMAIL { get; } = Helper.GetEnvVariable("_FreeSmileGmail", false);
+        private static string FREESMILE_GMAIL_PASSWORD { get; } = Helper.GetEnvVariable("_FreeSmileGmailPass");
+        private static string FREESMILE_GMAIL { get; } = Helper.GetEnvVariable("_FreeSmileGmail");
         private static readonly string SmtpServer = "smtp.gmail.com";
         private static readonly int SmtpPort = 587;
 
