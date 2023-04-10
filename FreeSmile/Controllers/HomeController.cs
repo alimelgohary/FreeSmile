@@ -68,7 +68,7 @@ namespace FreeSmile.Controllers
             return Ok(notifications);
         }
 
-        [SwaggerOperation(Summary = "Takes notification id and marks notification as seen")]
+        [SwaggerOperation(Summary = "Takes notification id as a query parameter and marks notification as seen")]
         [HttpPut("NotificationSeen")]
         public async Task<IActionResult> NotificationSeenAsync(int notification_id)
         {
