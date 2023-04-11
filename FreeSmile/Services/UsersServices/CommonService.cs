@@ -30,7 +30,7 @@ namespace FreeSmile.Services
             await _context.Database.ExecuteSqlRawAsync($"dbo.DeletePost {id};");
         }
 
-        public async Task<RegularResponse> AddReviewAsync(ReviewDto value, int user_id)
+        public async Task<RegularResponse> AddUpdateReviewAsync(ReviewDto value, int user_id)
         {
             try
             {
@@ -134,6 +134,41 @@ namespace FreeSmile.Services
                 _logger.LogError("{Message}", ex.Message);
                 throw;
             }
+        }
+
+        public Task<RegularResponse> ReportPostAsync(int post_id, int user_id)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public Task<RegularResponse> BlockUserAsync(int user_id, int other_user_id)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public Task<RegularResponse> SendMessageAsync(SendMessageDto message, int user_id, int other_user_id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<GetMessageDto>> GetChatHistoryAsync(int user_id, int other_user_id, int page, int size)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public Task<List<RecentMessagesDto>> GetRecentMessagesAsync(int user_id, int page, int size)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public Task<RegularResponse> AddUpdateProfilePictureAsync(ProfilePictureDto value, int user_id)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public Task<RegularResponse> DeleteProfilePictureAsync(int user_id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

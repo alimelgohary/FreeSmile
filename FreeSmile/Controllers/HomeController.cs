@@ -39,7 +39,7 @@ namespace FreeSmile.Controllers
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
 
-            RegularResponse res = await _commonService.AddReviewAsync(value, user_id_int);
+            RegularResponse res = await _commonService.AddUpdateReviewAsync(value, user_id_int);
 
             return StatusCode(res.StatusCode, res);
         }
