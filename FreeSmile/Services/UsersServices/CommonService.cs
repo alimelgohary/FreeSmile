@@ -90,7 +90,7 @@ namespace FreeSmile.Services
                 List<Notification> notifications;
                 List<GetNotificationDto> actualNotifications = new();
                 
-                    notifications = await _context.Notifications.Where(x => x.OwnerId == user_id).OrderByDescending(x => x.NotificationId).Skip(size * --page).Take(size).Include(x => x.Temp).ToListAsync();
+                notifications = await _context.Notifications.Where(x => x.OwnerId == user_id).OrderByDescending(x => x.NotificationId).Skip(size * --page).Take(size).Include(x => x.Temp).ToListAsync();
                 foreach (var notification in notifications)
                 {
                     actualNotifications.Add(new GetNotificationDto()
@@ -140,7 +140,16 @@ namespace FreeSmile.Services
             throw new NotImplementedException();
         }
         
-        public Task<RegularResponse> SendMessageAsync(SendMessageDto message, int user_id, int other_user_id)
+        public Task<RegularResponse> UnblockUserAsync(int user_id, int other_user_id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<BlockedUsersDto>> GetBlockedListAsync(int user_id, int page, int size)
+        {
+            throw new NotImplementedException();
+        }
+        public Task<RegularResponse> SendMessageAsync(SendMessageDto message, int sender_id)
         {
             throw new NotImplementedException();
         }
@@ -161,6 +170,21 @@ namespace FreeSmile.Services
         }
         
         public Task<RegularResponse> DeleteProfilePictureAsync(int user_id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<RegularResponse> AddCaseAsync(CaseDto value, int user_id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<RegularResponse> DeleteCaseAsync(int user_id, int case_post_id)
         {
             throw new NotImplementedException();
         }
