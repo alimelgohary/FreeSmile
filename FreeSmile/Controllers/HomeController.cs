@@ -32,9 +32,9 @@ namespace FreeSmile.Controllers
             _commonService = commonService;
         }
         
-        [SwaggerOperation(Summary = "Adds or updates user's review")]
+        [SwaggerOperation(Summary = $"Takes {nameof(ReviewDto)} as JSON & Adds or updates user's review")]
         [HttpPost("AddUpdateReview")]
-        public async Task<IActionResult> AddReviewAsync([FromBody] ReviewDto value)
+        public async Task<IActionResult> AddUpdateReviewAsync([FromBody] ReviewDto value)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
@@ -56,9 +56,9 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
         }
         
-        [SwaggerOperation(Summary = "Takes page number, size, and returns user's notifications (Check NotificationDto). It returns all notifications if page not specified")]
+        [SwaggerOperation(Summary = $"Takes {nameof(page)}, {nameof(size)} as query & returns user's notifications (returns list of {nameof(GetNotificationDto)}).")]
         [HttpGet("GetNotifications")]
-        public async Task<IActionResult> GetNotificationsAsync(int page, int size = 10)
+        public async Task<IActionResult> GetNotificationsAsync(int page = 1, int size = 10)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
@@ -68,7 +68,7 @@ namespace FreeSmile.Controllers
             return Ok(notifications);
         }
 
-        [SwaggerOperation(Summary = "Takes notification id as a query parameter and marks notification as seen")]
+        [SwaggerOperation(Summary = $"Takes {nameof(notification_id)} as a query parameter & marks notification as seen (send this request when notification clicked")]
         [HttpPut("NotificationSeen")]
         public async Task<IActionResult> NotificationSeenAsync(int notification_id)
         {

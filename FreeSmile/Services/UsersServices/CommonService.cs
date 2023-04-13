@@ -89,14 +89,8 @@ namespace FreeSmile.Services
             {
                 List<Notification> notifications;
                 List<GetNotificationDto> actualNotifications = new();
-                if (page == 0) //Get all notifications if page not specified
-                {
-                    notifications = await _context.Notifications.Where(x => x.OwnerId == user_id).OrderByDescending(x => x.NotificationId).Include(x => x.Temp).ToListAsync();
-                }
-                else
-                {
+                
                     notifications = await _context.Notifications.Where(x => x.OwnerId == user_id).OrderByDescending(x => x.NotificationId).Skip(size * --page).Take(size).Include(x => x.Temp).ToListAsync();
-                }
                 foreach (var notification in notifications)
                 {
                     actualNotifications.Add(new GetNotificationDto()
