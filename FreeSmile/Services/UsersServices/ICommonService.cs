@@ -20,5 +20,6 @@ namespace FreeSmile.Services
         public Task<RegularResponse> AddUpdateProfilePictureAsync(ProfilePictureDto value, int user_id);
         public Task<RegularResponse> DeleteProfilePictureAsync(int user_id);
         
+        // TODO: Don't forget to not include blocked or blocking people posts
     }
 }
