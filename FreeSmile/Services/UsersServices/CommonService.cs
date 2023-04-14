@@ -188,5 +188,17 @@ namespace FreeSmile.Services
         {
             throw new NotImplementedException();
         }
+
+        public async Task<bool> UsersCanCommunicate(int user_id, int other_user_id)
+        {
+            User? user1 = await _context.Users.Include(x => x.Blockers)
+                                              .Include(x => x.Blockeds)
+                                              .FirstOrDefaultAsync(x => x.Id == user_id);
+            
+            bool user1_blocked_user2 = user1?.Blockeds.Where(x => x.Id == other_user_id).Count() > 0;
+            bool user1_is_blocked_by_user2 = user1?.Blockers.Where(x => x.Id == other_user_id).Count() > 0;
+            
+            return !user1_blocked_user2 && !user1_is_blocked_by_user2;
+        }
     }
 }
