@@ -89,7 +89,7 @@ namespace FreeSmile.Services
             {
                 List<Notification> notifications;
                 List<GetNotificationDto> actualNotifications = new();
-                
+
                 notifications = await _context.Notifications.Where(x => x.OwnerId == user_id).OrderByDescending(x => x.NotificationId).Skip(size * --page).Take(size).Include(x => x.Temp).ToListAsync();
                 foreach (var notification in notifications)
                 {
@@ -134,12 +134,12 @@ namespace FreeSmile.Services
         {
             throw new NotImplementedException();
         }
-        
+
         public Task<RegularResponse> BlockUserAsync(int user_id, int other_user_id)
         {
             throw new NotImplementedException();
         }
-        
+
         public Task<RegularResponse> UnblockUserAsync(int user_id, int other_user_id)
         {
             throw new NotImplementedException();
@@ -158,17 +158,17 @@ namespace FreeSmile.Services
         {
             throw new NotImplementedException();
         }
-        
+
         public Task<List<RecentMessagesDto>> GetRecentMessagesAsync(int user_id, int page, int size)
         {
             throw new NotImplementedException();
         }
-        
+
         public Task<RegularResponse> AddUpdateProfilePictureAsync(ProfilePictureDto value, int user_id)
         {
             throw new NotImplementedException();
         }
-        
+
         public Task<RegularResponse> DeleteProfilePictureAsync(int user_id)
         {
             throw new NotImplementedException();
@@ -188,8 +188,14 @@ namespace FreeSmile.Services
         {
             throw new NotImplementedException();
         }
+        public async Task<byte[]> GetProfilePictureAsync(int user_id, int size)
+        {
+            if (size < 1 || size > 3)
+                size = 1;
 
-        public async Task<bool> UsersCanCommunicate(int user_id, int other_user_id)
+            throw new NotImplementedException();
+        }
+
         public async Task<bool> CanUsersCommunicateAsync(int user_id, int other_user_id)
         {
             User? user1 = await _context.Users.Include(x => x.Blockers)

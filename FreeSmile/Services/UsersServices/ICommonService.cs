@@ -25,6 +25,8 @@ namespace FreeSmile.Services
         public Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id);
         public Task<RegularResponse> DeleteCaseAsync(int user_id, int case_post_id);
         public Task<bool> CanUsersCommunicateAsync(int user_id, int other_user_id);
+        public Task<byte[]> GetProfilePictureAsync(int user_id, int size);
+
         // TODO: Don't forget to not include blocked or blocking people posts
     }
 }
