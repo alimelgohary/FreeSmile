@@ -11,7 +11,7 @@ namespace FreeSmile.DTOs
     {
         [DisplayName(nameof(Opinion))]
         [MaxLength(100, ErrorMessage = "maxchar")]
-        public string Opinion { get; set; } = null!;
+        public string? Opinion { get; set; }
         
         [DisplayName(nameof(Rating))]
         [Required(ErrorMessage = "required")]
