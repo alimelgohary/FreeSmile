@@ -62,7 +62,11 @@
   "boundvalue": "{0} must be between {1} and {2}",
   "rating": "Rating",
   "opinion": "Your opinion",
-  "reviewaddedsuccessfully": "Review added successfully",
-  "revieweditedsuccessfully": "Review edited successfully",
-  "reviewdeletedsuccessfully": "Review deleted successfully"
+  "reviewaddedsuccessfully": "Review is added successfully",
+  "revieweditedsuccessfully": "Review is edited successfully",
+  "reviewdeletedsuccessfully": "Review is deleted successfully",
+  "reason": "Reason of report",
+  "reported_post_id": "Reported Post",
+  "postreportedsuccessfully": "Post is reported successfully",
+  "alreadyreportedthispost": "You have already reported this post",
 }

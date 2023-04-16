@@ -130,12 +130,32 @@ namespace FreeSmile.Services
             }
         }
 
-        public Task<RegularResponse> ReportPostAsync(int post_id, int user_id)
+        public async Task<RegularResponse> ReportPostAsync(ReportPostDto value, int user_id)
         {
-            throw new NotImplementedException();
-        }
+            try
+            {
+                PostReport? previousReport = await _context.PostReports.FindAsync(user_id, value.reported_post_id);
+                if (previousReport is not null)
+                    return RegularResponse.BadRequestError(error: _localizer["AlreadyReportedThisPost"]);
 
-        public Task<RegularResponse> BlockUserAsync(int user_id, int other_user_id)
+                await _context.PostReports.AddAsync(new()
+                {
+                    ReporterId = user_id,
+                    PostId = (int)value.reported_post_id!,
+                    Reason = value.Reason
+                });
+
+                await _context.SaveChangesAsync();
+
+                return RegularResponse.Success(message: _localizer["PostReportedSuccessfully"]);
+        }
+            catch (Exception ex)
+            {
+                _logger.LogError("{Message}", ex.Message);
+
+                return RegularResponse.UnknownError(_localizer);
+            }
+        }
         {
             throw new NotImplementedException();
         }

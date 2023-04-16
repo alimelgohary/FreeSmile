@@ -80,14 +80,14 @@ namespace FreeSmile.Controllers
             return Ok();
         }
 
-        [SwaggerOperation(Summary = $"Takes {nameof(post_id)} as a query parameter & reports post")]
+        [SwaggerOperation(Summary = $"Takes {nameof(ReportPostDto)} as JSON & reports post")]
         [HttpPost("ReportPost")]
-        public async Task<IActionResult> ReportPostAsync(int post_id)
+        public async Task<IActionResult> ReportPostAsync([FromBody] ReportPostDto value)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
 
-            RegularResponse res = await _commonService.ReportPostAsync(post_id, user_id_int);
+            RegularResponse res = await _commonService.ReportPostAsync(value, user_id_int);
 
             return StatusCode(res.StatusCode, res);
         }

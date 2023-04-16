@@ -12,7 +12,7 @@ namespace FreeSmile.Services
         public Task<RegularResponse> DeleteReviewAsync(int user_id);
         public Task<List<GetNotificationDto>> GetNotificationsAsync(int user_id, int page, int size);
         public Task NotificationSeenAsync(int notification_id, int user_id_int);
-        public Task<RegularResponse> ReportPostAsync(int post_id, int user_id);
+        public Task<RegularResponse> ReportPostAsync(ReportPostDto value, int user_id);
         public Task<RegularResponse> BlockUserAsync(int user_id, int other_user_id);
         public Task<RegularResponse> UnblockUserAsync(int user_id, int other_user_id);
         public Task<List<BlockedUsersDto>> GetBlockedListAsync(int user_id, int page, int size);

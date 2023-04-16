@@ -64,5 +64,9 @@
   "opinion": "رأيك",
   "reviewaddedsuccessfully": "تم إضافة التقييم بنجاح",
   "revieweditedsuccessfully": "تم تعديل التقييم بنجاح",
-  "reviewdeletedsuccessfully": "تم مسح التقييم بنجاح"
+  "reviewdeletedsuccessfully": "تم مسح التقييم بنجاح",
+  "reason": "سبب الإبلاغ",
+  "reported_post_id": "المنشور المبلغ عنه",
+  "postreportedsuccessfully": "تم الإبلاغ عن المنشور بنجاح",
+  "alreadyreportedthispost": "لقد قمت بالإبلاغ عن هذا المنشور مسبقا",
 }
