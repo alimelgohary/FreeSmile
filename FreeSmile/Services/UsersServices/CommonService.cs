@@ -148,7 +148,7 @@ namespace FreeSmile.Services
                 await _context.SaveChangesAsync();
 
                 return RegularResponse.Success(message: _localizer["PostReportedSuccessfully"]);
-        }
+            }
             catch (Exception ex)
             {
                 _logger.LogError("{Message}", ex.Message);
@@ -156,55 +156,109 @@ namespace FreeSmile.Services
                 return RegularResponse.UnknownError(_localizer);
             }
         }
+
+        public async Task<RegularResponse> BlockUserAsync(int user_id, int other_user_id)
+        {
+            try
+            {
+                if (user_id.Equals(other_user_id))
+                    return RegularResponse.BadRequestError(error: _localizer["CannotBlockYourself"]);
+
+                User? user2 = await _context.Users.FindAsync(other_user_id);
+
+                if (user2 is null)
+                    return RegularResponse.BadRequestError(error: _localizer["UserNotFound"]);
+
+                User? user1 = await _context.Users.Include(x => x.Blockeds)
+                                                  .FirstOrDefaultAsync(x => x.Id == user_id);
+
+                if (user1!.Blockeds.Where(x => x.Id == other_user_id).Count() > 0)
+                    return RegularResponse.BadRequestError(error: _localizer["AlreadyBlockedThisUser"]);
+
+                user1.Blockeds.Add(user2);
+                await _context.SaveChangesAsync();
+
+                return RegularResponse.Success(message: _localizer["UserBlockedSuccessfully", user2.Username]);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{Message}", ex.Message);
+
+                return RegularResponse.UnknownError(_localizer);
+            }
+        }
+
+        public async Task<RegularResponse> UnblockUserAsync(int user_id, int other_user_id)
+        {
+            try
+            {
+                if (user_id.Equals(other_user_id))
+                    return RegularResponse.BadRequestError(error: _localizer["CannotUnblockYourself"]);
+
+                User? user2 = await _context.Users.FindAsync(other_user_id);
+
+                if (user2 is null)
+                    return RegularResponse.BadRequestError(error: _localizer["UserNotFound"]);
+
+                User? user1 = await _context.Users.Include(x => x.Blockeds)
+                                                  .FirstOrDefaultAsync(x => x.Id == user_id);
+
+                if (user1!.Blockeds.Where(x => x.Id == other_user_id).Count() == 0)
+                    return RegularResponse.BadRequestError(error: _localizer["UserAlreadyUnblocked"]);
+
+                user1.Blockeds.Remove(user2);
+                await _context.SaveChangesAsync();
+
+                return RegularResponse.Success(message: _localizer["UserUnblockedSuccessfully", user2.Username]);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{Message}", ex.Message);
+
+                return RegularResponse.UnknownError(_localizer);
+            }
+        }
+
+        public async Task<List<BlockedUsersDto>> GetBlockedListAsync(int user_id, int page, int size)
+        {
+            throw new NotImplementedException();
+        }
+        public async Task<RegularResponse> SendMessageAsync(SendMessageDto message, int sender_id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<RegularResponse> UnblockUserAsync(int user_id, int other_user_id)
+        public async Task<List<GetMessageDto>> GetChatHistoryAsync(int user_id, int other_user_id, int page, int size)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<BlockedUsersDto>> GetBlockedListAsync(int user_id, int page, int size)
-        {
-            throw new NotImplementedException();
-        }
-        public Task<RegularResponse> SendMessageAsync(SendMessageDto message, int sender_id)
+        public async Task<List<RecentMessagesDto>> GetRecentMessagesAsync(int user_id, int page, int size)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<GetMessageDto>> GetChatHistoryAsync(int user_id, int other_user_id, int page, int size)
+        public async Task<RegularResponse> AddUpdateProfilePictureAsync(ProfilePictureDto value, int user_id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<RecentMessagesDto>> GetRecentMessagesAsync(int user_id, int page, int size)
+        public async Task<RegularResponse> DeleteProfilePictureAsync(int user_id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<RegularResponse> AddUpdateProfilePictureAsync(ProfilePictureDto value, int user_id)
+        public async Task<RegularResponse> AddCaseAsync(CaseDto value, int user_id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<RegularResponse> DeleteProfilePictureAsync(int user_id)
+        public async Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<RegularResponse> AddCaseAsync(CaseDto value, int user_id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<RegularResponse> DeleteCaseAsync(int user_id, int case_post_id)
+        public async Task<RegularResponse> DeleteCaseAsync(int user_id, int case_post_id)
         {
             throw new NotImplementedException();
         }
@@ -221,10 +275,10 @@ namespace FreeSmile.Services
             User? user1 = await _context.Users.Include(x => x.Blockers)
                                               .Include(x => x.Blockeds)
                                               .FirstOrDefaultAsync(x => x.Id == user_id);
-            
+
             bool user1_blocked_user2 = user1?.Blockeds.Where(x => x.Id == other_user_id).Count() > 0;
             bool user1_is_blocked_by_user2 = user1?.Blockers.Where(x => x.Id == other_user_id).Count() > 0;
-            
+
             return !user1_blocked_user2 && !user1_is_blocked_by_user2;
         }
     }

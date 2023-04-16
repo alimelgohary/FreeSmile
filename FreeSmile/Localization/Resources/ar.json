@@ -69,4 +69,10 @@
   "reported_post_id": "المنشور المبلغ عنه",
   "postreportedsuccessfully": "تم الإبلاغ عن المنشور بنجاح",
   "alreadyreportedthispost": "لقد قمت بالإبلاغ عن هذا المنشور مسبقا",
+  "cannotblockyourself": "لا يمكنك حظر نفسك",
+  "alreadyblockedthisuser": "لقد قمت بحظر هذا المستخدم مسبقا",
+  "userblockedsuccessfully": "تم حظر المستخدم {0} بنجاح",
+  "cannotunblockyourself": "لا يمكنك إلغاء حظر نفسك",
+  "useralreadyunblocked": "هذا المستخدم غير محظور بالفعل",
+  "userunblockedsuccessfully": "تم إلغاء حظر المستخدم {0} بنجاح"
 }

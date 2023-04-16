@@ -69,4 +69,10 @@
   "reported_post_id": "Reported Post",
   "postreportedsuccessfully": "Post is reported successfully",
   "alreadyreportedthispost": "You have already reported this post",
+  "cannotblockyourself": "You cannot block yourself",
+  "alreadyblockedthisuser": "You have already blocked this user",
+  "userblockedsuccessfully": "You successfully blocked {0}",
+  "cannotunblockyourself": "You cannot unblock yourself",
+  "useralreadyunblocked": "This user is already unblocked",
+  "userunblockedsuccessfully": "You successfully unblocked {0}"
 }
