@@ -221,7 +221,15 @@ namespace FreeSmile.Services
 
         public async Task<List<BlockedUsersDto>> GetBlockedListAsync(int user_id, int page, int size)
         {
-            throw new NotImplementedException();
+            User? user = await _context.Users.Include(x => x.Blockeds)
+                                             .FirstOrDefaultAsync(x => x.Id == user_id);
+
+            return user!.Blockeds.Select(x => new BlockedUsersDto()
+            {
+                Username = x.Username,
+                User_Id = x.Id,
+                Full_Name = x.Fullname
+            }).Skip(size * --page).Take(size).ToList();
         }
         public async Task<RegularResponse> SendMessageAsync(SendMessageDto message, int sender_id)
         {
