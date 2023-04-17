@@ -7,7 +7,7 @@ namespace FreeSmile.Services
     public interface ICommonService
     {
         public Task DeletePost(int id);
-
+        public Task<bool> CanUsersCommunicateAsync(int user_id, int other_user_id);
         public Task<RegularResponse> AddUpdateReviewAsync(ReviewDto value, int user_id);
         public Task<RegularResponse> DeleteReviewAsync(int user_id);
         public Task<List<GetNotificationDto>> GetNotificationsAsync(int user_id, int page, int size);
@@ -19,13 +19,12 @@ namespace FreeSmile.Services
         public Task<RegularResponse> SendMessageAsync(SendMessageDto message, int user_id);
         public Task<List<GetMessageDto>> GetChatHistoryAsync(int user_id, int other_user_id, int page, int size);
         public Task<List<RecentMessagesDto>> GetRecentMessagesAsync(int user_id, int page, int size);
+        public Task<byte[]> GetProfilePictureAsync(int user_id, int size);
         public Task<RegularResponse> AddUpdateProfilePictureAsync(ProfilePictureDto value, int user_id);
         public Task<RegularResponse> DeleteProfilePictureAsync(int user_id);
         public Task<RegularResponse> AddCaseAsync(CaseDto value, int user_id);
         public Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id);
         public Task<RegularResponse> DeleteCaseAsync(int user_id, int case_post_id);
-        public Task<bool> CanUsersCommunicateAsync(int user_id, int other_user_id);
-        public Task<byte[]> GetProfilePictureAsync(int user_id, int size);
 
         // TODO: Don't forget to not include blocked or blocking people posts
     }

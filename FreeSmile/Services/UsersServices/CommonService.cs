@@ -29,7 +29,19 @@ namespace FreeSmile.Services
         {
             await _context.Database.ExecuteSqlRawAsync($"dbo.DeletePost {id};");
         }
+        
+        public async Task<bool> CanUsersCommunicateAsync(int user_id, int other_user_id)
+        {
+            User? user1 = await _context.Users.Include(x => x.Blockers)
+                                              .Include(x => x.Blockeds)
+                                              .FirstOrDefaultAsync(x => x.Id == user_id);
 
+            bool user1_blocked_user2 = user1?.Blockeds.Where(x => x.Id == other_user_id).Count() > 0;
+            bool user1_is_blocked_by_user2 = user1?.Blockers.Where(x => x.Id == other_user_id).Count() > 0;
+
+            return !user1_blocked_user2 && !user1_is_blocked_by_user2;
+        }
+        
         public async Task<RegularResponse> AddUpdateReviewAsync(ReviewDto value, int user_id)
         {
             try
@@ -245,7 +257,15 @@ namespace FreeSmile.Services
         {
             throw new NotImplementedException();
         }
+        
+        public async Task<byte[]> GetProfilePictureAsync(int user_id, int size)
+        {
+            if (size < 1 || size > 3)
+                size = 1;
 
+            throw new NotImplementedException();
+        }
+        
         public async Task<RegularResponse> AddUpdateProfilePictureAsync(ProfilePictureDto value, int user_id)
         {
             throw new NotImplementedException();
@@ -269,25 +289,6 @@ namespace FreeSmile.Services
         public async Task<RegularResponse> DeleteCaseAsync(int user_id, int case_post_id)
         {
             throw new NotImplementedException();
-        }
-        public async Task<byte[]> GetProfilePictureAsync(int user_id, int size)
-        {
-            if (size < 1 || size > 3)
-                size = 1;
-
-            throw new NotImplementedException();
-        }
-
-        public async Task<bool> CanUsersCommunicateAsync(int user_id, int other_user_id)
-        {
-            User? user1 = await _context.Users.Include(x => x.Blockers)
-                                              .Include(x => x.Blockeds)
-                                              .FirstOrDefaultAsync(x => x.Id == user_id);
-
-            bool user1_blocked_user2 = user1?.Blockeds.Where(x => x.Id == other_user_id).Count() > 0;
-            bool user1_is_blocked_by_user2 = user1?.Blockers.Where(x => x.Id == other_user_id).Count() > 0;
-
-            return !user1_blocked_user2 && !user1_is_blocked_by_user2;
         }
     }
 }
