@@ -140,7 +140,7 @@ namespace FreeSmile.Controllers
             return Ok(res);
         }
 
-        [SwaggerOperation(Summary = $"takes {nameof(receiver_user_id)} as query and returns Messages with him (returns List of {nameof(GetMessageDto)})")]
+        [SwaggerOperation(Summary = $"takes {nameof(receiver_user_id)} as query and returns Messages with him (returns List of {nameof(GetMessageDto)}) sorted DESC (recent messages first)")]
         [HttpGet("GetChatHistory")]
         public async Task<IActionResult> GetChatHistoryAsync(int receiver_user_id, int page = 1, int size = 10)
         {

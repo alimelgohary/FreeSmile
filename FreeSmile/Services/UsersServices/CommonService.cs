@@ -189,6 +189,10 @@ namespace FreeSmile.Services
 
         public async Task<GetMessageDto> SendMessageAsync(SendMessageDto message, int sender_id)
         {
+            User? user2 = await _context.Users.FindAsync(message.Receiver_Id);
+
+            if (user2 is null)
+                throw new GeneralException(_localizer["UserNotFound"]);
 
             if (await CanUsersCommunicateAsync(sender_id, (int)message.Receiver_Id!) == false)
                 throw new GeneralException(_localizer["personnotavailable"]);
@@ -206,17 +210,52 @@ namespace FreeSmile.Services
 
             return new GetMessageDto()
             {
+                MessageId = message1.MessageId,
                 IsSender = true,
                 SenderId = message1.SenderId,
                 ReceiverId = message1.ReceiverId,
                 Message = message1.Body,
-                Seen = message1.Seen
+                Seen = message1.Seen,
+                SentAt = message1.SentAt.Humanize(culture: CultureInfo.CurrentCulture)
             };
         }
 
         public async Task<List<GetMessageDto>> GetChatHistoryAsync(int user_id, int other_user_id, int page, int size)
         {
-            throw new NotImplementedException();
+            User? user2 = await _context.Users.FindAsync(other_user_id);
+
+            if (user2 is null)
+                throw new GeneralException(_localizer["UserNotFound"]);
+
+            var messages = _context.Messages.Where(x => (x.SenderId == user_id && x.ReceiverId == other_user_id)
+                                                     || (x.ReceiverId == user_id && x.SenderId == other_user_id))
+                                            .OrderByDescending(x => x.MessageId)
+                                            .Select(x => new GetMessageDto()
+                                            {
+                                                MessageId = x.MessageId,
+                                                SenderId = x.SenderId,
+                                                ReceiverId = x.ReceiverId,
+                                                Seen = x.Seen,
+                                                Message = x.Body,
+                                                IsSender = x.SenderId == user_id,
+                                                SentAt = x.SentAt.Humanize(default, default, CultureInfo.CurrentCulture)
+                                            }).Skip(size * --page).Take(size).ToList();
+
+            // Mark returned messages as seen if the receiver is the one requested them
+            try
+            {
+                foreach (var item in messages.Where(x => x.ReceiverId == user_id))
+                {
+                    var message = await _context.Messages.FirstOrDefaultAsync(x => x.MessageId == item.MessageId);
+                    message!.Seen = true;
+                }
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{Message}", ex.Message);
+            }
+            return messages;
         }
 
         public async Task<List<RecentMessagesDto>> GetRecentMessagesAsync(int user_id, int page, int size)
