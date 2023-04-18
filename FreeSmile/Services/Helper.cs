@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using System.Text.Json.Serialization;
 
 namespace FreeSmile.Services
@@ -21,6 +20,18 @@ namespace FreeSmile.Services
                     Environment.Exit(1);
                 }
             }
+        }
+        public static bool ValidPageNumber(int count, int pageRequested, int sizeRequested)
+        {
+            int lastPossiblePage = count / sizeRequested;
+            if (count % sizeRequested != 0)
+                lastPossiblePage++;
+
+            if (pageRequested > lastPossiblePage)
+            {
+                return false;
+            }
+            return true;
         }
 
         public async static Task SaveToDisk(IFormFile? file, string path)
