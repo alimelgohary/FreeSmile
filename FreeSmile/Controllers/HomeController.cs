@@ -127,7 +127,7 @@ namespace FreeSmile.Controllers
 
             return Ok(blocked_users);
         }
-
+        
         [SwaggerOperation(Summary = $"Takes a {nameof(SendMessageDto)} object as JSON & sends a message to the receiver")]
         [HttpPost("SendMessage")]
         public async Task<IActionResult> SendMessageAsync([FromBody] SendMessageDto value)
@@ -135,9 +135,9 @@ namespace FreeSmile.Controllers
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
 
-            RegularResponse res = await _commonService.SendMessageAsync(value, user_id_int);
+            GetMessageDto res = await _commonService.SendMessageAsync(value, user_id_int);
 
-            return StatusCode(res.StatusCode, res);
+            return Ok(res);
         }
 
         [SwaggerOperation(Summary = $"takes {nameof(receiver_user_id)} as query and returns Messages with him (returns List of {nameof(GetMessageDto)})")]

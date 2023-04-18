@@ -16,7 +16,7 @@ namespace FreeSmile.Services
         public Task<RegularResponse> BlockUserAsync(int user_id, int other_user_id);
         public Task<RegularResponse> UnblockUserAsync(int user_id, int other_user_id);
         public Task<List<BlockedUsersDto>> GetBlockedListAsync(int user_id, int page, int size);
-        public Task<RegularResponse> SendMessageAsync(SendMessageDto message, int user_id);
+        public Task<GetMessageDto> SendMessageAsync(SendMessageDto message, int user_id);
         public Task<List<GetMessageDto>> GetChatHistoryAsync(int user_id, int other_user_id, int page, int size);
         public Task<List<RecentMessagesDto>> GetRecentMessagesAsync(int user_id, int page, int size);
         public Task<byte[]> GetProfilePictureAsync(int user_id, int size);

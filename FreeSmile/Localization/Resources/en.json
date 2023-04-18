@@ -74,5 +74,9 @@
   "userblockedsuccessfully": "You successfully blocked {0}",
   "cannotunblockyourself": "You cannot unblock yourself",
   "useralreadyunblocked": "This user is already unblocked",
-  "userunblockedsuccessfully": "You successfully unblocked {0}"
+  "userunblockedsuccessfully": "You successfully unblocked {0}",
+  "receiver_id": "receiver",
+  "message": "message",
+  "messagesentsuccessfully": "Message is sent successfully",
+  "personnotavailable": "This person is not available",
 }

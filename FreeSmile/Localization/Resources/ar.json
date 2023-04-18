@@ -74,5 +74,9 @@
   "userblockedsuccessfully": "تم حظر المستخدم {0} بنجاح",
   "cannotunblockyourself": "لا يمكنك إلغاء حظر نفسك",
   "useralreadyunblocked": "هذا المستخدم غير محظور بالفعل",
-  "userunblockedsuccessfully": "تم إلغاء حظر المستخدم {0} بنجاح"
+  "userunblockedsuccessfully": "تم إلغاء حظر المستخدم {0} بنجاح",
+  "receiver_id": "المرسل إليه",
+  "message": "الرسالة",
+  "messagesentsuccessfully": "تم إرسال الرسالة بنجاح",
+  "personnotavailable": "هذا الشخص غير متوفر",
 }
