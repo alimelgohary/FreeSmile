@@ -28,7 +28,7 @@ builder.Host.UseSerilog((ctx, lc) => lc
     .ReadFrom.Configuration(config));
 #endregion
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options => options.Filters.Add<CustomExceptionFilter>());
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: corsPolicy,
