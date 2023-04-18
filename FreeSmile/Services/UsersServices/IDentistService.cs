@@ -21,6 +21,7 @@ namespace FreeSmile.Services
         // TOOD: add portfolio          //TODO: edit portfolio
         // TOOD: PUT: like article      //TODO: POST: comment on an article   //TODO: POST: Report a comment
         // TODO: PUT: change settings dentist
+        // TODO: GET: get settings dentist
         // TODO: Don't forget to not include blocked or blocking people posts
     }
 }

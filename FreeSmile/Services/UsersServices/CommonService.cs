@@ -256,5 +256,15 @@ namespace FreeSmile.Services
         {
             throw new NotImplementedException();
         }
+
+        public async Task<CommonSettingsDto> GetCommonSettingsAsync(int user_id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<CommonSettingsDto> UpdateCommonSettingsAsync(CommonSettingsDto settings, int user_id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
