@@ -11,12 +11,12 @@ namespace FreeSmile.Services
 {
     public class UserService : IUserService
     {
-        private readonly ILogger<UsersController> _logger;
-        private readonly IStringLocalizer<UsersController> _localizer;
+        private readonly ILogger<UserService> _logger;
+        private readonly IStringLocalizer<UserService> _localizer;
         private readonly FreeSmileContext _context;
         private readonly ICommonService _commonService;
 
-        public UserService(ILogger<UsersController> logger, FreeSmileContext context, IStringLocalizer<UsersController> localizer, ICommonService commonService)
+        public UserService(ILogger<UserService> logger, FreeSmileContext context, IStringLocalizer<UserService> localizer, ICommonService commonService)
         {
             _logger = logger;
             _context = context;
