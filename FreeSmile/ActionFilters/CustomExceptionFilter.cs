@@ -28,6 +28,15 @@ namespace FreeSmile.ActionFilters
             {
                 resObject = RegularResponse.BadRequestError(error: context.Exception.Message);
             }
+            else if (context.Exception is InternalServerException exception)
+            {
+                resObject = new RegularResponse()
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Error = context.Exception.Message,
+                    NextPage = exception.NextPage
+                };
+            }
             else
             {
                 resObject = RegularResponse.UnknownError(_localizer);
@@ -43,8 +52,18 @@ namespace FreeSmile.ActionFilters
 
     internal class GeneralException : Exception
     {
-        public GeneralException(string? message) : base(message)
+        public string NextPage;
+        public GeneralException(string? message, string NextPage = "same") : base(message)
         {
+            this.NextPage = NextPage;
+        }
+    }
+    internal class InternalServerException : Exception
+    {
+        public string NextPage;
+        public InternalServerException(string? message, string NextPage ="same") : base(message)
+        {
+            this.NextPage = NextPage;
         }
     }
 }
