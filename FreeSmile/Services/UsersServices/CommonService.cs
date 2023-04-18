@@ -1,3 +1,4 @@
+﻿using FreeSmile.ActionFilters;
 ﻿using FreeSmile.Controllers;
 using FreeSmile.DTOs;
 using FreeSmile.Models;
@@ -44,8 +45,6 @@ namespace FreeSmile.Services
         
         public async Task<RegularResponse> AddUpdateReviewAsync(ReviewDto value, int user_id)
         {
-            try
-            {
                 var oldReview = await _context.Reviews.FirstOrDefaultAsync(x => x.ReviewerId == user_id);
 
                 if (oldReview is not null)
@@ -66,18 +65,9 @@ namespace FreeSmile.Services
                 string message = oldReview is null ? "ReviewAddedSuccessfully" : "ReviewEditedSuccessfully";
                 return RegularResponse.Success(message: _localizer[message]);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError("{Message}", ex.Message);
-
-                return RegularResponse.UnknownError(_localizer);
-            }
-        }
 
         public async Task<RegularResponse> DeleteReviewAsync(int user_id)
         {
-            try
-            {
                 var review = await _context.Reviews.FirstOrDefaultAsync(x => x.ReviewerId == user_id);
 
                 if (review is not null)
@@ -87,18 +77,9 @@ namespace FreeSmile.Services
                 }
                 return RegularResponse.Success(message: _localizer["ReviewDeletedSuccessfully"]);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError("{Message}", ex.Message);
-
-                return RegularResponse.UnknownError(_localizer);
-            }
-        }
 
         public async Task<List<GetNotificationDto>> GetNotificationsAsync(int user_id, int page, int size)
         {
-            try
-            {
                 List<Notification> notifications;
                 List<GetNotificationDto> actualNotifications = new();
 
@@ -117,17 +98,9 @@ namespace FreeSmile.Services
                 }
                 return actualNotifications;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError("{Message}", ex.Message);
-                throw;
-            }
-        }
 
         public async Task NotificationSeenAsync(int notification_id, int user_id_int)
         {
-            try
-            {
                 Notification? notification = await _context.Notifications.FirstOrDefaultAsync(x => x.NotificationId == notification_id && x.OwnerId == user_id_int);
                 if (notification is not null)
                 {
@@ -135,20 +108,12 @@ namespace FreeSmile.Services
                     await _context.SaveChangesAsync();
                 }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError("{Message}", ex.Message);
-                throw;
-            }
-        }
 
         public async Task<RegularResponse> ReportPostAsync(ReportPostDto value, int user_id)
         {
-            try
-            {
                 PostReport? previousReport = await _context.PostReports.FindAsync(user_id, value.reported_post_id);
                 if (previousReport is not null)
-                    return RegularResponse.BadRequestError(error: _localizer["AlreadyReportedThisPost"]);
+                throw new GeneralException(_localizer["AlreadyReportedThisPost"]);
 
                 await _context.PostReports.AddAsync(new()
                 {
@@ -161,75 +126,53 @@ namespace FreeSmile.Services
 
                 return RegularResponse.Success(message: _localizer["PostReportedSuccessfully"]);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError("{Message}", ex.Message);
-
-                return RegularResponse.UnknownError(_localizer);
-            }
-        }
 
         public async Task<RegularResponse> BlockUserAsync(int user_id, int other_user_id)
         {
-            try
-            {
+
                 if (user_id.Equals(other_user_id))
-                    return RegularResponse.BadRequestError(error: _localizer["CannotBlockYourself"]);
+                throw new GeneralException(_localizer["CannotBlockYourself"]);
 
                 User? user2 = await _context.Users.FindAsync(other_user_id);
 
                 if (user2 is null)
-                    return RegularResponse.BadRequestError(error: _localizer["UserNotFound"]);
+                throw new GeneralException(_localizer["UserNotFound"]);
 
                 User? user1 = await _context.Users.Include(x => x.Blockeds)
                                                   .FirstOrDefaultAsync(x => x.Id == user_id);
 
                 if (user1!.Blockeds.Where(x => x.Id == other_user_id).Count() > 0)
-                    return RegularResponse.BadRequestError(error: _localizer["AlreadyBlockedThisUser"]);
+                throw new GeneralException(_localizer["AlreadyBlockedThisUser"]);
 
                 user1.Blockeds.Add(user2);
                 await _context.SaveChangesAsync();
 
                 return RegularResponse.Success(message: _localizer["UserBlockedSuccessfully", user2.Username]);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError("{Message}", ex.Message);
-
-                return RegularResponse.UnknownError(_localizer);
-            }
-        }
 
         public async Task<RegularResponse> UnblockUserAsync(int user_id, int other_user_id)
         {
-            try
-            {
+
                 if (user_id.Equals(other_user_id))
-                    return RegularResponse.BadRequestError(error: _localizer["CannotUnblockYourself"]);
+                throw new GeneralException(_localizer["CannotUnblockYourself"]);
 
                 User? user2 = await _context.Users.FindAsync(other_user_id);
 
                 if (user2 is null)
-                    return RegularResponse.BadRequestError(error: _localizer["UserNotFound"]);
+                throw new GeneralException(_localizer["UserNotFound"]);
 
                 User? user1 = await _context.Users.Include(x => x.Blockeds)
                                                   .FirstOrDefaultAsync(x => x.Id == user_id);
 
                 if (user1!.Blockeds.Where(x => x.Id == other_user_id).Count() == 0)
-                    return RegularResponse.BadRequestError(error: _localizer["UserAlreadyUnblocked"]);
+                throw new GeneralException(_localizer["UserAlreadyUnblocked"]);
 
                 user1.Blockeds.Remove(user2);
                 await _context.SaveChangesAsync();
 
                 return RegularResponse.Success(message: _localizer["UserUnblockedSuccessfully", user2.Username]);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("{Message}", ex.Message);
 
-                return RegularResponse.UnknownError(_localizer);
             }
-        }
 
         public async Task<List<BlockedUsersDto>> GetBlockedListAsync(int user_id, int page, int size)
         {
