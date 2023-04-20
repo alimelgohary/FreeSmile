@@ -5,10 +5,7 @@ using FreeSmile.Models;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using System.Globalization;
-using System.Transactions;
-using static FreeSmile.Services.AuthHelper;
 using static FreeSmile.Services.Helper;
 
 namespace FreeSmile.Services
@@ -284,14 +281,73 @@ namespace FreeSmile.Services
             throw new NotImplementedException();
         }
 
-        public async Task<RegularResponse> AddUpdateProfilePictureAsync(ProfilePictureDto value, int user_id)
+        public async Task<byte[]> AddUpdateProfilePictureAsync(ProfilePictureDto value, int user_id)
         {
-            throw new NotImplementedException();
+            var userDir = MyConstants.GetProfilePicturesUser(user_id);
+
+            if (!Directory.Exists(userDir))
+                Directory.CreateDirectory(userDir);
+
+            byte[] originalImage;
+
+            using (var memoryStream = new MemoryStream())
+            {
+                await value.ProfilePicture.CopyToAsync(memoryStream);
+                originalImage = memoryStream.ToArray();
+            }
+
+            var Ext = Path.GetExtension(value.ProfilePicture.FileName).ToLower();
+
+            int QualityPercent = (int)(10240000.0d / value.ProfilePicture.Length);
+            
+            string[] fullPaths = { string.Empty,
+                                   MyConstants.GetProfilePicturesFullPath(user_id, 1, Ext),
+                                   MyConstants.GetProfilePicturesFullPath(user_id, 2, Ext),
+                                   MyConstants.GetProfilePicturesFullPath(user_id, 3, Ext)
+                                 };
+
+            using (var image = Image.Load(originalImage))
+            {
+                image.Mutate(x => x.Resize(100, 0));
+                await image.SaveAsync(fullPaths[1]);
+            }
+
+            using (var image = Image.Load(originalImage))
+            {
+                image.Mutate(x => x.Resize(250, 0));
+                await image.SaveAsync(fullPaths[2]);
+            }
+
+            using (var image = Image.Load(originalImage))
+        {
+                if (QualityPercent < 100)
+                    image.Mutate(x => x.Resize(image.Width * QualityPercent / 100, 0));
+                await image.SaveAsync(fullPaths[3]);
+            }
+
+            User? user = await _context.Users.FindAsync(user_id);
+            user!.ProfilePicture = Ext;
+            await _context.SaveChangesAsync();
+
+            return await File.ReadAllBytesAsync(fullPaths[1]);
         }
 
         public async Task<RegularResponse> DeleteProfilePictureAsync(int user_id)
         {
-            throw new NotImplementedException();
+            User? user = await _context.Users.FindAsync(user_id);
+            if (user!.ProfilePicture is not null)
+            {
+                var imagesDir = MyConstants.GetProfilePicturesUser(user_id);
+
+                if (Directory.Exists(imagesDir))
+                {
+                    Directory.Delete(imagesDir, true);
+                }
+                user.ProfilePicture = null;
+                await _context.SaveChangesAsync();
+            }
+            return RegularResponse.Success(message: _localizer["ProfilePicDeleted"]);
+
         }
 
         public async Task<RegularResponse> AddCaseAsync(CaseDto value, int user_id)

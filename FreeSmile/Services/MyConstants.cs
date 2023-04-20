@@ -9,5 +9,11 @@
         public const string AUTH_COOKIE_KEY = "Authorization-Token";
         public static TimeSpan OTP_AGE = TimeSpan.FromMinutes(10);
         public const string otpemailfilename = "otpemail.html";
+        public const string IMAGES_PATH = "Images";
+
+        //"Images\profilePics\{id}\{size}{ext}"
+        public static string GetProfilePicturesUser(int id) => Path.Combine(IMAGES_PATH, "profilePics", $"{id}");
+        public static string GetProfilePicturesRelativePath(int id, byte size, string ext) => Path.Combine(GetProfilePicturesUser(id), $"{size}{ext}");
+        public static string GetProfilePicturesFullPath(int id, byte size, string ext) => Path.Combine(Directory.GetCurrentDirectory(), GetProfilePicturesRelativePath(id, size, ext));
     }
 }

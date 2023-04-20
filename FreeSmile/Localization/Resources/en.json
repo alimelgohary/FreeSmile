@@ -81,4 +81,7 @@
   "personnotavailable": "This person is not available",
   "notfound": "{0} cannot be found",
   "yourreview": "Your review",
+  "imagesonly": "{0} must be an image file",
+  "profilepicture": "Profile picture",
+  "profilepicdeleted": "Profile picture is deleted successfully",
 }

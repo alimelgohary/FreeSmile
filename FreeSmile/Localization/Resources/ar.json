@@ -81,4 +81,7 @@
   "personnotavailable": "هذا الشخص غير متوفر",
   "notfound": "لم يتم العثور على {0}",
   "yourreview": "تقييمك",
+  "imagesonly": "يجب أن يكون {0} من امتدادات الصور",
+  "profilepicture": "صورة الملف الشخصي",
+  "profilepicdeleted": "تم حذف صورة الملف الشخصي بنجاح",
 }
