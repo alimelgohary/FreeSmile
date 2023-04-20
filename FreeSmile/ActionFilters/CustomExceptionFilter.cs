@@ -24,17 +24,26 @@ namespace FreeSmile.ActionFilters
         {
             RegularResponse resObject;
             
-            if (context.Exception is GeneralException)
+            if (context.Exception is GeneralException exception)
             {
-                resObject = RegularResponse.BadRequestError(error: context.Exception.Message);
+                resObject = RegularResponse.BadRequestError(error: context.Exception.Message, nextPage:exception.NextPage);
             }
-            else if (context.Exception is InternalServerException exception)
+            else if (context.Exception is InternalServerException ex)
             {
                 resObject = new RegularResponse()
                 {
                     StatusCode = StatusCodes.Status500InternalServerError,
                     Error = context.Exception.Message,
-                    NextPage = exception.NextPage
+                    NextPage = ex.NextPage
+                };
+            }
+            else if(context.Exception is NotFoundException e) 
+            {
+                resObject = new RegularResponse()
+                {
+                    StatusCode = StatusCodes.Status404NotFound,
+                    Error = context.Exception.Message,
+                    NextPage = e.NextPage
                 };
             }
             else
@@ -62,6 +71,14 @@ namespace FreeSmile.ActionFilters
     {
         public string NextPage;
         public InternalServerException(string? message, string NextPage ="same") : base(message)
+        {
+            this.NextPage = NextPage;
+        }
+    }
+    internal class NotFoundException : Exception
+    {
+        public string NextPage;
+        public NotFoundException(string? message, string NextPage ="same") : base(message)
         {
             this.NextPage = NextPage;
         }
