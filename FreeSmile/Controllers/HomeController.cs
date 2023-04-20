@@ -32,6 +32,18 @@ namespace FreeSmile.Controllers
             _commonService = commonService;
         }
 
+        [SwaggerOperation(Summary = $"Gets authenticated user's review")]
+        [HttpGet("GetReview")]
+        public async Task<IActionResult> GetReviewAsync()
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+
+            ReviewDto review = await _commonService.GetReviewAsync(user_id_int);
+
+            return Ok(review);
+        }
+
         [SwaggerOperation(Summary = $"Takes {nameof(ReviewDto)} as JSON & Adds or updates user's review")]
         [HttpPost("AddUpdateReview")]
         public async Task<IActionResult> AddUpdateReviewAsync([FromBody] ReviewDto value)

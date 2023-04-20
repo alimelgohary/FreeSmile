@@ -43,6 +43,19 @@ namespace FreeSmile.Services
             return !user1_blocked_user2 && !user1_is_blocked_by_user2;
         }
 
+        public async Task<ReviewDto> GetReviewAsync(int user_id)
+        {
+            var review = await _context.Reviews.FirstOrDefaultAsync(x => x.ReviewerId == user_id);
+            if (review is null)
+                throw new NotFoundException(_localizer["NotFound", _localizer["yourreview"]]);
+
+            return new ReviewDto()
+            {
+                Opinion = review.Opinion,
+                Rating = review.Rating
+            };
+        }
+
         public async Task<RegularResponse> AddUpdateReviewAsync(ReviewDto value, int user_id)
         {
             var oldReview = await _context.Reviews.FirstOrDefaultAsync(x => x.ReviewerId == user_id);

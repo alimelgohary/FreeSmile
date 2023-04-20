@@ -8,6 +8,7 @@ namespace FreeSmile.Services
     {
         public Task DeletePost(int id);
         public Task<bool> CanUsersCommunicateAsync(int user_id, int other_user_id);
+        public Task<ReviewDto> GetReviewAsync(int user_id);
         public Task<RegularResponse> AddUpdateReviewAsync(ReviewDto value, int user_id);
         public Task<RegularResponse> DeleteReviewAsync(int user_id);
         public Task<List<GetNotificationDto>> GetNotificationsAsync(int user_id, int page, int size);

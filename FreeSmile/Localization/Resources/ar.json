@@ -79,4 +79,6 @@
   "message": "الرسالة",
   "messagesentsuccessfully": "تم إرسال الرسالة بنجاح",
   "personnotavailable": "هذا الشخص غير متوفر",
+  "notfound": "لم يتم العثور على {0}",
+  "yourreview": "تقييمك",
 }

@@ -79,4 +79,6 @@
   "message": "message",
   "messagesentsuccessfully": "Message is sent successfully",
   "personnotavailable": "This person is not available",
+  "notfound": "{0} cannot be found",
+  "yourreview": "Your review",
 }
