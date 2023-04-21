@@ -1,4 +1,13 @@
 ﻿using Microsoft.Extensions.Localization;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Bmp;
+using SixLabors.ImageSharp.Formats.Gif;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Formats.Pbm;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Formats.Tga;
+using SixLabors.ImageSharp.Formats.Tiff;
+using SixLabors.ImageSharp.Formats.Webp;
 using System.Text.Json.Serialization;
 
 namespace FreeSmile.Services
@@ -42,7 +51,22 @@ namespace FreeSmile.Services
             using var stream = new FileStream(path, FileMode.Create);
             await file.CopyToAsync(stream);
         }
-
+        public static IImageEncoder ExtensionToEncoder(string ext)
+        {
+            ext = ext.ToLower();
+            return ext switch
+            {
+                ".jpg" or ".jpeg" or ".jfif" => new JpegEncoder(),
+                ".png" => new PngEncoder(),
+                ".gif" => new GifEncoder(),
+                ".webp" => new WebpEncoder(),
+                ".bm" or ".bmp" or ".dip" => new BmpEncoder(),
+                ".ppm" or ".pbm" or ".pgm" => new PbmEncoder(),
+                ".tga" or ".vda" or ".icb" or ".vst" => new TgaEncoder(),
+                ".tiff" or ".tif" => new TiffEncoder(),
+                _ => new JpegEncoder(),
+            };
+        }
         public class RegularResponse
         {
             public int Id { get; set; }

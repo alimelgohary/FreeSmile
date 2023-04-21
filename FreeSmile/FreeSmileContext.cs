@@ -786,11 +786,6 @@ namespace FreeSmile
                     .IsUnicode(false)
                     .HasColumnName("phone");
 
-                entity.Property(e => e.ProfilePicture)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("profilePicture");
-
                 entity.Property(e => e.Salt)
                     .HasMaxLength(10)
                     .IsUnicode(false)

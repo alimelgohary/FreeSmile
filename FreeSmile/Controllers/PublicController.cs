@@ -1,15 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using FreeSmile.DTOs;
 using FreeSmile.Services;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using static FreeSmile.Services.Helper;
-using FreeSmile.ActionFilters;
 using Swashbuckle.AspNetCore.Annotations;
-using Newtonsoft.Json.Linq;
-using static System.Net.Mime.MediaTypeNames;
-using System.Buffers.Text;
 
 namespace FreeSmile.Controllers
 {
@@ -30,25 +23,17 @@ namespace FreeSmile.Controllers
             _commonService = commonService;
         }
 
-        [SwaggerOperation(Summary = $"Takes optional {nameof(user_id)} & {nameof(size)} (1: 100 x 100, 2: 250 x 250, 3: original size) as query & gets his profile picture as base64. If {nameof(user_id)} not specified, it returns authorized user's profile picture")]
+        [SwaggerOperation(Summary = $"Takes optional {nameof(other_user_id)} & {nameof(size)} (1: 100, 2: 250, 3: original size) as query & gets his profile picture as base64. If {nameof(other_user_id)} not specified, it returns authorized user's profile picture. If {nameof(size)} not specified, it returns size 1")]
         [HttpGet("GetProfilePicture")]
-        public async Task<IActionResult> GetProfilePictureAsync(int user_id, int size)
+        public async Task<IActionResult> GetProfilePictureAsync(uint other_user_id, byte size)
         {
-            if (user_id != 0)
-            {
-                byte[] picture = await _commonService.GetProfilePictureAsync(user_id, size);
-                return Ok(picture);
-            }
+            string? auth_user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int auth_user_id_int = 0;
+            if (!string.IsNullOrEmpty(auth_user_id))
+                auth_user_id_int = int.Parse(auth_user_id);
 
-            string? authenticated_user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!string.IsNullOrEmpty(authenticated_user_id))
-            {
-                int authenticated_user_id_int = int.Parse(authenticated_user_id);
-                byte[] picture = await _commonService.GetProfilePictureAsync(authenticated_user_id_int, size);
-                return Ok(picture);
-            }
-
-            return Unauthorized();
+            byte[]? picture = await _commonService.GetProfilePictureAsync(auth_user_id_int, (int)other_user_id, size);
+            return Ok(picture);
         }
     }
 }

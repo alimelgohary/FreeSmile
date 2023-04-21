@@ -11,9 +11,9 @@
         public const string otpemailfilename = "otpemail.html";
         public const string IMAGES_PATH = "Images";
 
-        //"Images\profilePics\{id}\{size}{ext}"
-        public static string GetProfilePicturesUser(int id) => Path.Combine(IMAGES_PATH, "profilePics", $"{id}");
-        public static string GetProfilePicturesRelativePath(int id, byte size, string ext) => Path.Combine(GetProfilePicturesUser(id), $"{size}{ext}");
-        public static string GetProfilePicturesFullPath(int id, byte size, string ext) => Path.Combine(Directory.GetCurrentDirectory(), GetProfilePicturesRelativePath(id, size, ext));
+        //"Images\profilePics\{id[0]}\{id}\{size}"
+        public static string GetProfilePicturesUser(int id) => Path.Combine(IMAGES_PATH, "profilePics", id.ToString().First().ToString(), $"{id}");
+        public static string GetProfilePicturesPath(int id, byte size) => Path.Combine(GetProfilePicturesUser(id), $"{size}");
+        
     }
 }

@@ -24,26 +24,35 @@ namespace FreeSmile.ActionFilters
         {
             RegularResponse resObject;
             
-            if (context.Exception is GeneralException exception)
+            if (context.Exception is GeneralException e1)
             {
-                resObject = RegularResponse.BadRequestError(error: context.Exception.Message, nextPage:exception.NextPage);
+                resObject = RegularResponse.BadRequestError(error: context.Exception.Message, nextPage: e1.NextPage);
             }
-            else if (context.Exception is InternalServerException ex)
+            else if (context.Exception is InternalServerException e2)
             {
                 resObject = new RegularResponse()
                 {
                     StatusCode = StatusCodes.Status500InternalServerError,
                     Error = context.Exception.Message,
-                    NextPage = ex.NextPage
+                    NextPage = e2.NextPage
                 };
             }
-            else if(context.Exception is NotFoundException e) 
+            else if(context.Exception is NotFoundException e3) 
             {
                 resObject = new RegularResponse()
                 {
                     StatusCode = StatusCodes.Status404NotFound,
                     Error = context.Exception.Message,
-                    NextPage = e.NextPage
+                    NextPage = e3.NextPage
+                };
+            }
+            else if(context.Exception is UnauthorizedException e4) 
+            {
+                resObject = new RegularResponse()
+                {
+                    StatusCode = StatusCodes.Status401Unauthorized,
+                    Error = context.Exception.Message,
+                    NextPage = e4.NextPage
                 };
             }
             else
@@ -53,7 +62,7 @@ namespace FreeSmile.ActionFilters
 
             var result = new ObjectResult(resObject) { StatusCode = resObject.StatusCode};
 
-            _logger.LogError("{Message}", context.Exception.Message);
+            _logger.LogError("{StackTrace} {Message}", context.Exception.StackTrace, context.Exception.Message);
 
             context.Result = result;
         }
@@ -83,4 +92,13 @@ namespace FreeSmile.ActionFilters
             this.NextPage = NextPage;
         }
     }
+    internal class UnauthorizedException : Exception
+    {
+        public string NextPage;
+        public UnauthorizedException(string? message, string NextPage ="same") : base(message)
+        {
+            this.NextPage = NextPage;
+        }
+    }
+
 }

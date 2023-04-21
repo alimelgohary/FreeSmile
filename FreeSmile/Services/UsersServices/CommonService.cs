@@ -273,21 +273,55 @@ namespace FreeSmile.Services
             throw new NotImplementedException();
         }
 
-        public async Task<byte[]> GetProfilePictureAsync(int user_id, int size)
+        public async Task<byte[]?> GetProfilePictureAsync(int auth_user_id, int other_user_id, byte size)
         {
             if (size < 1 || size > 3)
                 size = 1;
 
-            throw new NotImplementedException();
+            User? user1 = null, user2 = null;
+
+            if (auth_user_id == 0 && other_user_id == 0)
+                throw new UnauthorizedException(_localizer["unauthorized"]);
+
+            user1 = await _context.Users.FindAsync(auth_user_id);
+            user2 = await _context.Users.FindAsync(other_user_id);
+
+
+            if (user1?.Suspended == true)
+                throw new GeneralException(_localizer["UserSuspended"]);
+
+            if (other_user_id == 0 && auth_user_id != 0) //0 1
+            {
+                // authenticated user asking for his profile picture
+                var imagePath = MyConstants.GetProfilePicturesPath(auth_user_id, size);
+                if (File.Exists(imagePath))
+                    return await File.ReadAllBytesAsync(imagePath);
+            }
+            else if (other_user_id != 0 && auth_user_id != 0) // 1 1 
+            {
+                // authenticated user asking for other guy's profile picture
+                if (user2 is not null)
+                {
+                    if (await CanUsersCommunicateAsync(auth_user_id, other_user_id) == false)
+                        throw new GeneralException(_localizer["personnotavailable"]);
+
+                    var imagePath = MyConstants.GetProfilePicturesPath(other_user_id, size);
+                    if (File.Exists(imagePath))
+                        return await File.ReadAllBytesAsync(imagePath);
+                }
+            }
+            else if (other_user_id != 0 && auth_user_id == 0) // 1 0
+            {
+                // stranger asking for some user's profile
+                var imagePath = MyConstants.GetProfilePicturesPath(other_user_id, size);
+                if (File.Exists(imagePath))
+                    return await File.ReadAllBytesAsync(imagePath);
+            }
+            return null;
         }
 
         public async Task<byte[]> AddUpdateProfilePictureAsync(ProfilePictureDto value, int user_id)
         {
-            var userDir = MyConstants.GetProfilePicturesUser(user_id);
-
-            if (!Directory.Exists(userDir))
-                Directory.CreateDirectory(userDir);
-
             byte[] originalImage;
 
             using (var memoryStream = new MemoryStream())
@@ -300,54 +334,40 @@ namespace FreeSmile.Services
 
             int QualityPercent = (int)(10240000.0d / value.ProfilePicture.Length);
             
-            string[] fullPaths = { string.Empty,
-                                   MyConstants.GetProfilePicturesFullPath(user_id, 1, Ext),
-                                   MyConstants.GetProfilePicturesFullPath(user_id, 2, Ext),
-                                   MyConstants.GetProfilePicturesFullPath(user_id, 3, Ext)
+            string[] paths = { string.Empty,
+                               MyConstants.GetProfilePicturesPath(user_id, 1),
+                               MyConstants.GetProfilePicturesPath(user_id, 2),
+                               MyConstants.GetProfilePicturesPath(user_id, 3)
                                  };
 
             using (var image = Image.Load(originalImage))
             {
-                image.Mutate(x => x.Resize(100, 0));
-                await image.SaveAsync(fullPaths[1]);
-            }
-
-            using (var image = Image.Load(originalImage))
+                var encoder = ExtensionToEncoder(Ext);
+                int[] sizes = new int[] { 100, 250 };
+                for (int i = 0; i < sizes.Length; i++)
             {
-                image.Mutate(x => x.Resize(250, 0));
-                await image.SaveAsync(fullPaths[2]);
+                    using (var size = image.Clone(x => x.Resize(sizes[i], 0)))
+                    {
+                        await size.SaveAsync(paths[i + 1], encoder);
             }
+                }
 
-            using (var image = Image.Load(originalImage))
-        {
                 if (QualityPercent < 100)
                     image.Mutate(x => x.Resize(image.Width * QualityPercent / 100, 0));
-                await image.SaveAsync(fullPaths[3]);
+                await image.SaveAsync(paths[3], encoder);
             }
-
-            User? user = await _context.Users.FindAsync(user_id);
-            user!.ProfilePicture = Ext;
-            await _context.SaveChangesAsync();
-
-            return await File.ReadAllBytesAsync(fullPaths[1]);
+            return await File.ReadAllBytesAsync(paths[1]);
         }
 
         public async Task<RegularResponse> DeleteProfilePictureAsync(int user_id)
         {
-            User? user = await _context.Users.FindAsync(user_id);
-            if (user!.ProfilePicture is not null)
-            {
-                var imagesDir = MyConstants.GetProfilePicturesUser(user_id);
+            var userDir = MyConstants.GetProfilePicturesUser(user_id);
 
-                if (Directory.Exists(imagesDir))
+            if (Directory.Exists(userDir))
                 {
-                    Directory.Delete(imagesDir, true);
-                }
-                user.ProfilePicture = null;
-                await _context.SaveChangesAsync();
+                Directory.Delete(userDir, true);
             }
             return RegularResponse.Success(message: _localizer["ProfilePicDeleted"]);
-
         }
 
         public async Task<RegularResponse> AddCaseAsync(CaseDto value, int user_id)
