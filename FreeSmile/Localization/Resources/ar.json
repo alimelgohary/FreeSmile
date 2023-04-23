@@ -25,7 +25,6 @@
   "invalidchoice": "يوجد خطأ في اختيار {0}",
   "degree": "الدرجة الوظيفية",
   "university": "الجامعة",
-  "imagespdfonly": "مسموح برفع ملفات الصور والبي دي اف فقط",
   "verificationrequestsuccess": "تم إرسال طلب التحقق بنجاح",
   "alreadyrequested": "لقد تم إرسال طلب التحقق من قبل",
   "verifyemailfirst": "يجب تفعيل البريد الإلكتروني أولا",
@@ -85,4 +84,5 @@
   "profilepicture": "صورة الملف الشخصي",
   "profilepicdeleted": "تم حذف صورة الملف الشخصي بنجاح",
   "unauthorized": "يجب عليك تسجيل الدخول أولا",
+  "selectedpic": "الصورة المختارة",
 }

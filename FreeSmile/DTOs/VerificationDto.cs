@@ -22,13 +22,13 @@ namespace FreeSmile.DTOs
         [DisplayName(nameof(NatIdPhoto))]
         [Required(ErrorMessage = "required")]
         [MaxFileSize(2, ErrorMessage = "TooLarge")]
-        [AllowedExtensions(new[] {".jpg", ".jpeg", ".png", ".jpe", ".jfif", ".bmp" , ".pdf"}, ErrorMessage = "imagespdfonly")]
+        [AllowedExtensions(new[] {".jpg", ".jpeg", ".png", ".jpe", ".jfif", ".bmp" }, ErrorMessage = "imagesonly")]
         public IFormFile NatIdPhoto { get; set; } = null!;
 
         [DisplayName(nameof(ProofOfDegreePhoto))]
         [Required(ErrorMessage = "required")]
         [MaxFileSize(2, ErrorMessage = "TooLarge")]
-        [AllowedExtensions(new[] {".jpg", ".jpeg", ".png", ".jpe", ".jfif", ".bmp" , ".pdf"}, ErrorMessage = "imagespdfonly")]
+        [AllowedExtensions(new[] {".jpg", ".jpeg", ".png", ".jpe", ".jfif", ".bmp"}, ErrorMessage = "imagesonly")]
         public IFormFile ProofOfDegreePhoto { get; set; } = null!;
 
     }

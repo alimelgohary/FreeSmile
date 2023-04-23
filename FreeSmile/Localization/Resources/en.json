@@ -25,7 +25,6 @@
   "invalidchoice": "Something went wrong selecting the {0}",
   "degree": "Academic Degree",
   "university": "University",
-  "imagespdfonly": "Only images or pdf are allowed to upload",
   "verificationrequestsuccess": "Verification request sent successfully",
   "alreadyrequested": "You have already requested verification",
   "verifyemailfirst": "You must verify your email first",
@@ -85,4 +84,5 @@
   "profilepicture": "Profile picture",
   "profilepicdeleted": "Profile picture is deleted successfully",
   "unauthorized": "You must login first",
+  "selectedpic": "Selected picture",
 }

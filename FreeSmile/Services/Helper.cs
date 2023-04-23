@@ -56,7 +56,7 @@ namespace FreeSmile.Services
             ext = ext.ToLower();
             return ext switch
             {
-                ".jpg" or ".jpeg" or ".jfif" => new JpegEncoder(),
+                ".jpg" or ".jpeg" or ".jfif" or ".jpe" => new JpegEncoder(),
                 ".png" => new PngEncoder(),
                 ".gif" => new GifEncoder(),
                 ".webp" => new WebpEncoder(),

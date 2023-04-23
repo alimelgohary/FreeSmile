@@ -5,6 +5,7 @@ using FreeSmile.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using static FreeSmile.Services.Helper;
+using static FreeSmile.Services.MyConstants;
 
 namespace FreeSmile.Services
 {
@@ -28,32 +29,75 @@ namespace FreeSmile.Services
             if (await _context.VerificationRequests.AnyAsync(v => v.OwnerId == ownerId))
                 throw new GeneralException(_localizer["AlreadyRequested"]);
 
-            User? user = await _context.Users.FindAsync(ownerId)!;
+            var userDir = GetVerificationPathUser(ownerId);
+            if (!Directory.Exists(userDir))
+            {
+                Directory.CreateDirectory(userDir);
+            }
 
-            var natExt = Path.GetExtension(verificationDto.NatIdPhoto.FileName);
-            var natRelativePath = Path.Combine("Images", "verificationRequests", $"{ownerId}nat{natExt}");
-            var natFullPath = Path.Combine(Directory.GetCurrentDirectory(), natRelativePath);
-            await SaveToDisk(verificationDto.NatIdPhoto, natFullPath);
+            var natPath = GetVerificationImgPath(ownerId, VerificationType.Nat);
+            var proofPath = GetVerificationImgPath(ownerId, VerificationType.Proof);
 
-            var proofExt = Path.GetExtension(verificationDto.ProofOfDegreePhoto.FileName);
-            var proofRelativePath = Path.Combine("Images", "verificationRequests", $"{ownerId}proof{proofExt}");
-            var proofFullPath = Path.Combine(Directory.GetCurrentDirectory(), proofRelativePath);
-            await SaveToDisk(verificationDto.ProofOfDegreePhoto, proofFullPath);
-
-
-            await _context.AddAsync(
-                new VerificationRequest()
+            try
+            {
+                byte[] natImage;
+                using (var memoryStream = new MemoryStream())
                 {
-                    OwnerId = ownerId,
-                    NatIdPhoto = natRelativePath,
-                    ProofOfDegreePhoto = proofRelativePath,
-                    DegreeRequested = (int)verificationDto.DegreeRequested!,
-                    UniversityRequested = (int)verificationDto.UniversityRequested!
-                });
+                    await verificationDto.NatIdPhoto.CopyToAsync(memoryStream);
+                    natImage = memoryStream.ToArray();
+                }
+                var natExt = Path.GetExtension(verificationDto.NatIdPhoto.FileName);
+                var encoder = ExtensionToEncoder(natExt);
+                using (var image = Image.Load(natImage))
+                {
+                    await image.SaveAsync(natPath, encoder);
+                }
 
-            await _context.SaveChangesAsync();
+                byte[] proofImage;
+                using (var memoryStream = new MemoryStream())
+                {
+                    await verificationDto.ProofOfDegreePhoto.CopyToAsync(memoryStream);
+                    proofImage = memoryStream.ToArray();
+                }
+                var proofExt = Path.GetExtension(verificationDto.ProofOfDegreePhoto.FileName);
+                encoder = ExtensionToEncoder(proofExt);
+                using (var image = Image.Load(natImage))
+                {
+                    await image.SaveAsync(proofPath, encoder);
+                }
 
-            return RegularResponse.Success(id: user.Id, message: _localizer["verificationrequestsuccess"], nextPage: Pages.pendingVerificationAcceptance.ToString());
+                await _context.AddAsync(
+                    new VerificationRequest()
+                    {
+                        OwnerId = ownerId,
+                        NatIdPhoto = natPath,
+                        ProofOfDegreePhoto = proofPath,
+                        DegreeRequested = (int)verificationDto.DegreeRequested!,
+                        UniversityRequested = (int)verificationDto.UniversityRequested!
+                    });
+
+                await _context.SaveChangesAsync();
+
+                return RegularResponse.Success(message: _localizer["VerificationRequestSuccess"], nextPage: Pages.pendingVerificationAcceptance.ToString());
+
+            }
+            
+            catch (Exception ex) when (ex is UnknownImageFormatException
+                                    || ex is InvalidImageContentException
+                                    || ex is NotSupportedException)
+            {
+                if (Directory.Exists(userDir))
+                    Directory.Delete(userDir, true);
+
+                throw new GeneralException(_localizer["ImagesOnly", _localizer["SelectedPic"]]);
+            }
+            catch(Exception)
+            {
+                if (Directory.Exists(userDir))
+                    Directory.Delete(userDir, true);
+
+                throw;
+            }
         }
     }
 }
