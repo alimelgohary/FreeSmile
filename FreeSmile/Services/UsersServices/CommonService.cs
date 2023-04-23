@@ -322,6 +322,14 @@ namespace FreeSmile.Services
 
         public async Task<byte[]> AddUpdateProfilePictureAsync(ProfilePictureDto value, int user_id)
         {
+            var userDir = MyConstants.GetProfilePicturesUser(user_id);
+            if (!Directory.Exists(userDir))
+            {
+                Directory.CreateDirectory(userDir);
+            }
+            
+            try
+            {
             byte[] originalImage;
 
             using (var memoryStream = new MemoryStream())
@@ -358,8 +366,23 @@ namespace FreeSmile.Services
             }
             return await File.ReadAllBytesAsync(paths[1]);
         }
+            catch (Exception ex) when (ex is UnknownImageFormatException
+                                    || ex is InvalidImageContentException
+                                    || ex is NotSupportedException)
+            {
+                if (Directory.Exists(userDir))
+                    Directory.Delete(userDir, true);
 
-        public async Task<RegularResponse> DeleteProfilePictureAsync(int user_id)
+                throw new GeneralException(_localizer["ImagesOnly", _localizer["SelectedPic"]]);
+            }
+            catch (Exception ex)
+            {
+                if (Directory.Exists(userDir))
+                    Directory.Delete(userDir, true);
+                throw;
+            }
+        }
+
         {
             var userDir = MyConstants.GetProfilePicturesUser(user_id);
 
