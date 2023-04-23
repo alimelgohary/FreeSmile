@@ -383,6 +383,7 @@ namespace FreeSmile.Services
             }
         }
 
+        public RegularResponse DeleteProfilePictureAsync(int user_id)
         {
             var userDir = MyConstants.GetProfilePicturesUser(user_id);
 

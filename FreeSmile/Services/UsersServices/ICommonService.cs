@@ -22,7 +22,7 @@ namespace FreeSmile.Services
         public Task<List<RecentMessagesDto>> GetRecentMessagesAsync(int user_id, int page, int size);
         public Task<byte[]?> GetProfilePictureAsync(int auth_user_id, int other_user_id, byte size);
         public Task<byte[]> AddUpdateProfilePictureAsync(ProfilePictureDto value, int user_id);
-        public Task<RegularResponse> DeleteProfilePictureAsync(int user_id);
+        public RegularResponse DeleteProfilePictureAsync(int user_id);
         public Task<RegularResponse> AddCaseAsync(CaseDto value, int user_id);
         public Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id);
         public Task<RegularResponse> DeleteCaseAsync(int user_id, int case_post_id);

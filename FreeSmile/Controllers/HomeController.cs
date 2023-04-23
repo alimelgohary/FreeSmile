@@ -190,12 +190,12 @@ namespace FreeSmile.Controllers
 
         [SwaggerOperation(Summary = "Deletes user's profile picture")]
         [HttpDelete("DeleteProfilePicture")]
-        public async Task<IActionResult> DeleteProfilePictureAsync()
+        public IActionResult DeleteProfilePictureAsync()
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
 
-            RegularResponse res = await _commonService.DeleteProfilePictureAsync(user_id_int);
+            RegularResponse res = _commonService.DeleteProfilePictureAsync(user_id_int);
 
             return StatusCode(res.StatusCode, res);
         }
