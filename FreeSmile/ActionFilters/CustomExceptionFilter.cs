@@ -62,8 +62,7 @@ namespace FreeSmile.ActionFilters
 
             var result = new ObjectResult(resObject) { StatusCode = resObject.StatusCode};
 
-            _logger.LogError("{StackTrace} {Message}", context.Exception.StackTrace, context.Exception.Message);
-
+            _logger.LogError(context.Exception.ToString());
             context.Result = result;
         }
     }
