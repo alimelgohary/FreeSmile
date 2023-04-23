@@ -9,19 +9,5 @@
         public const string AUTH_COOKIE_KEY = "Authorization-Token";
         public static TimeSpan OTP_AGE = TimeSpan.FromMinutes(10);
         public const string otpemailfilename = "otpemail.html";
-        public const string IMAGES_PATH = "Images";
-
-        //"Images\profilePics\{id[0]}\{id}\{size}"
-        public static string GetProfilePicturesUser(int id) => Path.Combine(IMAGES_PATH, "profilePics", id.ToString().First().ToString(), $"{id}");
-        public static string GetProfilePicturesPath(int id, byte size) => Path.Combine(GetProfilePicturesUser(id), $"{size}");
-
-        //"Images\verificationRequests\{id[0]}\{id}\{1|2}"
-        public static string GetVerificationPathUser(int id) => Path.Combine(IMAGES_PATH, "verificationRequests", id.ToString().First().ToString(), $"{id}");
-        public static string GetVerificationImgPath(int id, VerificationType type) => Path.Combine(GetVerificationPathUser(id), $"{(int)type}");
-        public enum VerificationType
-        {
-            Nat = 1,
-            Proof = 2
-        }
     }
 }

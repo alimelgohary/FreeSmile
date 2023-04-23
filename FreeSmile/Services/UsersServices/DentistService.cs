@@ -5,7 +5,7 @@ using FreeSmile.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using static FreeSmile.Services.Helper;
-using static FreeSmile.Services.MyConstants;
+using static FreeSmile.Services.DirectoryHelper;
 
 namespace FreeSmile.Services
 {

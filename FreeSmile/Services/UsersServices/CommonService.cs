@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using System.Globalization;
 using static FreeSmile.Services.Helper;
+using static FreeSmile.Services.DirectoryHelper;
 
 namespace FreeSmile.Services
 {
@@ -293,7 +294,7 @@ namespace FreeSmile.Services
             if (other_user_id == 0 && auth_user_id != 0) //0 1
             {
                 // authenticated user asking for his profile picture
-                var imagePath = MyConstants.GetProfilePicturesPath(auth_user_id, size);
+                var imagePath = GetProfilePicturesPath(auth_user_id, size);
                 if (File.Exists(imagePath))
                     return await File.ReadAllBytesAsync(imagePath);
             }
@@ -305,7 +306,7 @@ namespace FreeSmile.Services
                     if (await CanUsersCommunicateAsync(auth_user_id, other_user_id) == false)
                         throw new GeneralException(_localizer["personnotavailable"]);
 
-                    var imagePath = MyConstants.GetProfilePicturesPath(other_user_id, size);
+                    var imagePath = GetProfilePicturesPath(other_user_id, size);
                     if (File.Exists(imagePath))
                         return await File.ReadAllBytesAsync(imagePath);
                 }
@@ -313,7 +314,7 @@ namespace FreeSmile.Services
             else if (other_user_id != 0 && auth_user_id == 0) // 1 0
             {
                 // stranger asking for some user's profile
-                var imagePath = MyConstants.GetProfilePicturesPath(other_user_id, size);
+                var imagePath = GetProfilePicturesPath(other_user_id, size);
                 if (File.Exists(imagePath))
                     return await File.ReadAllBytesAsync(imagePath);
             }
@@ -322,7 +323,7 @@ namespace FreeSmile.Services
 
         public async Task<byte[]> AddUpdateProfilePictureAsync(ProfilePictureDto value, int user_id)
         {
-            var userDir = MyConstants.GetProfilePicturesUser(user_id);
+            var userDir = GetProfilePicturesUser(user_id);
             if (!Directory.Exists(userDir))
             {
                 Directory.CreateDirectory(userDir);
@@ -343,9 +344,9 @@ namespace FreeSmile.Services
             int QualityPercent = (int)(10240000.0d / value.ProfilePicture.Length);
             
             string[] paths = { string.Empty,
-                               MyConstants.GetProfilePicturesPath(user_id, 1),
-                               MyConstants.GetProfilePicturesPath(user_id, 2),
-                               MyConstants.GetProfilePicturesPath(user_id, 3)
+                               GetProfilePicturesPath(user_id, 1),
+                               GetProfilePicturesPath(user_id, 2),
+                               GetProfilePicturesPath(user_id, 3)
                                  };
 
             using (var image = Image.Load(originalImage))
@@ -385,7 +386,7 @@ namespace FreeSmile.Services
 
         public RegularResponse DeleteProfilePictureAsync(int user_id)
         {
-            var userDir = MyConstants.GetProfilePicturesUser(user_id);
+            var userDir = GetProfilePicturesUser(user_id);
 
             if (Directory.Exists(userDir))
                 {
