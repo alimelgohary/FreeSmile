@@ -47,6 +47,10 @@ namespace FreeSmile.Services
         public async Task DeletePost(int id)
         {
             await _context.Database.ExecuteSqlRawAsync($"dbo.DeletePost {id};");
+
+            var postsImgsDir = GetPostsPathPost(id);
+            if (Directory.Exists(postsImgsDir))
+                Directory.Delete(postsImgsDir, true);
         }
 
         public async Task<bool> CanUsersCommunicateAsync(int user_id, int other_user_id)
