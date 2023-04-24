@@ -41,8 +41,8 @@ namespace FreeSmile.Controllers
             return Ok(academicDegrees);
         }
 
-        [SwaggerOperation(Summary = "returns governates list as {id, name}")]
-        [HttpGet("GetGovernates")]
+        [SwaggerOperation(Summary = "returns Governorates list as {id, name}")]
+        [HttpGet("GetGovernorates")]
         public IActionResult GetGovernatesList()
         {
             string lang = Thread.CurrentThread.CurrentCulture.Name;
