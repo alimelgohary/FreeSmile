@@ -8,7 +8,7 @@ namespace FreeSmile.DTOs
     {
         [DisplayName(nameof(ProfilePicture))]
         [Required(ErrorMessage = "required")]
-        [MaxFileSize(3, ErrorMessage = "TooLarge")]
+        [MaxFileSize(5, ErrorMessage = "TooLarge")]
         [AllowedExtensions(new[] { ".jpg", ".jpeg", ".png", ".webp", ".bmp", ".gif"}, ErrorMessage = "ImagesOnly")]
         public IFormFile ProfilePicture { get; set; } = null!;
     }
