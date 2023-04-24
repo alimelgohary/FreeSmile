@@ -434,6 +434,10 @@ namespace FreeSmile.Services
             {
                 await _commonService.DeletePost(id);
             }
+            
+            var profilePicPath = DirectoryHelper.GetProfilePicturesUser(user_id);
+            if (Directory.Exists(profilePicPath))
+                Directory.Delete(profilePicPath, true);
 
             _context.Remove(user);
             await _context.SaveChangesAsync();
