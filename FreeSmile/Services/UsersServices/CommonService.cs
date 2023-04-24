@@ -361,8 +361,6 @@ namespace FreeSmile.Services
 
             var Ext = Path.GetExtension(value.ProfilePicture.FileName).ToLower();
 
-            int QualityPercent = (int)(10240000.0d / value.ProfilePicture.Length);
-            
             string[] paths = { string.Empty,
                                GetProfilePicturesPath(user_id, 1),
                                GetProfilePicturesPath(user_id, 2),
@@ -381,8 +379,16 @@ namespace FreeSmile.Services
             }
                 }
 
-                if (QualityPercent < 100)
-                    image.Mutate(x => x.Resize(image.Width * QualityPercent / 100, 0));
+                    while (value.ProfilePicture.Length >= MAX_IMAGE_SIZE)
+                    {
+                        image.Mutate(x => x.Resize(image.Width * 70 / 100, 0));
+                        using (var ms = new MemoryStream())
+                        {
+                            await image.SaveAsync(ms, encoder);
+                            if (ms.Length <= MAX_IMAGE_SIZE)
+                                break;
+                        }
+                    }
                 await image.SaveAsync(paths[3], encoder);
             }
             return await File.ReadAllBytesAsync(paths[1]);
@@ -396,7 +402,7 @@ namespace FreeSmile.Services
 
                 throw new GeneralException(_localizer["ImagesOnly", _localizer["SelectedPic"]]);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 if (Directory.Exists(userDir))
                     Directory.Delete(userDir, true);
