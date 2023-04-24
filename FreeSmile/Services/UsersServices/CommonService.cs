@@ -8,6 +8,8 @@ using Microsoft.Extensions.Localization;
 using System.Globalization;
 using static FreeSmile.Services.Helper;
 using static FreeSmile.Services.DirectoryHelper;
+using static FreeSmile.Services.MyConstants;
+using static FreeSmile.Services.AuthHelper;
 
 namespace FreeSmile.Services
 {
@@ -22,6 +24,24 @@ namespace FreeSmile.Services
             _logger = logger;
             _context = context;
             _localizer = localizer;
+        }
+
+        public async Task<Role> GetCurrentRole(int user_id)
+        {
+            Role role = Role.Patient;
+            if (await _context.Patients.AnyAsync(x => x.PatientId == user_id))
+                role = Role.Patient;
+
+            if (await _context.Dentists.AnyAsync(x => x.DentistId == user_id))
+                role = Role.Dentist;
+
+            if (await _context.SuperAdmins.AnyAsync(x => x.SuperAdminId == user_id))
+                role = Role.SuperAdmin;
+
+            if (await _context.Admins.AnyAsync(x => x.AdminId == user_id))
+                role = Role.Admin;
+
+            return role;
         }
 
         public async Task DeletePost(int id)
@@ -395,9 +415,88 @@ namespace FreeSmile.Services
             return RegularResponse.Success(message: _localizer["ProfilePicDeleted"]);
         }
 
-        public async Task<RegularResponse> AddCaseAsync(CaseDto value, int user_id)
+        public async Task<int> AddCaseAsync(CaseDto value, int user_id)
         {
-            throw new NotImplementedException();
+            Role role = await GetCurrentRole(user_id);
+            if (value.GovernorateId == 0 && role == Role.Patient)
+                throw new GeneralException(_localizer["Required", _localizer["GovernorateId"]]);
+
+            int gov_id;
+            if (role == Role.Patient)
+            {
+                gov_id = value.GovernorateId!;
+            }
+            else
+            {
+                Dentist? d = await _context.Dentists.Include(x => x.CurrentUniversityNavigation).FirstOrDefaultAsync(x => x.DentistId == user_id);
+                gov_id = d!.CurrentUniversityNavigation.GovId;
+            }
+
+            using var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                var post_id = await AddPostAsync(value, user_id);
+
+                var case1 = new Case()
+                {
+                    CaseId = post_id,
+                    CaseTypeId = (int)value.CaseTypeId!,
+                    GovernateId = value.GovernorateId
+                };
+                await _context.AddAsync(case1);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return case1.CaseId;
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
+
+        public async Task<int> AddPostAsync(PostDto value, int user_id)
+        {
+            Post post = new()
+            {
+                Title = value.Title,
+                Body = value.Body,
+                WriterId = user_id
+            };
+
+            await _context.Posts.AddAsync(post);
+            await _context.SaveChangesAsync();
+
+            var post_dir = GetPostsPathPost(post.PostId);
+            try
+            {
+                if (!Directory.Exists(post_dir))
+                    Directory.CreateDirectory(post_dir);
+
+                int count = value.Images is not null ? value.Images.Count : 0;
+                for (int i = 0; i < count; i++)
+                {
+                    await ResizeSaveImage(GetPostsPathImg(post.PostId, i), value.Images![i]);
+                }
+                return post.PostId;
+            }
+            catch (Exception ex) when (ex is UnknownImageFormatException
+                                    || ex is InvalidImageContentException
+                                    || ex is NotSupportedException)
+            {
+                if (Directory.Exists(post_dir))
+                    Directory.Delete(post_dir, true);
+
+                throw new GeneralException(_localizer["ImagesOnly", _localizer["SelectedPic"]]);
+            }
+            catch (Exception)
+        {
+                if (Directory.Exists(post_dir))
+                    Directory.Delete(post_dir, true);
+                throw;
+            }
+
         }
 
         public async Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id)

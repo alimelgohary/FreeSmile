@@ -85,4 +85,9 @@
   "profilepicdeleted": "تم حذف صورة الملف الشخصي بنجاح",
   "unauthorized": "يجب عليك تسجيل الدخول أولا",
   "selectedpic": "الصورة المختارة",
+  "governorateid": "المحافظة",
+  "casetypeid": "نوع الحالة",
+  "title": "العنوان",
+  "body": "المحتوى",
+  "images": "الصور"
 }

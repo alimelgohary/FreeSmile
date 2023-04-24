@@ -1,11 +1,13 @@
 ﻿using FreeSmile.DTOs;
 using FreeSmile.Models;
+using static FreeSmile.Services.AuthHelper;
 using static FreeSmile.Services.Helper;
 
 namespace FreeSmile.Services
 {
     public interface ICommonService
     {
+        public Task<Role> GetCurrentRole(int user_id);
         public Task DeletePost(int id);
         public Task<bool> CanUsersCommunicateAsync(int user_id, int other_user_id);
         public Task<ReviewDto> GetReviewAsync(int user_id);
@@ -23,7 +25,8 @@ namespace FreeSmile.Services
         public Task<byte[]?> GetProfilePictureAsync(int auth_user_id, int other_user_id, byte size);
         public Task<byte[]> AddUpdateProfilePictureAsync(ProfilePictureDto value, int user_id);
         public RegularResponse DeleteProfilePictureAsync(int user_id);
-        public Task<RegularResponse> AddCaseAsync(CaseDto value, int user_id);
+        public Task<int> AddCaseAsync(CaseDto value, int user_id);
+        public Task<int> AddPostAsync(PostDto value, int user_id);
         public Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id);
         public Task<RegularResponse> DeleteCaseAsync(int user_id, int case_post_id);
         public Task<CommonSettingsDto> GetCommonSettingsAsync(int user_id);

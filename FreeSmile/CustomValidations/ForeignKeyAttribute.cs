@@ -9,11 +9,13 @@ namespace FreeSmile.CustomValidations
     {
         public string className { get; set; }
         public string colName { get; set; }
-
-        public ForeignKeyAttribute(string className, string colName)
+        bool bypassZero { get; set; }
+        
+        public ForeignKeyAttribute(string className, string colName, bool bypassZero = false)
         {
             this.className = className;
             this.colName = colName;
+            this.bypassZero = bypassZero;
         }
 
         public override bool IsValid(object? value)
@@ -21,6 +23,9 @@ namespace FreeSmile.CustomValidations
             if (value == null)
                 return true;
 
+            if (bypassZero && (int)value == 0)
+                return true;
+            
             if (Exsists(className, colName, (int)value))
                 return true;
 

@@ -85,4 +85,9 @@
   "profilepicdeleted": "Profile picture is deleted successfully",
   "unauthorized": "You must login first",
   "selectedpic": "Selected picture",
+  "governorateid": "Governorate",
+  "casetypeid": "Case type",
+  "title": "Title",
+  "body": "Body",
+  "images": "Images"
 }

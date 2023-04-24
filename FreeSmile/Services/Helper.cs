@@ -9,6 +9,7 @@ using SixLabors.ImageSharp.Formats.Tga;
 using SixLabors.ImageSharp.Formats.Tiff;
 using SixLabors.ImageSharp.Formats.Webp;
 using System.Text.Json.Serialization;
+using static FreeSmile.Services.MyConstants;
 
 namespace FreeSmile.Services
 {
@@ -42,7 +43,34 @@ namespace FreeSmile.Services
             }
             return true;
         }
+        public static async Task ResizeSaveImage(string path, IFormFile file)
+        {
+            byte[] originalImage;
 
+            using (var memoryStream = new MemoryStream())
+            {
+                await file.CopyToAsync(memoryStream);
+                originalImage = memoryStream.ToArray();
+            }
+
+            var Ext = Path.GetExtension(file.FileName).ToLower();
+            using (var image = Image.Load(originalImage))
+            {
+                var encoder = ExtensionToEncoder(Ext);
+
+                while (file.Length >= MAX_IMAGE_SIZE)
+                {
+                    image.Mutate(x => x.Resize(image.Width * 70 / 100, 0));
+                    using (var ms = new MemoryStream())
+                    {
+                        await image.SaveAsync(ms, encoder);
+                        if (ms.Length <= MAX_IMAGE_SIZE)
+                            break;
+                    }
+                }
+                await image.SaveAsync(path, encoder);
+            }
+        }
         public async static Task SaveToDisk(IFormFile? file, string path)
         {
             //DO NOT REMOVE THIS CHECK

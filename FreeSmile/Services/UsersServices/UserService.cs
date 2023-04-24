@@ -165,7 +165,7 @@ namespace FreeSmile.Services
         {
             User? user = await _context.Users.FindAsync(user_id);
 
-            Role role = await GetCurrentRole(user!.Id);
+            Role role = await _commonService.GetCurrentRole(user!.Id);
 
             if (user.IsVerified)
                 throw new GeneralException(
@@ -209,7 +209,7 @@ namespace FreeSmile.Services
             if (user.Suspended)
                 throw new GeneralException(_localizer["UserSuspended"]);
 
-            Role role = await GetCurrentRole(user.Id);
+            Role role = await _commonService.GetCurrentRole(user.Id);
 
             TimeSpan loginTokenAge = MyConstants.LOGIN_TOKEN_AGE;
 
@@ -242,25 +242,6 @@ namespace FreeSmile.Services
                 nextPage: nextPage,
                 message: _localizer["LoginSuccess"]
             );
-        }
-
-        async Task<Role> GetCurrentRole(int user_id)
-        {
-            Role role = Role.Patient;
-
-            if (await _context.SuperAdmins.AnyAsync(x => x.SuperAdminId == user_id))
-                role = Role.SuperAdmin;
-
-            if (await _context.Dentists.AnyAsync(x => x.DentistId == user_id))
-                role = Role.Dentist;
-
-            if (await _context.Patients.AnyAsync(x => x.PatientId == user_id))
-                role = Role.Patient;
-
-            if (await _context.Admins.AnyAsync(x => x.AdminId == user_id))
-                role = Role.Admin;
-
-            return role;
         }
 
         public async Task<RegularResponse> ChangePassword(ResetPasswordDto request)
@@ -308,7 +289,7 @@ namespace FreeSmile.Services
         {
             User? user = await _context.Users.FindAsync(user_id);
 
-            Role role = await GetCurrentRole(user!.Id);
+            Role role = await _commonService.GetCurrentRole(user!.Id);
 
             if (StorePassword(request.CurrentPassword, user.Salt) != user.Password)
                 throw new GeneralException(_localizer["IncorrectCurrentPassword"]);
@@ -349,7 +330,7 @@ namespace FreeSmile.Services
 
             if (user.IsVerified)
             {
-                Role role = await GetCurrentRole(user.Id);
+                Role role = await _commonService.GetCurrentRole(user.Id);
                 string nextPage = Pages.home.ToString() + role.ToString();
                 if (role == Role.Dentist)
                 {
@@ -434,7 +415,7 @@ namespace FreeSmile.Services
 
         public async Task<RegularResponse> RedirectToHome(int user_id)
         {
-            Role role = await GetCurrentRole(user_id);
+            Role role = await _commonService.GetCurrentRole(user_id);
             return RegularResponse.Success(
                 nextPage: Pages.home.ToString() + role.ToString()
             );

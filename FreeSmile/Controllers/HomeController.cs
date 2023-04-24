@@ -201,16 +201,16 @@ namespace FreeSmile.Controllers
         }
 
         [Authorize(Roles = "Patient,Dentist")]
-        [SwaggerOperation(Summary = $"takes {nameof(CaseDto)} as Form Data & creates a case (patient or dentist)")]
+        [SwaggerOperation(Summary = $"takes {nameof(CaseDto)} as Form Data & creates a case (patient or dentist). GovernorateId is required if patient. and ignored if dentist")]
         [HttpPost("AddCase")]
         public async Task<IActionResult> AddCaseAsync([FromForm] CaseDto value)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
 
-            RegularResponse res = await _commonService.AddCaseAsync(value, user_id_int);
+            int res = await _commonService.AddCaseAsync(value, user_id_int);
 
-            return StatusCode(res.StatusCode, res);
+            return Ok(res);
         }
 
         [Authorize(Roles = "Patient,Dentist")]
