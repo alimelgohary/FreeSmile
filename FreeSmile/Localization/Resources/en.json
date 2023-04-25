@@ -88,5 +88,7 @@
   "casetypeid": "Case type",
   "title": "Title",
   "body": "Body",
-  "images": "Images"
+  "images": "Images",
+  "thispost": "This post",
+  "postdeleted": "Post is deleted successfully",
 }

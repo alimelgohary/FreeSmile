@@ -419,7 +419,7 @@ namespace FreeSmile.Services
             var postsIds = _context.Posts.Where(x => x.WriterId == user_id).Select(x => x.PostId).ToList();
             foreach (var id in postsIds)
             {
-                await _commonService.DeletePost(id);
+                await _commonService.DeletePostDangerousAsync(id);
             }
 
             var profilePicPath = DirectoryHelper.GetProfilePicturesUser(user_id);

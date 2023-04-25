@@ -8,7 +8,7 @@ namespace FreeSmile.Services
     public interface ICommonService
     {
         public Task<Role> GetCurrentRole(int user_id);
-        public Task DeletePost(int id);
+        public Task DeletePostDangerousAsync(int id);
         public Task<bool> CanUsersCommunicateAsync(int user_id, int other_user_id);
         public Task<ReviewDto> GetReviewAsync(int user_id);
         public Task<RegularResponse> AddUpdateReviewAsync(ReviewDto value, int user_id);
@@ -28,7 +28,7 @@ namespace FreeSmile.Services
         public Task<int> AddCaseAsync(CaseDto value, int user_id);
         public Task<int> AddPostAsync(PostDto value, int user_id);
         public Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id);
-        public Task<RegularResponse> DeleteCaseAsync(int user_id, int case_post_id);
+        public Task<RegularResponse> DeletePostAsync(int user_id, int case_post_id);
         public Task<CommonSettingsDto> GetCommonSettingsAsync(int user_id);
         public Task<CommonSettingsDto> UpdateCommonSettingsAsync(CommonSettingsDto settings, int user_id);
 

@@ -44,7 +44,7 @@ namespace FreeSmile.Services
             return role;
         }
 
-        public async Task DeletePost(int id)
+        public async Task DeletePostDangerousAsync(int id)
         {
             await _context.Database.ExecuteSqlRawAsync($"dbo.DeletePost {id};");
 
@@ -514,9 +514,22 @@ namespace FreeSmile.Services
             throw new NotImplementedException();
         }
 
-        public async Task<RegularResponse> DeleteCaseAsync(int user_id, int case_post_id)
+        public async Task<RegularResponse> DeletePostAsync(int user_id, int case_post_id)
         {
-            throw new NotImplementedException();
+            Role role = await GetCurrentRole(user_id);
+            if (role == Role.Admin || role == Role.SuperAdmin)
+            {
+                await DeletePostDangerousAsync(case_post_id);
+                return RegularResponse.Success(message: _localizer["PostDeleted"]);
+            }
+
+            if (await _context.Posts.FirstOrDefaultAsync(x => x.PostId == case_post_id && x.WriterId == user_id) is not null)
+        {
+                await DeletePostDangerousAsync(case_post_id);
+                return RegularResponse.Success(message: _localizer["PostDeleted"]);
+            }
+
+            throw new NotFoundException(_localizer["notfound", _localizer["thispost"]]);
         }
 
         public async Task<CommonSettingsDto> GetCommonSettingsAsync(int user_id)
