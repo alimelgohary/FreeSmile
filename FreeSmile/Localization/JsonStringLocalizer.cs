@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 
@@ -6,6 +7,13 @@ using Newtonsoft.Json;
 public class JsonStringLocalizer : IStringLocalizer
 {
     private readonly JsonSerializer _serializer = new();
+    private readonly IDistributedCache _cache;
+
+    public JsonStringLocalizer(IDistributedCache cache)
+    {
+        _cache = cache;
+    }
+
     public LocalizedString this[string key]
     {
         get
@@ -56,7 +64,15 @@ public class JsonStringLocalizer : IStringLocalizer
 
         if (File.Exists(fullFilePath))
         {
-            return GetValueFromJSON(key, fullFilePath);
+            var cacheKey = $"{Thread.CurrentThread.CurrentCulture.Name}_{key}";
+            var cacheValue = _cache.GetString(cacheKey);
+            
+            if (!string.IsNullOrEmpty(cacheValue))
+                return cacheValue;
+            
+            var res = GetValueFromJSON(key, fullFilePath);
+            _cache.SetString(cacheKey, res);
+            return res;
         }
 
         return string.Empty;

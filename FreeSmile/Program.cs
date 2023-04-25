@@ -47,6 +47,7 @@ builder.Services.AddCors(options =>
 
 #region Localization1
 builder.Services.AddLocalization();
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<IStringLocalizerFactory, JsonStringLocalizerFactory>();
 builder.Services.AddMvc()
     .AddDataAnnotationsLocalization(options =>
