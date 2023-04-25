@@ -359,19 +359,12 @@ namespace FreeSmile.Services
 
             await _context.SaveChangesAsync();
 
-            try
-            {
-                SendEmail(user.Email,
-                        _localizer["otpemailsubject"],
-                        MyConstants.otpemailfilename,
-                        _localizer["lang"],
-                true,
-                        user.Username, MyConstants.OTP_AGE.Minutes, user.Otp);
-            }
-            catch (Exception ex)
-            {
-                throw new InternalServerException(_localizer["ErrorSendingEmail"]);
-            }
+            SendEmail(user.Email,
+                    _localizer["otpemailsubject"],
+                    MyConstants.otpemailfilename,
+                    _localizer["lang"],
+            true,
+                    user.Username, MyConstants.OTP_AGE.Minutes, user.Otp);
 
             return RegularResponse.Success(
                 message: _localizer["SentOtpSuccessfully", user.Email],
@@ -393,19 +386,13 @@ namespace FreeSmile.Services
 
             await _context.SaveChangesAsync();
 
-            try
-            {
+            
                 SendEmail(user.Email,
                         _localizer["otpemailsubject"],
                         MyConstants.otpemailfilename,
                         _localizer["lang"],
                 true,
                         user.Username, MyConstants.OTP_AGE.Minutes, user.Otp);
-            }
-            catch (Exception ex)
-            {
-                throw new InternalServerException(_localizer["ErrorSendingEmail"]);
-            }
 
             return RegularResponse.Success(
                 message: _localizer["SentOtpSuccessfully", ObscureEmail(user.Email)],
@@ -434,7 +421,7 @@ namespace FreeSmile.Services
             {
                 await _commonService.DeletePost(id);
             }
-            
+
             var profilePicPath = DirectoryHelper.GetProfilePicturesUser(user_id);
             if (Directory.Exists(profilePicPath))
                 Directory.Delete(profilePicPath, true);
