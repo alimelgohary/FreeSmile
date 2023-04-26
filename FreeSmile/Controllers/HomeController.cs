@@ -32,7 +32,7 @@ namespace FreeSmile.Controllers
             _commonService = commonService;
         }
 
-        [SwaggerOperation(Summary = $"Gets authenticated user's review")]
+        [SwaggerOperation(Summary = $"Gets authenticated user's review. This Should return {nameof(ReviewDto)}")]
         [HttpGet("GetReview")]
         public async Task<IActionResult> GetReviewAsync()
         {
@@ -44,7 +44,7 @@ namespace FreeSmile.Controllers
             return Ok(review);
         }
 
-        [SwaggerOperation(Summary = $"Takes {nameof(ReviewDto)} as JSON & Adds or updates user's review")]
+        [SwaggerOperation(Summary = $"Takes {nameof(ReviewDto)} as JSON & Adds or updates user's review. This should return {nameof(RegularResponse)} with a success message")]
         [HttpPost("AddUpdateReview")]
         public async Task<IActionResult> AddUpdateReviewAsync([FromBody] ReviewDto value)
         {
@@ -56,7 +56,7 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
         }
 
-        [SwaggerOperation(Summary = "Deletes user's review")]
+        [SwaggerOperation(Summary = $"Deletes user's review. This should return {nameof(RegularResponse)} with a success message")]
         [HttpDelete("DeleteReview")]
         public async Task<IActionResult> DeleteReviewAsync()
         {
@@ -92,7 +92,7 @@ namespace FreeSmile.Controllers
             return Ok();
         }
 
-        [SwaggerOperation(Summary = $"Takes {nameof(ReportPostDto)} as JSON & reports post")]
+        [SwaggerOperation(Summary = $"Takes {nameof(ReportPostDto)} as JSON & reports post. This should return {nameof(RegularResponse)} with a success message")]
         [HttpPost("ReportPost")]
         public async Task<IActionResult> ReportPostAsync([FromBody] ReportPostDto value)
         {
@@ -104,7 +104,7 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
         }
 
-        [SwaggerOperation(Summary = $"Takes a {nameof(blocked_user_id)} as a query parameter & blocks him")]
+        [SwaggerOperation(Summary = $"Takes a {nameof(blocked_user_id)} as a query parameter & blocks him. This should return {nameof(RegularResponse)} with a success message")]
         [HttpPost("BlockUser")]
         public async Task<IActionResult> BlockUserAsync(int blocked_user_id)
         {
@@ -116,7 +116,7 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
         }
 
-        [SwaggerOperation(Summary = $"Takes a {nameof(unblocked_user_id)} as a query parameter & unblocks him")]
+        [SwaggerOperation(Summary = $"Takes a {nameof(unblocked_user_id)} as a query parameter & unblocks him. This should return {nameof(RegularResponse)} with a success message")]
         [HttpPost("UnblockUser")]
         public async Task<IActionResult> UnblockUserAsync(int unblocked_user_id)
         {
@@ -128,7 +128,7 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
         }
 
-        [SwaggerOperation(Summary = $"takes {nameof(page)}, {nameof(size)} as query & Gets list of blocked users (returns List of {nameof(BlockedUsersDto)}).")]
+        [SwaggerOperation(Summary = $"Takes {nameof(page)}, {nameof(size)} as query & Gets list of blocked users (returns List of {nameof(BlockedUsersDto)}).")]
         [HttpGet("GetBlockedUsers")]
         public async Task<IActionResult> GetBlockedListAsync(int page = 1, int size = 10)
         {
@@ -140,7 +140,7 @@ namespace FreeSmile.Controllers
             return Ok(blocked_users);
         }
         
-        [SwaggerOperation(Summary = $"Takes a {nameof(SendMessageDto)} object as JSON & sends a message to the receiver")]
+        [SwaggerOperation(Summary = $"Takes a {nameof(SendMessageDto)} object as JSON & sends a message to the receiver. This should return {nameof(GetMessageDto)}")]
         [HttpPost("SendMessage")]
         public async Task<IActionResult> SendMessageAsync([FromBody] SendMessageDto value)
         {
@@ -152,7 +152,7 @@ namespace FreeSmile.Controllers
             return Ok(res);
         }
 
-        [SwaggerOperation(Summary = $"takes {nameof(receiver_user_id)} as query and returns Messages with him (returns List of {nameof(GetMessageDto)}) sorted DESC (recent messages first)")]
+        [SwaggerOperation(Summary = $"Takes {nameof(receiver_user_id)} as query and returns Messages with him (returns List of {nameof(GetMessageDto)}) sorted DESC (recent messages first)")]
         [HttpGet("GetChatHistory")]
         public async Task<IActionResult> GetChatHistoryAsync(int receiver_user_id, int page = 1, int size = 10)
         {
@@ -164,7 +164,7 @@ namespace FreeSmile.Controllers
             return Ok(res);
         }
 
-        [SwaggerOperation(Summary = $"takes {nameof(page)}, {nameof(size)} as query and returns last messages with all people(returns List of {nameof(RecentMessagesDto)})")]
+        [SwaggerOperation(Summary = $"Takes {nameof(page)}, {nameof(size)} as query and returns last messages with all people(returns List of {nameof(RecentMessagesDto)})")]
         [HttpGet("GetRecentMessages")]
         public async Task<IActionResult> GetRecentMessagesAsync(int page = 1, int size = 10)
         {
@@ -176,7 +176,7 @@ namespace FreeSmile.Controllers
             return Ok(res);
         }
 
-        [SwaggerOperation(Summary = $"Takes {nameof(ProfilePictureDto)} as Form Data & Adds or updates user's profile picture, returns the same picture in a 100x100 size if successful")]
+        [SwaggerOperation(Summary = $"Takes {nameof(ProfilePictureDto)} as Form Data & Adds or updates user's profile picture, returns the same picture in a 100x100 size if success")]
         [HttpPost("AddUpdateProfilePicture")]
         public async Task<IActionResult> AddUpdateProfilePictureAsync([FromForm] ProfilePictureDto value)
         {
@@ -188,7 +188,7 @@ namespace FreeSmile.Controllers
             return Ok(res);
         }
 
-        [SwaggerOperation(Summary = "Deletes user's profile picture")]
+        [SwaggerOperation(Summary = $"Deletes user's profile picture. This should return {nameof(RegularResponse)} with a success message")]
         [HttpDelete("DeleteProfilePicture")]
         public IActionResult DeleteProfilePictureAsync()
         {
@@ -201,7 +201,7 @@ namespace FreeSmile.Controllers
         }
 
         [Authorize(Roles = "Patient,Dentist")]
-        [SwaggerOperation(Summary = $"takes {nameof(CaseDto)} as Form Data & creates a case (patient or dentist). GovernorateId is required if patient. and ignored if dentist")]
+        [SwaggerOperation(Summary = $"Takes {nameof(CaseDto)} as Form Data & creates a case (patient or dentist). GovernorateId is required if patient. and ignored if dentist. This should return integer created post id if Success")]
         [HttpPost("AddCase")]
         public async Task<IActionResult> AddCaseAsync([FromForm] CaseDto value)
         {
@@ -227,7 +227,7 @@ namespace FreeSmile.Controllers
         }
 
         [Authorize(Roles = "Patient,Dentist,Admin,SuperAdmin")]
-        [SwaggerOperation(Summary = $"takes {nameof(case_post_id)} as query & deletes a case (patient or dentist or admin)")]
+        [SwaggerOperation(Summary = $"Takes {nameof(case_post_id)} as query & deletes a case (patient or dentist or admin). This should return {nameof(RegularResponse)} with a success message")]
         [HttpDelete("DeleteCase")]
         public async Task<IActionResult> DeleteCaseAsync(int case_post_id)
         {
