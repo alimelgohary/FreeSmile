@@ -511,7 +511,34 @@ namespace FreeSmile.Services
 
         public async Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id)
         {
-            throw new NotImplementedException();
+            Case? case1 = await _context.Cases.Include(x => x.CaseNavigation)
+                                              .FirstOrDefaultAsync(x=>x.CaseId == (int)value.updated_post_id! && x.CaseNavigation.WriterId == user_id);
+            if (case1 is null)
+                throw new NotFoundException(_localizer["notfound", _localizer["thispost"]]);
+
+            Role role = await GetCurrentRole(user_id);
+            if (value.GovernorateId == 0 && role == Role.Patient)
+                throw new GeneralException(_localizer["Required", _localizer["GovernorateId"]]);
+
+            int gov_id;
+            if (role == Role.Patient)
+            {
+                gov_id = value.GovernorateId!;
+            }
+            else
+            {
+                Dentist? d = await _context.Dentists.Include(x => x.CurrentUniversityNavigation).FirstOrDefaultAsync(x => x.DentistId == user_id);
+                gov_id = d!.CurrentUniversityNavigation.GovId;
+            }
+
+            case1.GovernateId = gov_id;
+            case1.CaseTypeId = (int)value.CaseTypeId!;
+            case1.CaseNavigation.Title = value.Title;
+            case1.CaseNavigation.Body = value.Body;
+            case1.CaseNavigation.TimeUpdated = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            return RegularResponse.Success(message: _localizer["PostEditedSuccess"]);
         }
 
         public async Task<RegularResponse> DeletePostAsync(int user_id, int case_post_id)

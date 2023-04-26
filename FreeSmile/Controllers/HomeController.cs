@@ -214,7 +214,7 @@ namespace FreeSmile.Controllers
         }
 
         [Authorize(Roles = "Patient,Dentist")]
-        [SwaggerOperation(Summary = $"takes {nameof(UpdateCaseDto)} as JSON & updates a case (patient or dentist)")]
+        [SwaggerOperation(Summary = $"Takes {nameof(UpdateCaseDto)} as JSON & updates a case (patient or dentist). This should return {nameof(RegularResponse)} with a success message")]
         [HttpPut("UpdateCase")]
         public async Task<IActionResult> UpdateCaseAsync([FromBody] UpdateCaseDto value)
         {
