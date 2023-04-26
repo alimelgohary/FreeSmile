@@ -1,17 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.Data.Common;
 using System.Data;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
+using Microsoft.Extensions.Localization;
 
 namespace FreeSmile.CustomValidations
 {
-    public class UniqueAttribute : RequiredAttribute
+    public class UniqueAttribute : ValidationAttribute
     {
         public string className { get; set; }
         public string colName { get; set; }
+        public new string ErrorMessage { get; set; } = "Unique";
 
         public UniqueAttribute(string className, string colName)
         {
@@ -27,6 +26,15 @@ namespace FreeSmile.CustomValidations
                 return true;
             
             return false;
+        }
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        {
+            if (IsValid(value))
+                return ValidationResult.Success;
+
+            var _localizer = validationContext.GetService(typeof(IStringLocalizer<ValidationAttribute>)) as IStringLocalizer<ValidationAttribute>;
+            var error = _localizer![ErrorMessage, _localizer[validationContext.DisplayName]];
+            return new ValidationResult(error);
         }
         public static bool IsUnique(string className, string colName, string value)
         {

@@ -1,16 +1,17 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 
 namespace FreeSmile.CustomValidations
 {
-    public class ForeignKeyAttribute : RequiredAttribute
+    public class ForeignKeyAttribute : ValidationAttribute
     {
         public string className { get; set; }
         public string colName { get; set; }
         bool bypassZero { get; set; }
-        
+        public new string ErrorMessage { get; set; } = "InvalidChoice";
         public ForeignKeyAttribute(string className, string colName, bool bypassZero = false)
         {
             this.className = className;
@@ -30,6 +31,15 @@ namespace FreeSmile.CustomValidations
                 return true;
 
             return false;
+        }
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        {
+            if(IsValid(value))
+                return ValidationResult.Success;
+
+            var _localizer = validationContext.GetService(typeof(IStringLocalizer<ValidationAttribute>)) as IStringLocalizer<ValidationAttribute>;
+            var error = _localizer![ErrorMessage, _localizer[validationContext.DisplayName]];
+            return new ValidationResult(error);
         }
         public static bool Exsists(string className, string colName, int value)
         {

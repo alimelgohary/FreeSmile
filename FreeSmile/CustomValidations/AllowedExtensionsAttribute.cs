@@ -1,19 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.Extensions.Localization;
+using System.ComponentModel.DataAnnotations;
 
 namespace FreeSmile.CustomValidations
 {
     /// <summary>
     /// Used on IFormFileCollection, IFormFile to validate the extension of each file in the collection
     /// </summary>
-    public class AllowedExtensionsAttribute : RequiredAttribute
+    public class AllowedExtensionsAttribute : ValidationAttribute
     {
         private readonly string[] _extensions;
+        public new string ErrorMessage { get; set; } = "InvalidFileExtension";
         public AllowedExtensionsAttribute(string[] extensions)
         {
             _extensions = extensions;
         }
 
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
         {
             var file = value as IFormFile;
             if (file != null)
@@ -37,6 +39,15 @@ namespace FreeSmile.CustomValidations
             }
 
             return true;
+        }
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        {
+            if (IsValid(value))
+                return ValidationResult.Success;
+
+            var _localizer = validationContext.GetService(typeof(IStringLocalizer<ValidationAttribute>)) as IStringLocalizer<ValidationAttribute>;
+            var error = _localizer![ErrorMessage, _localizer[validationContext.DisplayName]];
+            return new ValidationResult(error);
         }
     }
 }
