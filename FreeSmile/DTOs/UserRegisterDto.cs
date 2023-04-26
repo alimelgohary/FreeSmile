@@ -13,15 +13,15 @@ namespace FreeSmile.DTOs
         [Required(ErrorMessage = "required")]
         [RegularExpression("^[A-Za-z]+[A-Za-z0-9_]*[A-Za-z0-9]+$", ErrorMessage = "usernameRegex")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "maxMinChar")]
-        [Unique(nameof(User), nameof(Username), ErrorMessage = "unique")]
+        [Unique(nameof(User), nameof(Username))]
         public string Username { get; set; } = null!;
         
         
         [Required(ErrorMessage = "required")]
         [DisplayName(nameof(Email))]
-        [RegularExpression("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", ErrorMessage = "mustBeEmail")] // Provide a real validation, .Net validation sucks, .edu.eg
+        [RegularExpression("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", ErrorMessage = "invalidvalue")] // Provide a real validation, .Net validation sucks, .edu.eg
         [MaxLength(100, ErrorMessage = "maxchar")]
-        [UniqueVerified(nameof(User), nameof(Email), ErrorMessage = "unique")]
+        [UniqueVerified(nameof(User), nameof(Email))]
         public string Email { get; set; } = null!;
         
         
@@ -33,7 +33,7 @@ namespace FreeSmile.DTOs
 
         [DisplayName(nameof(Phone))]
         [StringLength(10, MinimumLength = 10, ErrorMessage = "exactchar")]
-        [UniqueVerified(nameof(User), nameof(Phone), ErrorMessage = "unique")]
+        [UniqueVerified(nameof(User), nameof(Phone))]
         [RegularExpression("^1[0-9]*$", ErrorMessage = "mustBeNumber")]
         public string? Phone { get; set; }
 
@@ -48,7 +48,7 @@ namespace FreeSmile.DTOs
 
         [DisplayName(nameof(Birthdate))]
         [Age(5, 120, ErrorMessage ="ageminmax")]
-        [ValidDate(ErrorMessage = "mustBeDate")]
+        [ValidDate()]
         public string? Birthdate { get; set; }
     }
 }

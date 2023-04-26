@@ -11,12 +11,12 @@ namespace FreeSmile.DTOs
     {
         [DisplayName(nameof(UniversityRequested))]
         [Required(ErrorMessage = "required")]
-        [ForeignKey(nameof(University), "university_id", ErrorMessage = "invalidchoice")]
+        [ForeignKey(nameof(University), "university_id")]
         public int? UniversityRequested { get; set; }
 
         [DisplayName(nameof(DegreeRequested))]
         [Required(ErrorMessage = "required")]
-        [ForeignKey(nameof(AcademicDegree), "deg_id", ErrorMessage = "invalidchoice")]
+        [ForeignKey(nameof(AcademicDegree), "deg_id")]
         public int? DegreeRequested { get; set; }
 
         [DisplayName(nameof(NatIdPhoto))]

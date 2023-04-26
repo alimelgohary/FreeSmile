@@ -10,7 +10,7 @@ namespace FreeSmile.DTOs
     {
         [DisplayName(nameof(Receiver_Id))]
         [Required(ErrorMessage = "required")]
-        [ForeignKey(nameof(User), "id", ErrorMessage = "invalidchoice")]
+        [ForeignKey(nameof(User), "id")]
         public int? Receiver_Id { get; set; }
 
         [Required(ErrorMessage = "required")]

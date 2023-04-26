@@ -9,7 +9,7 @@ namespace FreeSmile.DTOs
     {
         [DisplayName(nameof(reported_post_id))]
         [Required(ErrorMessage = "required")]
-        [ForeignKey(nameof(Post), "post_id", ErrorMessage = "invalidchoice")]
+        [ForeignKey(nameof(Post), "post_id")]
         public int? reported_post_id { get; set; }
 
         [DisplayName(nameof(Reason))]
