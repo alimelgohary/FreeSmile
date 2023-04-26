@@ -176,7 +176,7 @@ namespace FreeSmile.Controllers
             return Ok(res);
         }
 
-        [SwaggerOperation(Summary = $"Takes {nameof(ProfilePictureDto)} as Form Data & Adds or updates user's profile picture, returns the same picture in a 100x100 size if success")]
+        [SwaggerOperation(Summary = $"Takes {nameof(ProfilePictureDto)} as Form Data & Adds or updates user's profile picture, returns the same picture as base64 in a 100x100 size if success")]
         [HttpPost("AddUpdateProfilePicture")]
         public async Task<IActionResult> AddUpdateProfilePictureAsync([FromForm] ProfilePictureDto value)
         {
