@@ -466,7 +466,7 @@ namespace FreeSmile.Services
             }
         }
 
-        public async Task<int> AddPostAsync(PostDto value, int user_id)
+        public async Task<int> AddPostAsync(AddPostDto value, int user_id)
         {
             Post post = new()
             {

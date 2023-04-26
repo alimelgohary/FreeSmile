@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace FreeSmile.DTOs
 {
-    public class AddCaseDto : PostDto
+    public class AddCaseDto : AddPostDto
     {
         [DisplayName(nameof(GovernorateId))]
         [ForeignKey(nameof(Governate), "gov_id", bypassZero: true)]

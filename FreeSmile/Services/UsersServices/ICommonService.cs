@@ -26,7 +26,7 @@ namespace FreeSmile.Services
         public Task<byte[]> AddUpdateProfilePictureAsync(AddProfilePictureDto value, int user_id);
         public RegularResponse DeleteProfilePictureAsync(int user_id);
         public Task<int> AddCaseAsync(AddCaseDto value, int user_id);
-        public Task<int> AddPostAsync(PostDto value, int user_id);
+        public Task<int> AddPostAsync(AddPostDto value, int user_id);
         public Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id);
         public Task<RegularResponse> DeletePostAsync(int user_id, int case_post_id);
         public Task<CommonSettingsDto> GetCommonSettingsAsync(int user_id);

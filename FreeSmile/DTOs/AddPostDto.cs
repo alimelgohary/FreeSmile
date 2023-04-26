@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace FreeSmile.DTOs
 {
-    public class PostDto
+    public class AddPostDto
     {
         [DisplayName(nameof(Title))]
         [Required(ErrorMessage = "required")]
