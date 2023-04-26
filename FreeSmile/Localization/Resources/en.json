@@ -88,5 +88,7 @@
   "images": "Images",
   "thispost": "This post",
   "postdeleted": "Post is deleted successfully",
-  "posteditedsuccess": "Post is edited successfully"
+  "posteditedsuccess": "Post is edited successfully",
+  "page": "Page",
+  "size": "Page size"
 }

@@ -68,14 +68,14 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
         }
 
-        [SwaggerOperation(Summary = $"Takes {nameof(page)}, {nameof(size)} as query & returns user's notifications (returns list of {nameof(GetNotificationDto)}).")]
+        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Page)}, {nameof(pageSize.Size)}  as query & returns user's notifications (returns list of {nameof(GetNotificationDto)}).")]
         [HttpGet("GetNotifications")]
-        public async Task<IActionResult> GetNotificationsAsync(int page = 1, int size = 10)
+        public async Task<IActionResult> GetNotificationsAsync([FromQuery] PageSize pageSize)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
 
-            var notifications = await _commonService.GetNotificationsAsync(user_id_int, page, size);
+            var notifications = await _commonService.GetNotificationsAsync(user_id_int, pageSize.Page, pageSize.Size);
 
             return Ok(notifications);
         }
@@ -128,14 +128,14 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
         }
 
-        [SwaggerOperation(Summary = $"Takes {nameof(page)}, {nameof(size)} as query & Gets list of blocked users (returns List of {nameof(BlockedUsersDto)}).")]
+        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Page)}, {nameof(pageSize.Size)} as query & Gets list of blocked users (returns List of {nameof(BlockedUsersDto)}).")]
         [HttpGet("GetBlockedUsers")]
-        public async Task<IActionResult> GetBlockedListAsync(int page = 1, int size = 10)
+        public async Task<IActionResult> GetBlockedListAsync([FromQuery] PageSize pageSize)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
 
-            List<BlockedUsersDto> blocked_users = await _commonService.GetBlockedListAsync(user_id_int, page, size);
+            List<BlockedUsersDto> blocked_users = await _commonService.GetBlockedListAsync(user_id_int, pageSize.Page, pageSize.Size);
 
             return Ok(blocked_users);
         }
@@ -152,26 +152,26 @@ namespace FreeSmile.Controllers
             return Ok(res);
         }
 
-        [SwaggerOperation(Summary = $"Takes {nameof(receiver_user_id)} as query and returns Messages with him (returns List of {nameof(GetMessageDto)}) sorted DESC (recent messages first)")]
+        [SwaggerOperation(Summary = $"Takes {nameof(receiver_user_id)}, {nameof(pageSize.Page)}, {nameof(pageSize.Size)} as query and returns Messages with him (returns List of {nameof(GetMessageDto)}) sorted DESC (recent messages first)")]
         [HttpGet("GetChatHistory")]
-        public async Task<IActionResult> GetChatHistoryAsync(int receiver_user_id, int page = 1, int size = 10)
+        public async Task<IActionResult> GetChatHistoryAsync(int receiver_user_id, [FromQuery]PageSize pageSize)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
 
-            List<GetMessageDto> res = await _commonService.GetChatHistoryAsync(user_id_int, receiver_user_id, page, size);
+            List<GetMessageDto> res = await _commonService.GetChatHistoryAsync(user_id_int, receiver_user_id, pageSize.Page, pageSize.Size);
 
             return Ok(res);
         }
 
-        [SwaggerOperation(Summary = $"Takes {nameof(page)}, {nameof(size)} as query and returns last messages with all people(returns List of {nameof(RecentMessagesDto)})")]
+        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Page)}, {nameof(pageSize.Size)} as query and returns last messages with all people(returns List of {nameof(RecentMessagesDto)})")]
         [HttpGet("GetRecentMessages")]
-        public async Task<IActionResult> GetRecentMessagesAsync(int page = 1, int size = 10)
+        public async Task<IActionResult> GetRecentMessagesAsync([FromQuery] PageSize pageSize)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
 
-            List<RecentMessagesDto> res = await _commonService.GetRecentMessagesAsync(user_id_int, page, size);
+            List<RecentMessagesDto> res = await _commonService.GetRecentMessagesAsync(user_id_int, pageSize.Page, pageSize.Size);
 
             return Ok(res);
         }
@@ -252,6 +252,8 @@ namespace FreeSmile.Controllers
         public void Dummy5(ProfilePictureDto v) { } // Only for including ProfilePictureDto in Swagger schemas
         [HttpPost("Dummy6")]
         public void Dummy6(CaseDto v) { } // Only for including CaseDto in Swagger schemas
+        [HttpPost("Dummy7")]
+        public void Dummy7(PageSize v) { } // Only for including PageSize in Swagger schemas
         #endregion
 
     }
