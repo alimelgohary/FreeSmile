@@ -128,14 +128,14 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
         }
 
-        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Page)}, {nameof(pageSize.Size)} as query & Gets list of blocked users (returns List of {nameof(BlockedUsersDto)}).")]
+        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Page)}, {nameof(pageSize.Size)} as query & Gets list of blocked users (returns List of {nameof(GetBlockedUsersDto)}).")]
         [HttpGet("GetBlockedUsers")]
         public async Task<IActionResult> GetBlockedListAsync([FromQuery] PageSize pageSize)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
 
-            List<BlockedUsersDto> blocked_users = await _commonService.GetBlockedListAsync(user_id_int, pageSize.Page, pageSize.Size);
+            List<GetBlockedUsersDto> blocked_users = await _commonService.GetBlockedListAsync(user_id_int, pageSize.Page, pageSize.Size);
 
             return Ok(blocked_users);
         }
@@ -176,9 +176,9 @@ namespace FreeSmile.Controllers
             return Ok(res);
         }
 
-        [SwaggerOperation(Summary = $"Takes {nameof(ProfilePictureDto)} as Form Data & Adds or updates user's profile picture, returns the same picture as base64 in a 100x100 size if success")]
+        [SwaggerOperation(Summary = $"Takes {nameof(AddProfilePictureDto)} as Form Data & Adds or updates user's profile picture, returns the same picture as base64 in a 100x100 size if success")]
         [HttpPost("AddUpdateProfilePicture")]
-        public async Task<IActionResult> AddUpdateProfilePictureAsync([FromForm] ProfilePictureDto value)
+        public async Task<IActionResult> AddUpdateProfilePictureAsync([FromForm] AddProfilePictureDto value)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
@@ -201,9 +201,9 @@ namespace FreeSmile.Controllers
         }
 
         [Authorize(Roles = "Patient,Dentist")]
-        [SwaggerOperation(Summary = $"Takes {nameof(CaseDto)} as Form Data & creates a case (patient or dentist). GovernorateId is required if patient. and ignored if dentist. This should return integer created post id if Success")]
+        [SwaggerOperation(Summary = $"Takes {nameof(AddCaseDto)} as Form Data & creates a case (patient or dentist). GovernorateId is required if patient. and ignored if dentist. This should return integer created post id if Success")]
         [HttpPost("AddCase")]
-        public async Task<IActionResult> AddCaseAsync([FromForm] CaseDto value)
+        public async Task<IActionResult> AddCaseAsync([FromForm] AddCaseDto value)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
@@ -243,15 +243,15 @@ namespace FreeSmile.Controllers
         [HttpPost("Dummy1")]
         public void Dummy1(GetNotificationDto v) { } // Only for including NotificationDto in Swagger schemas
         [HttpPost("Dummy2")]
-        public void Dummy2(BlockedUsersDto v) { } // Only for including BlockedUsersDto in Swagger schemas
+        public void Dummy2(GetBlockedUsersDto v) { } // Only for including BlockedUsersDto in Swagger schemas
         [HttpPost("Dummy3")]
         public void Dummy3(GetMessageDto v) { } // Only for including GetMessageDto in Swagger schemas
         [HttpPost("Dummy4")]
         public void Dummy4(RecentMessagesDto v) { } // Only for including RecentMessagesDto in Swagger schemas
         [HttpPost("Dummy5")]
-        public void Dummy5(ProfilePictureDto v) { } // Only for including ProfilePictureDto in Swagger schemas
+        public void Dummy5(AddProfilePictureDto v) { } // Only for including ProfilePictureDto in Swagger schemas
         [HttpPost("Dummy6")]
-        public void Dummy6(CaseDto v) { } // Only for including CaseDto in Swagger schemas
+        public void Dummy6(AddCaseDto v) { } // Only for including CaseDto in Swagger schemas
         [HttpPost("Dummy7")]
         public void Dummy7(PageSize v) { } // Only for including PageSize in Swagger schemas
         #endregion

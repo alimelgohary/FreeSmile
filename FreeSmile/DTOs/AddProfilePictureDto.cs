@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace FreeSmile.DTOs
 {
-    public class ProfilePictureDto
+    public class AddProfilePictureDto
     {
         [DisplayName(nameof(ProfilePicture))]
         [Required(ErrorMessage = "required")]

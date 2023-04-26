@@ -209,12 +209,12 @@ namespace FreeSmile.Services
 
         }
 
-        public async Task<List<BlockedUsersDto>> GetBlockedListAsync(int user_id, int page, int size)
+        public async Task<List<GetBlockedUsersDto>> GetBlockedListAsync(int user_id, int page, int size)
         {
             User? user = await _context.Users.Include(x => x.Blockeds)
                                              .FirstOrDefaultAsync(x => x.Id == user_id);
 
-            return user!.Blockeds.Select(x => new BlockedUsersDto()
+            return user!.Blockeds.Select(x => new GetBlockedUsersDto()
             {
                 Username = x.Username,
                 User_Id = x.Id,
@@ -345,7 +345,7 @@ namespace FreeSmile.Services
             return null;
         }
 
-        public async Task<byte[]> AddUpdateProfilePictureAsync(ProfilePictureDto value, int user_id)
+        public async Task<byte[]> AddUpdateProfilePictureAsync(AddProfilePictureDto value, int user_id)
         {
             var userDir = GetProfilePicturesUser(user_id);
             if (!Directory.Exists(userDir))
@@ -425,7 +425,7 @@ namespace FreeSmile.Services
             return RegularResponse.Success(message: _localizer["ProfilePicDeleted"]);
         }
 
-        public async Task<int> AddCaseAsync(CaseDto value, int user_id)
+        public async Task<int> AddCaseAsync(AddCaseDto value, int user_id)
         {
             Role role = await GetCurrentRole(user_id);
             if (value.GovernorateId == 0 && role == Role.Patient)
