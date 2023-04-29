@@ -279,12 +279,11 @@ namespace FreeSmile.Services
 
         public async Task<List<GetMessageDto>> GetChatHistoryAsync(int user_id, int other_user_id, int page, int size)
         {
-            User? user2 = await _context.Users.FindAsync(other_user_id);
-
-            if (user2 is null)
+            if (!await _context.Users.AnyAsync(x => x.Id == other_user_id))
                 throw new GeneralException(_localizer["UserNotFound"]);
 
-            var messages = _context.Messages.Where(x => (x.SenderId == user_id && x.ReceiverId == other_user_id)
+            var messages = _context.Messages.AsNoTracking()
+                                            .Where(x => (x.SenderId == user_id && x.ReceiverId == other_user_id)
                                                      || (x.ReceiverId == user_id && x.SenderId == other_user_id))
                                             .OrderByDescending(x => x.MessageId)
                                             .Select(x => new GetMessageDto()
@@ -303,8 +302,7 @@ namespace FreeSmile.Services
             {
                 foreach (var item in messages.Where(x => x.ReceiverId == user_id))
                 {
-                    var message = await _context.Messages.FirstOrDefaultAsync(x => x.MessageId == item.MessageId);
-                    message!.Seen = true;
+                    (await _context.Messages.FindAsync(item.MessageId))!.Seen = true;
                 }
                 await _context.SaveChangesAsync();
             }
