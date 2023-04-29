@@ -230,15 +230,15 @@ namespace FreeSmile.Services
             var blocklist = await _context.Users.AsNoTracking()
                                                 .Select(x =>
                                                     new
-            {
+                                                    {
                                                         x.Id,
                                                         Blockeds = x.Blockeds.Skip(page * size)
                                                                              .Take(size)
                                                                              .Select(x => new GetBlockedUsersDto
                                                                              {
-                Username = x.Username,
-                User_Id = x.Id,
-                Full_Name = x.Fullname
+                                                                                 Username = x.Username,
+                                                                                 User_Id = x.Id,
+                                                                                 Full_Name = x.Fullname
                                                                              })
                                                     })
                                                 .FirstOrDefaultAsync(x => x.Id == user_id);
@@ -385,7 +385,7 @@ namespace FreeSmile.Services
                 if ((x.SenderId, x.ReceiverId) == (y.SenderId, y.ReceiverId))
                     return true;
                 return false;
-        }
+            }
 
             public int GetHashCode([DisallowNull] Message obj)
             {
@@ -440,39 +440,37 @@ namespace FreeSmile.Services
         {
             var userDir = GetProfilePicturesUser(user_id);
             if (!Directory.Exists(userDir))
-            {
                 Directory.CreateDirectory(userDir);
-            }
-            
+
             try
             {
-            byte[] originalImage;
+                byte[] originalImage;
 
-            using (var memoryStream = new MemoryStream())
-            {
-                await value.ProfilePicture.CopyToAsync(memoryStream);
-                originalImage = memoryStream.ToArray();
-            }
+                using (var memoryStream = new MemoryStream())
+                {
+                    await value.ProfilePicture.CopyToAsync(memoryStream);
+                    originalImage = memoryStream.ToArray();
+                }
 
-            var Ext = Path.GetExtension(value.ProfilePicture.FileName).ToLower();
+                var Ext = Path.GetExtension(value.ProfilePicture.FileName).ToLower();
 
-            string[] paths = { string.Empty,
-                               GetProfilePicturesPath(user_id, 1),
-                               GetProfilePicturesPath(user_id, 2),
-                               GetProfilePicturesPath(user_id, 3)
+                string[] paths = { string.Empty,
+                                   GetProfilePicturesPath(user_id, 1),
+                                   GetProfilePicturesPath(user_id, 2),
+                                   GetProfilePicturesPath(user_id, 3)
                                  };
 
-            using (var image = Image.Load(originalImage))
-            {
-                var encoder = ExtensionToEncoder(Ext);
-                int[] sizes = new int[] { 100, 250 };
-                for (int i = 0; i < sizes.Length; i++)
-            {
-                    using (var size = image.Clone(x => x.Resize(sizes[i], 0)))
+                using (var image = Image.Load(originalImage))
+                {
+                    var encoder = ExtensionToEncoder(Ext);
+                    int[] sizes = new int[] { 100, 250 };
+                    for (int i = 0; i < sizes.Length; i++)
                     {
-                        await size.SaveAsync(paths[i + 1], encoder);
-            }
-                }
+                        using (var size = image.Clone(x => x.Resize(sizes[i], 0)))
+                        {
+                            await size.SaveAsync(paths[i + 1], encoder);
+                        }
+                    }
 
                     while (value.ProfilePicture.Length >= MAX_IMAGE_SIZE)
                     {
@@ -484,10 +482,10 @@ namespace FreeSmile.Services
                                 break;
                         }
                     }
-                await image.SaveAsync(paths[3], encoder);
+                    await image.SaveAsync(paths[3], encoder);
+                }
+                return await File.ReadAllBytesAsync(paths[1]);
             }
-            return await File.ReadAllBytesAsync(paths[1]);
-        }
             catch (Exception ex) when (ex is UnknownImageFormatException
                                     || ex is InvalidImageContentException
                                     || ex is NotSupportedException)
@@ -510,7 +508,7 @@ namespace FreeSmile.Services
             var userDir = GetProfilePicturesUser(user_id);
 
             if (Directory.Exists(userDir))
-                {
+            {
                 Directory.Delete(userDir, true);
             }
             return RegularResponse.Success(message: _localizer["ProfilePicDeleted"]);
@@ -592,7 +590,7 @@ namespace FreeSmile.Services
                 throw new GeneralException(_localizer["ImagesOnly", _localizer["SelectedPic"]]);
             }
             catch (Exception)
-        {
+            {
                 if (Directory.Exists(post_dir))
                     Directory.Delete(post_dir, true);
                 throw;
@@ -603,7 +601,7 @@ namespace FreeSmile.Services
         public async Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id)
         {
             Case? case1 = await _context.Cases.Include(x => x.CaseNavigation)
-                                              .FirstOrDefaultAsync(x=>x.CaseId == (int)value.updated_post_id! && x.CaseNavigation.WriterId == user_id);
+                                              .FirstOrDefaultAsync(x => x.CaseId == (int)value.updated_post_id! && x.CaseNavigation.WriterId == user_id);
             if (case1 is null)
                 throw new NotFoundException(_localizer["notfound", _localizer["thispost"]]);
 
@@ -642,7 +640,7 @@ namespace FreeSmile.Services
             }
 
             if (await _context.Posts.FirstOrDefaultAsync(x => x.PostId == case_post_id && x.WriterId == user_id) is not null)
-        {
+            {
                 await DeletePostDangerousAsync(case_post_id);
                 return RegularResponse.Success(message: _localizer["PostDeleted"]);
             }
