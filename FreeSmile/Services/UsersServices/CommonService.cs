@@ -74,7 +74,9 @@ namespace FreeSmile.Services
 
         public async Task<ReviewDto> GetReviewAsync(int user_id)
         {
-            var review = await _context.Reviews.FirstOrDefaultAsync(x => x.ReviewerId == user_id);
+            var review = await _context.Reviews
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync(x => x.ReviewerId == user_id);
             if (review is null)
                 throw new NotFoundException(_localizer["NotFound", _localizer["yourreview"]]);
 
