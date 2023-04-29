@@ -28,20 +28,19 @@ namespace FreeSmile.Services
 
         public async Task<Role> GetCurrentRole(int user_id)
         {
-            Role role = Role.Patient;
             if (await _context.Patients.AnyAsync(x => x.PatientId == user_id))
-                role = Role.Patient;
+                return Role.Patient;
 
             if (await _context.Dentists.AnyAsync(x => x.DentistId == user_id))
-                role = Role.Dentist;
-
-            if (await _context.SuperAdmins.AnyAsync(x => x.SuperAdminId == user_id))
-                role = Role.SuperAdmin;
+                return Role.Dentist;
 
             if (await _context.Admins.AnyAsync(x => x.AdminId == user_id))
-                role = Role.Admin;
+                return Role.Admin;
 
-            return role;
+            if (await _context.SuperAdmins.AnyAsync(x => x.SuperAdminId == user_id))
+                return Role.SuperAdmin;
+
+            return Role.Patient;
         }
 
         public async Task DeletePostDangerousAsync(int id)
