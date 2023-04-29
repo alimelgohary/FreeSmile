@@ -127,7 +127,14 @@ namespace FreeSmile.Services
             List<Notification> notifications;
             List<GetNotificationDto> actualNotifications = new();
 
-            notifications = await _context.Notifications.Where(x => x.OwnerId == user_id).OrderByDescending(x => x.NotificationId).Skip(size * --page).Take(size).Include(x => x.Temp).ToListAsync();
+            notifications = await _context.Notifications
+                                .AsNoTracking()
+                                .Where(x => x.OwnerId == user_id)
+                                .OrderByDescending(x => x.NotificationId)
+                                .Skip(size * --page)
+                                .Take(size)
+                                .Include(x => x.Temp)
+                                .ToListAsync();
             foreach (var notification in notifications)
             {
                 actualNotifications.Add(new GetNotificationDto()
