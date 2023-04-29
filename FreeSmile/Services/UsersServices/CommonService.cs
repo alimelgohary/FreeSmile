@@ -248,9 +248,7 @@ namespace FreeSmile.Services
 
         public async Task<GetMessageDto> SendMessageAsync(SendMessageDto message, int sender_id)
         {
-            User? user2 = await _context.Users.FindAsync(message.Receiver_Id);
-
-            if (user2 is null)
+            if (!await _context.Users.AnyAsync(x => x.Id == message.Receiver_Id))
                 throw new GeneralException(_localizer["UserNotFound"]);
 
             if (await CanUsersCommunicateAsync(sender_id, (int)message.Receiver_Id!) == false)
@@ -260,7 +258,7 @@ namespace FreeSmile.Services
             {
                 SenderId = sender_id,
                 ReceiverId = (int)message.Receiver_Id!,
-                Body = message.Message,
+                Body = message.Message.Trim(),
                 Seen = sender_id == (int)message.Receiver_Id! //If sending to himself then already seen
             };
 
