@@ -397,19 +397,16 @@ namespace FreeSmile.Services
             if (size < 1 || size > 3)
                 size = 1;
 
-            User? user1 = null, user2 = null;
-
             if (auth_user_id == 0 && other_user_id == 0)
                 throw new UnauthorizedException(_localizer["unauthorized"]);
 
-            user1 = await _context.Users.FindAsync(auth_user_id);
-            user2 = await _context.Users.FindAsync(other_user_id);
-
+            var user1 = await _context.Users.AsNoTracking().Select(x => new { x.Id, x.Suspended }).FirstOrDefaultAsync(x => x.Id == auth_user_id);
+            var user2 = await _context.Users.AsNoTracking().Select(x => new { x.Id, x.Suspended }).FirstOrDefaultAsync(x => x.Id == other_user_id);
 
             if (user1?.Suspended == true)
                 throw new GeneralException(_localizer["UserSuspended"]);
 
-            if (other_user_id == 0 && auth_user_id != 0) //0 1
+            if ((other_user_id == 0 && auth_user_id != 0) || auth_user_id == other_user_id) //0 1
             {
                 // authenticated user asking for his profile picture
                 var imagePath = GetProfilePicturesPath(auth_user_id, size);
