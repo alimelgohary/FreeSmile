@@ -180,12 +180,10 @@ namespace FreeSmile.Services
 
         public async Task<RegularResponse> BlockUserAsync(int user_id, int other_user_id)
         {
-
             if (user_id.Equals(other_user_id))
                 throw new GeneralException(_localizer["CannotBlockYourself"]);
 
             User? user2 = await _context.Users.FindAsync(other_user_id);
-
             if (user2 is null)
                 throw new GeneralException(_localizer["UserNotFound"]);
 
@@ -203,7 +201,6 @@ namespace FreeSmile.Services
 
         public async Task<RegularResponse> UnblockUserAsync(int user_id, int other_user_id)
         {
-
             if (user_id.Equals(other_user_id))
                 throw new GeneralException(_localizer["CannotUnblockYourself"]);
 
@@ -227,15 +224,26 @@ namespace FreeSmile.Services
 
         public async Task<List<GetBlockedUsersDto>> GetBlockedListAsync(int user_id, int page, int size)
         {
-            User? user = await _context.Users.Include(x => x.Blockeds)
-                                             .FirstOrDefaultAsync(x => x.Id == user_id);
-
-            return user!.Blockeds.Select(x => new GetBlockedUsersDto()
+            page--;
+            var blocklist = await _context.Users.AsNoTracking()
+                                                .Select(x =>
+                                                    new
             {
+                                                        x.Id,
+                                                        Blockeds = x.Blockeds.Skip(page * size)
+                                                                             .Take(size)
+                                                                             .Select(x => new GetBlockedUsersDto
+                                                                             {
                 Username = x.Username,
                 User_Id = x.Id,
                 Full_Name = x.Fullname
-            }).Skip(size * --page).Take(size).ToList();
+                                                                             })
+                                                    })
+                                                .FirstOrDefaultAsync(x => x.Id == user_id);
+
+            if (blocklist is not null)
+                return blocklist.Blockeds.ToList();
+            return new();
         }
 
         public async Task<GetMessageDto> SendMessageAsync(SendMessageDto message, int sender_id)
