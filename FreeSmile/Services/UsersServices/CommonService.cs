@@ -10,6 +10,8 @@ using static FreeSmile.Services.Helper;
 using static FreeSmile.Services.DirectoryHelper;
 using static FreeSmile.Services.MyConstants;
 using static FreeSmile.Services.AuthHelper;
+using System.Diagnostics.CodeAnalysis;
+using DTOs;
 
 namespace FreeSmile.Services
 {
@@ -315,9 +317,81 @@ namespace FreeSmile.Services
 
         public async Task<List<RecentMessagesDto>> GetRecentMessagesAsync(int user_id, int page, int size)
         {
-            throw new NotImplementedException();
+            List<RecentMessagesDto> returnedList = new();
+
+            var lastMessages = _context.Messages.AsNoTracking()
+                                             .Join(
+                                                _context.Messages
+                                                .GroupBy(m => new { m.SenderId, m.ReceiverId })
+                                                .Select(g => g.Max(m => m.MessageId)),
+                                                    m => m.MessageId,
+                                                    maxId => maxId,
+                                                    (m, max) => m)
+                                            .Where(m => m.SenderId == user_id || m.ReceiverId == user_id)
+                                            .OrderByDescending(m => m.MessageId)
+                                            .ToHashSet(new PairEqualityComparer()) //Treat sender,receiver == receiver,sender
+                                            .Skip(--page * size)
+                                            .Take(size);
+
+            foreach (var message in lastMessages)
+            {
+                bool isAvailable = true;
+                bool isSender = message.SenderId == user_id;
+                BasicUserInfoDto? otherUser;
+                if (isSender)
+                {
+                    otherUser = await _context.Users.Select(x => new BasicUserInfoDto() { UserId = x.Id, FullName = x.Fullname, Username = x.Username }).FirstOrDefaultAsync(x => x.UserId == message.ReceiverId)!;
+                }
+                else
+                {
+                    otherUser = await _context.Users.Select(x => new BasicUserInfoDto() { UserId = x.Id, FullName = x.Fullname, Username = x.Username }).FirstOrDefaultAsync(x => x.UserId == message.SenderId)!;
+                }
+
+                byte[]? otherProfile = null;
+                try
+                {
+                    otherProfile = await GetProfilePictureAsync(user_id, otherUser!.UserId, size: 1);
+                }
+                catch (GeneralException) //IsBlocked
+                {
+                    isAvailable = false;
+                }
+
+                returnedList.Add(new()
+                {
+                    UserId = otherUser!.UserId,
+                    FullName = otherUser.FullName,
+                    Username = otherUser.Username,
+                    ProfilePicture = otherProfile,
+                    Seen = message.Seen,
+                    LastMessage = message.Body,
+                    LastMessageTime = message.SentAt.Humanize(culture: CultureInfo.CurrentCulture),
+                    IsAvailable = isAvailable,
+                    IsSender = isSender
+                });
+            }
+            return returnedList;
+        }
+        public class PairEqualityComparer : IEqualityComparer<Message>
+        {
+            public bool Equals(Message? x, Message? y)
+            {
+                if (x is null && y is null)
+                    return true;
+                if (x is null || y is null)
+                    return false;
+                if ((x.SenderId, x.ReceiverId) == (y.ReceiverId, y.SenderId))
+                    return true;
+                if ((x.SenderId, x.ReceiverId) == (y.SenderId, y.ReceiverId))
+                    return true;
+                return false;
         }
 
+            public int GetHashCode([DisallowNull] Message obj)
+            {
+                return obj.SenderId.GetHashCode() ^ obj.ReceiverId.GetHashCode();
+            }
+        }
         public async Task<byte[]?> GetProfilePictureAsync(int auth_user_id, int other_user_id, byte size)
         {
             if (size < 1 || size > 3)
