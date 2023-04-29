@@ -15,7 +15,7 @@ namespace FreeSmile.ActionFilters
         private readonly FreeSmileContext _context;
         private readonly IStringLocalizer<ControllerBase> _localizer;
         public ValidUser(FreeSmileContext context, IStringLocalizer<ControllerBase> localizer)
-        { 
+        {
             _context = context;
             _localizer = localizer;
         }
@@ -27,7 +27,7 @@ namespace FreeSmile.ActionFilters
 
             if (string.IsNullOrEmpty(user_id)
                 || !int.TryParse(user_id, out int user_id_int)
-                || !_context.Users.Any(user => user.Id == user_id_int))
+                || !await _context.Users.AnyAsync(user => user.Id == user_id_int))
             {
                 RegularResponse res = RegularResponse.BadRequestError(
                                          error: _localizer["UserNotFound"],

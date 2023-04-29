@@ -28,11 +28,14 @@ namespace FreeSmile.ActionFilters
             // I'm sure it's int because of previous filters
             int user_id_int = int.Parse(user_id);
 
-            Dentist? dentist = _context.Dentists.Find(user_id_int);
-            if (dentist is not null)
+            var verified = await _context.Dentists
+                                    .AsNoTracking()
+                                    .Select(x => new { x.DentistId, x.IsVerifiedDentist })
+                                    .FirstOrDefaultAsync(x => x.DentistId == user_id_int);
+            if (verified is not null)
             {
                 string nextPage;
-                if (!dentist.IsVerifiedDentist)
+                if (!verified.IsVerifiedDentist)
                 {
                     nextPage = Pages.verifyDentist.ToString();
 
@@ -41,7 +44,7 @@ namespace FreeSmile.ActionFilters
                                              nextPage: nextPage
                                           );
 
-                    if (await _context.VerificationRequests.AnyAsync(request => request.Owner == dentist))
+                    if (await _context.VerificationRequests.AnyAsync(request => request.OwnerId == user_id_int))
                     {
                         nextPage = Pages.pendingVerificationAcceptance.ToString();
                         res = RegularResponse.BadRequestError(

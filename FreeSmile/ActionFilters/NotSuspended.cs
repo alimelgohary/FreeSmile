@@ -2,6 +2,7 @@
 using FreeSmile.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using System.Security.Claims;
 using static FreeSmile.Services.Helper;
@@ -27,9 +28,11 @@ namespace FreeSmile.ActionFilters
             int user_id_int = int.Parse(user_id);
 
             // I'm sure it's a valid user because of previous filters
-            User user = _context.Users.Find(user_id_int)!;
+            var sus = await _context.Users.AsNoTracking()
+                                          .Select(x => new { x.Id, x.Suspended })
+                                          .FirstOrDefaultAsync(x => x.Id == user_id_int)!;
 
-            if (user.Suspended == true)
+            if (sus!.Suspended == true)
             {
                 RegularResponse res = RegularResponse.BadRequestError(
                                          error: _localizer["UserSuspended"]
