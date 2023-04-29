@@ -162,8 +162,8 @@ namespace FreeSmile.Services
 
         public async Task<RegularResponse> ReportPostAsync(ReportPostDto value, int user_id)
         {
-            PostReport? previousReport = await _context.PostReports.FindAsync(user_id, value.reported_post_id);
-            if (previousReport is not null)
+            bool previousReport = await _context.PostReports.AnyAsync(x => x.ReporterId == user_id && x.PostId == value.reported_post_id);
+            if (previousReport)
                 throw new GeneralException(_localizer["AlreadyReportedThisPost"]);
 
             await _context.PostReports.AddAsync(new()
