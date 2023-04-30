@@ -33,7 +33,6 @@ namespace FreeSmile.DTOs
 
         [DisplayName(nameof(Phone))]
         [StringLength(10, MinimumLength = 10, ErrorMessage = "exactchar")]
-        [UniqueVerified(nameof(User), nameof(Phone))]
         [RegularExpression("^1[0-9]*$", ErrorMessage = "mustBeNumber")]
         public string? Phone { get; set; }
 

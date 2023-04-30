@@ -30,11 +30,6 @@ namespace FreeSmile.Services
             _context.Users.RemoveRange(_context.Users.Where(x => x.Email == userDto.Email && x.IsVerified == false));
             await _context.SaveChangesAsync();
 
-            // Allow duplicate phones if user not verified yet
-            _context.Users.RemoveRange(_context.Users.Where(x => x.Phone == userDto.Phone && x.IsVerified == false));
-            await _context.SaveChangesAsync();
-
-
             var salt = GenerateSalt();
             string storedPass = StorePassword(userDto.Password, salt);
 
