@@ -648,14 +648,36 @@ namespace FreeSmile.Services
             throw new NotFoundException(_localizer["notfound", _localizer["thispost"]]);
         }
 
-        public async Task<CommonSettingsDto> GetCommonSettingsAsync(int user_id)
+        public async Task<GetCommonSettingsDto> GetCommonSettingsAsync(int user_id)
         {
-            throw new NotImplementedException();
+            var user = await _context.Users.AsNoTracking()
+                                            .Select(x => new GetCommonSettingsDto()
+                                            {
+                                                UserId = x.Id,
+                                                FullName = x.Fullname,
+                                                Username = x.Username,
+                                                Phone = x.Phone,
+                                                Email = x.Email,
+                                                Birthdate = x.Bd == null ? null : ((DateTime)x.Bd).ToString("yyyy-MM-dd"),
+                                                VisibleMail = x.VisibleMail,
+                                                VisibleContact = x.VisibleContact
+                                            })
+                                            .FirstOrDefaultAsync(x => x.UserId == user_id);
+            user!.ProfilePicture = await GetProfilePictureAsync(user_id, user_id, size: 1);
+
+            return user;
         }
 
-        public async Task<CommonSettingsDto> UpdateCommonSettingsAsync(CommonSettingsDto settings, int user_id)
+        public async Task UpdateCommonSettingsAsync(SetCommonSettingsDto settings, int user_id)
         {
-            throw new NotImplementedException();
+            User? user = await _context.Users.FindAsync(user_id);
+            user!.Username = settings.Username;
+            user.Fullname = settings.Fullname.Trim();
+            user.Phone = settings.Phone;
+            user.Bd = settings.Birthdate is null ? null : DateTime.Parse(settings.Birthdate);
+            user.VisibleMail = settings.VisibleMail;
+            user.VisibleContact = settings.VisibleContact;
+            await _context.SaveChangesAsync();
         }
     }
 }
