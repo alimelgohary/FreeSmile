@@ -1,3 +1,4 @@
+﻿using DTOs;
 ﻿using FreeSmile.DTOs;
 using static FreeSmile.Services.Helper;
 
@@ -20,8 +21,8 @@ namespace FreeSmile.Services
         // TODO: create article                   // TODO: edit article             // TODO: delete article
         // TODO: POST: create listing             // TODO: PUT: edit listing        // TODO: DELETE: listing
         // TODO: Don't forget to not include blocked or blocking people posts
-        // TOOD: add portfolio          //TODO: edit portfolio
-        // TOOD: PUT: like article      //TODO: POST: comment on an article   //TODO: POST: Report a comment
+        // TOOD: add portfolio          //TODO: delete portfolio
+        // TOOD: PUT: like/unlike article      //TODO: POST: add/remove comment on an article   //TODO: POST: Report a comment
         // TODO: PUT: change settings dentist
         // TODO: GET: get settings dentist
         // TODO: Don't forget to not include blocked or blocking people posts
