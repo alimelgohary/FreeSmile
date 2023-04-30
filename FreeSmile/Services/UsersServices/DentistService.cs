@@ -64,7 +64,7 @@ namespace FreeSmile.Services
                 }
                 var proofExt = Path.GetExtension(verificationDto.ProofOfDegreePhoto.FileName);
                 encoder = ExtensionToEncoder(proofExt);
-                using (var image = Image.Load(natImage))
+                using (var image = Image.Load(proofImage))
                 {
                     await image.SaveAsync(proofPath, encoder);
                 }
