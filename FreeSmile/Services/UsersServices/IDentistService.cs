@@ -1,5 +1,5 @@
 ﻿using DTOs;
-﻿using FreeSmile.DTOs;
+using FreeSmile.DTOs;
 using static FreeSmile.Services.Helper;
 
 namespace FreeSmile.Services

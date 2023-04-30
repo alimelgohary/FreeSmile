@@ -668,7 +668,7 @@ namespace FreeSmile.Services
             return user;
         }
 
-        public async Task UpdateCommonSettingsAsync(SetCommonSettingsDto settings, int user_id)
+        public async Task<GetCommonSettingsDto> UpdateCommonSettingsAsync(SetCommonSettingsDto settings, int user_id)
         {
             User? user = await _context.Users.FindAsync(user_id);
             user!.Username = settings.Username;
@@ -678,6 +678,8 @@ namespace FreeSmile.Services
             user.VisibleMail = settings.VisibleMail;
             user.VisibleContact = settings.VisibleContact;
             await _context.SaveChangesAsync();
+
+            return await GetCommonSettingsAsync(user_id);
         }
     }
 }
