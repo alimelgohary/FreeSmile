@@ -70,8 +70,6 @@ namespace FreeSmile.Services
                     new VerificationRequest()
                     {
                         OwnerId = ownerId,
-                        NatIdPhoto = natPath,
-                        ProofOfDegreePhoto = proofPath,
                         DegreeRequested = (int)verificationDto.DegreeRequested!,
                         UniversityRequested = (int)verificationDto.UniversityRequested!
                     });

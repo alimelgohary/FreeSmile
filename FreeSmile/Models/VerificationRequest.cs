@@ -6,8 +6,6 @@ namespace FreeSmile.Models
     public partial class VerificationRequest
     {
         public int OwnerId { get; set; }
-        public string NatIdPhoto { get; set; } = null!;
-        public string ProofOfDegreePhoto { get; set; } = null!;
         public int DegreeRequested { get; set; }
         public int UniversityRequested { get; set; }
 

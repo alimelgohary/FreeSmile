@@ -853,16 +853,6 @@ namespace FreeSmile
 
                 entity.Property(e => e.DegreeRequested).HasColumnName("degree_requested");
 
-                entity.Property(e => e.NatIdPhoto)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("nat_id_photo");
-
-                entity.Property(e => e.ProofOfDegreePhoto)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("proof_of_degree_photo");
-
                 entity.Property(e => e.UniversityRequested).HasColumnName("university_requested");
 
                 entity.HasOne(d => d.DegreeRequestedNavigation)
