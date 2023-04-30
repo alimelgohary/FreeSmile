@@ -6,6 +6,8 @@ namespace FreeSmile.Services
     public interface IDentistService
     {
         public Task<RegularResponse> AddVerificationRequestAsync(VerificationDto verificationDto, int ownerId);
+        public Task<GetDentistSettingsDto> GetSettingsAsync(int user_id);
+        public Task<GetDentistSettingsDto> UpdateSettingsAsync(SetDentistSettingsDto settings, int user_id);
 
         // TODO: GET Sharing patient Posts for Dentists
         // TODO: GET Patients cases Posts for Dentists
