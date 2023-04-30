@@ -35,7 +35,6 @@ namespace FreeSmile
         public virtual DbSet<Patient> Patients { get; set; } = null!;
         public virtual DbSet<Portfolio> Portfolios { get; set; } = null!;
         public virtual DbSet<Post> Posts { get; set; } = null!;
-        public virtual DbSet<PostImage> PostImages { get; set; } = null!;
         public virtual DbSet<PostReport> PostReports { get; set; } = null!;
         public virtual DbSet<ProductCat> ProductCats { get; set; } = null!;
         public virtual DbSet<Review> Reviews { get; set; } = null!;
@@ -261,7 +260,7 @@ namespace FreeSmile
                     .HasColumnName("dentist_id");
 
                 entity.Property(e => e.Bio)
-                    .HasMaxLength(100)
+                    .HasMaxLength(300)
                     .HasColumnName("bio");
 
                 entity.Property(e => e.CurrentDegree)
@@ -288,6 +287,11 @@ namespace FreeSmile
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("linkedUsername");
+
+                entity.Property(e => e.ResearchGateUsername)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("researchGateUsername");
 
                 entity.HasOne(d => d.CurrentDegreeNavigation)
                     .WithMany(p => p.Dentists)
@@ -371,6 +375,10 @@ namespace FreeSmile
             modelBuilder.Entity<Message>(entity =>
             {
                 entity.ToTable("messages");
+
+                entity.HasIndex(e => e.ReceiverId, "idx_recipient");
+
+                entity.HasIndex(e => e.SenderId, "idx_sender");
 
                 entity.Property(e => e.MessageId).HasColumnName("message_id");
 
@@ -553,25 +561,6 @@ namespace FreeSmile
                     .HasConstraintName("FK__posts__writer_id__1A9EF37A");
             });
 
-            modelBuilder.Entity<PostImage>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToTable("postImages");
-
-                entity.Property(e => e.ImageName)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("imageName");
-
-                entity.Property(e => e.PostId).HasColumnName("post_id");
-
-                entity.HasOne(d => d.Post)
-                    .WithMany()
-                    .HasForeignKey(d => d.PostId)
-                    .HasConstraintName("FK__postImage__post___1C873BEC");
-            });
-
             modelBuilder.Entity<PostReport>(entity =>
             {
                 entity.HasKey(e => new { e.ReporterId, e.PostId })
@@ -734,10 +723,6 @@ namespace FreeSmile
 
                 entity.HasIndex(e => e.Email, "email")
                     .IsUnique();
-
-                entity.HasIndex(e => e.Phone, "idx_phone_notnull")
-                    .IsUnique()
-                    .HasFilter("([phone] IS NOT NULL)");
 
                 entity.HasIndex(e => e.Username, "username")
                     .IsUnique();

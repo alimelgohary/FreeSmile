@@ -15,6 +15,7 @@ namespace FreeSmile.Models
         public string? FbUsername { get; set; }
         public string? LinkedUsername { get; set; }
         public string? GScholarUsername { get; set; }
+        public string? ResearchGateUsername { get; set; }
         public int CurrentDegree { get; set; }
         public int CurrentUniversity { get; set; }
         public bool IsVerifiedDentist { get; set; }
