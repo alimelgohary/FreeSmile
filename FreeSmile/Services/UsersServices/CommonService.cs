@@ -337,14 +337,14 @@ namespace FreeSmile.Services
             {
                 bool isAvailable = true;
                 bool isSender = message.SenderId == user_id;
-                BasicUserInfoDto? otherUser;
+                GetBasicUserInfo? otherUser;
                 if (isSender)
                 {
-                    otherUser = await _context.Users.Select(x => new BasicUserInfoDto() { UserId = x.Id, FullName = x.Fullname, Username = x.Username }).FirstOrDefaultAsync(x => x.UserId == message.ReceiverId)!;
+                    otherUser = await _context.Users.Select(x => new GetBasicUserInfo() { UserId = x.Id, FullName = x.Fullname, Username = x.Username }).FirstOrDefaultAsync(x => x.UserId == message.ReceiverId)!;
                 }
                 else
                 {
-                    otherUser = await _context.Users.Select(x => new BasicUserInfoDto() { UserId = x.Id, FullName = x.Fullname, Username = x.Username }).FirstOrDefaultAsync(x => x.UserId == message.SenderId)!;
+                    otherUser = await _context.Users.Select(x => new GetBasicUserInfo() { UserId = x.Id, FullName = x.Fullname, Username = x.Username }).FirstOrDefaultAsync(x => x.UserId == message.SenderId)!;
                 }
 
                 byte[]? otherProfile = null;

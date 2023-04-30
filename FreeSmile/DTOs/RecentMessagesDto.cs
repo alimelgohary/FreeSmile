@@ -2,7 +2,7 @@
 
 namespace FreeSmile.DTOs
 {
-    public class RecentMessagesDto : BasicUserInfoDto
+    public class RecentMessagesDto : GetBasicUserInfo
     {
         public string LastMessage { get; set; } = null!;
         public string LastMessageTime { get; set; } = null!;

@@ -29,8 +29,8 @@ namespace FreeSmile.Services
         public Task<int> AddPostAsync(AddPostDto value, int user_id);
         public Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id);
         public Task<RegularResponse> DeletePostAsync(int user_id, int case_post_id);
-        public Task<CommonSettingsDto> GetCommonSettingsAsync(int user_id);
-        public Task<CommonSettingsDto> UpdateCommonSettingsAsync(CommonSettingsDto settings, int user_id);
+        public Task<GetCommonSettingsDto> GetCommonSettingsAsync(int user_id);
+        public Task UpdateCommonSettingsAsync(SetCommonSettingsDto settings, int user_id);
 
         // TODO: Don't forget to not include blocked or blocking people posts
     }
