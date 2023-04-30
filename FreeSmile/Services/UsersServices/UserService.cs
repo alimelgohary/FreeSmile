@@ -45,7 +45,7 @@ namespace FreeSmile.Services
                 Password = storedPass,
                 Salt = salt,
                 Phone = userDto.Phone,
-                Fullname = userDto.Fullname,
+                Fullname = userDto.Fullname.Trim(),
                 Gender = userDto.Gender,
                 Bd = userDto.Birthdate is null ? null : DateTime.Parse(userDto.Birthdate)
             };

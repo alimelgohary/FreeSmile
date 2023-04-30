@@ -103,7 +103,7 @@ namespace FreeSmile.Services
                 new Review()
                 {
                     Rating = (byte)value.Rating!,
-                    Opinion = value.Opinion,
+                    Opinion = value.Opinion?.Trim(),
                     ReviewerId = user_id
                 });
             await _context.SaveChangesAsync();
@@ -172,7 +172,7 @@ namespace FreeSmile.Services
             {
                 ReporterId = user_id,
                 PostId = (int)value.reported_post_id!,
-                Reason = value.Reason
+                Reason = value.Reason?.Trim()
             });
 
             await _context.SaveChangesAsync();
