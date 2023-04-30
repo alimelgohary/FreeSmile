@@ -161,6 +161,22 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
             
         }
+
+        [SwaggerOperation(Summary = "content type: multipart/form-data, lets dentist send national id photo, proof photo to be checked by an admin for verification")]
+        [ServiceFilter(typeof(ValidUser), Order = 1)]
+        [ServiceFilter(typeof(NotSuspended), Order = 2)]
+        [ServiceFilter(typeof(VerifiedEmail), Order = 3)]
+        [Authorize(Roles = "Dentist")]
+        [HttpPost("RequestVerification")]
+        public async Task<IActionResult> AddVerificationRequestAsync([FromForm] VerificationDto value)
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+
+            RegularResponse res = await _dentistService.AddVerificationRequestAsync(value, user_id_int);
+
+            return StatusCode(res.StatusCode, res);
+        }
     }
 }
 
