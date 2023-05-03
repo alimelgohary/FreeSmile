@@ -13,5 +13,11 @@ namespace DTOs
         public string? ResearchGateUsername { get; set; } = null;
         public bool HasPendingVerificationRequest { get; set; }
 
+        public override void HidePrivate()
+        {
+            base.HidePrivate();
+            HasPendingVerificationRequest = false;
+        }
+
     }
 }

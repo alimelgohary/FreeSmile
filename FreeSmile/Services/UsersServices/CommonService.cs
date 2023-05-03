@@ -660,7 +660,8 @@ namespace FreeSmile.Services
                                                 Email = x.Email,
                                                 Birthdate = x.Bd == null ? null : ((DateTime)x.Bd).ToString("yyyy-MM-dd"),
                                                 VisibleMail = x.VisibleMail,
-                                                VisibleContact = x.VisibleContact
+                                                VisibleContact = x.VisibleContact,
+                                                VisibleBd = x.VisibleBd
                                             })
                                             .FirstOrDefaultAsync(x => x.UserId == user_id);
             user!.ProfilePicture = await GetProfilePictureAsync(user_id, user_id, size: 1);
@@ -671,12 +672,17 @@ namespace FreeSmile.Services
         public async Task<GetCommonSettingsDto> UpdateCommonSettingsAsync(SetCommonSettingsDto settings, int user_id)
         {
             User? user = await _context.Users.FindAsync(user_id);
-            user!.Username = settings.Username;
-            user.Fullname = settings.Fullname.Trim();
+
+            if (settings.Username != null)
+                user!.Username = settings.Username;
+
+            user!.Fullname = settings.Fullname.Trim();
             user.Phone = settings.Phone;
             user.Bd = settings.Birthdate is null ? null : DateTime.Parse(settings.Birthdate);
             user.VisibleMail = settings.VisibleMail;
             user.VisibleContact = settings.VisibleContact;
+            user.VisibleBd = settings.VisibleBd;
+
             await _context.SaveChangesAsync();
 
             return await GetCommonSettingsAsync(user_id);

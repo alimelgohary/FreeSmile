@@ -82,7 +82,7 @@ namespace FreeSmile.Services
                 return RegularResponse.Success(message: _localizer["VerificationRequestSuccess"], nextPage: Pages.pendingVerificationAcceptance.ToString());
 
             }
-            
+
             catch (Exception ex) when (ex is UnknownImageFormatException
                                     || ex is InvalidImageContentException
                                     || ex is NotSupportedException)
@@ -130,10 +130,40 @@ namespace FreeSmile.Services
             return dentist;
         }
 
-        public Task<GetDentistSettingsDto> UpdateSettingsAsync(SetDentistSettingsDto settings, int user_id)
+        public async Task<GetDentistSettingsDto> GetPublicSettingsAsync(int auth_user_id, int other_user_id)
         {
-            throw new NotImplementedException();
+            if (auth_user_id != 0)
+            {
+                // Authenticated user asking for other user settings
+                var user1 = await _context.Users.AsNoTracking().Select(x => new { x.Id, x.Suspended }).FirstOrDefaultAsync(x => x.Id == auth_user_id);
+                if (user1?.Suspended == true)
+                    throw new GeneralException(_localizer["UserSuspended"]);
+
+                if (await _commonService.CanUsersCommunicateAsync(auth_user_id, other_user_id) == false)
+                    throw new GeneralException(_localizer["personnotavailable"]);
+            }
+
+            var settings = await GetSettingsAsync(other_user_id);
+            settings.HidePrivate();
+
+            return settings;
         }
+
+        public async Task<GetDentistSettingsDto> UpdateSettingsAsync(SetDentistSettingsDto settings, int user_id)
+        {
+            await _commonService.UpdateCommonSettingsAsync(settings, user_id);
+            Dentist? dentist = await _context.Dentists.FindAsync(user_id);
+
+            dentist!.Bio = settings.Bio;
+            dentist.FbUsername = settings.FbUsername;
+            dentist.LinkedUsername = settings.LinkedUsername;
+            dentist.GScholarUsername = settings.GScholarUsername;
+            dentist.ResearchGateUsername = settings.ResearchGateUsername;
+            await _context.SaveChangesAsync();
+
+            return await GetSettingsAsync(user_id);
+        }
+
     }
 }
 

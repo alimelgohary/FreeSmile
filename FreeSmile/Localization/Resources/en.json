@@ -90,5 +90,11 @@
   "postdeleted": "Post is deleted successfully",
   "posteditedsuccess": "Post is edited successfully",
   "page": "Page",
-  "size": "Page size"
+  "size": "Page size",
+  "id": "Id",
+  "bio": "Bio",
+  "fbusername": "Facebook username",
+  "linkedusername": "LinkedIn username",
+  "gscholarusername": "Google Scholar username",
+  "researchgateusername": "ResearchGate username"
 }

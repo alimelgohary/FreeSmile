@@ -3,6 +3,8 @@ using Microsoft.Extensions.Localization;
 using FreeSmile.Services;
 using System.Security.Claims;
 using Swashbuckle.AspNetCore.Annotations;
+using FreeSmile.DTOs;
+using DTOs;
 
 namespace FreeSmile.Controllers
 {
@@ -34,6 +36,43 @@ namespace FreeSmile.Controllers
 
             byte[]? picture = await _commonService.GetProfilePictureAsync(auth_user_id_int, (int)other_user_id, size);
             return Ok(picture);
+        }
+
+
+        [SwaggerOperation(Summary = $"Takes {nameof(UserId.Id)} of the dentist as query & gets his profile info.")]
+        [HttpGet("Dentist/Profile")]
+        public async Task<IActionResult> GetDentistProfileAsync([FromQuery] DentistId dentistId)
+        {
+            string? auth_user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int auth_user_id_int = 0; 
+            if (!string.IsNullOrEmpty(auth_user_id))
+                auth_user_id_int = int.Parse(auth_user_id);
+
+            GetDentistSettingsDto profileInfo;
+            if (auth_user_id_int == dentistId.Id)
+                profileInfo = await _dentistService.GetSettingsAsync((int)dentistId.Id!);
+            else
+                profileInfo = await _dentistService.GetPublicSettingsAsync(auth_user_id_int, (int)dentistId.Id!);
+
+            return Ok(profileInfo);
+        }
+
+        [SwaggerOperation(Summary = $"Takes {nameof(UserId.Id)} as query & gets his profile info")]
+        [HttpGet("Patient/Profile")]
+        public async Task<IActionResult> GetPatientProfileAsync([FromQuery] PatientId patientId)
+        {
+            string? auth_user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int auth_user_id_int = 0;
+            if (!string.IsNullOrEmpty(auth_user_id))
+                auth_user_id_int = int.Parse(auth_user_id);
+
+            GetPatientSettingsDto profileInfo;
+            if (auth_user_id_int == patientId.Id)
+                profileInfo = await _patientService.GetSettingsAsync((int)patientId.Id!);
+            else
+                profileInfo = await _patientService.GetPublicSettingsAsync(auth_user_id_int, (int)patientId.Id!);
+
+            return Ok(profileInfo);
         }
     }
 }

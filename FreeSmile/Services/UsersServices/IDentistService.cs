@@ -9,6 +9,7 @@ namespace FreeSmile.Services
         public Task<RegularResponse> AddVerificationRequestAsync(VerificationDto verificationDto, int ownerId);
         public Task<GetDentistSettingsDto> GetSettingsAsync(int user_id);
         public Task<GetDentistSettingsDto> UpdateSettingsAsync(SetDentistSettingsDto settings, int user_id);
+        public Task<GetDentistSettingsDto> GetPublicSettingsAsync(int auth_user_id_int, int other_user_id);
 
         // TODO: GET Sharing patient Posts for Dentists
         // TODO: GET Patients cases Posts for Dentists
@@ -23,8 +24,6 @@ namespace FreeSmile.Services
         // TODO: Don't forget to not include blocked or blocking people posts
         // TOOD: add portfolio          //TODO: delete portfolio
         // TOOD: PUT: like/unlike article      //TODO: POST: add/remove comment on an article   //TODO: POST: Report a comment
-        // TODO: PUT: change settings dentist
-        // TODO: GET: get settings dentist
         // TODO: Don't forget to not include blocked or blocking people posts
     }
 }

@@ -41,6 +41,17 @@ namespace FreeSmile.Controllers
             return Ok(res);
         }
 
+        [SwaggerOperation(Summary = $"Takes a {nameof(SetDentistSettingsDto)} as JSON and updates Dentist profile settings. Send new values of each field, DO NOT SEND USERNAME IF IT'S NOT UPDATED. It returns updated settings as {nameof(GetDentistSettingsDto)}")]
+        [HttpPut("UpdateSettings")]
+        public async Task<IActionResult> UpdateSettingsAsync([FromBody] SetDentistSettingsDto value)
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+
+            var res = await _dentistService.UpdateSettingsAsync(value, user_id_int);
+
+            return Ok(res);
+        }
 
         #region DummyActions
         [HttpPost("Dummy")]

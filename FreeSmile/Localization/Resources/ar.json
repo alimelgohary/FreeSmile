@@ -91,4 +91,10 @@
   "posteditedsuccess": "تم تعديل المنشور بنجاح",
   "page": "الصفحة",
   "size": "حجم الصفحة",
+  "id": "المعرف",
+  "bio": "السيرة الذاتية",
+  "fbusername": "اسم مستخدم الفيسبوك",
+  "linkedusername": "اسم مستخدم لينكد إن",
+  "gscholarusername": "اسم مستخدم جوجل سكولار",
+  "researchgateusername": "اسم مستخدم ريسيرش جيت",
 }
