@@ -17,14 +17,14 @@ namespace FreeSmile.Controllers
     [ServiceFilter(typeof(NotSuspended), Order = 2)]
     [ServiceFilter(typeof(VerifiedEmail), Order = 3)]
     [ServiceFilter(typeof(VerifiedIfDentist), Order = 4)]
-    public class HomeController : ControllerBase
+    public class CommonController : ControllerBase
     {
-        private readonly IStringLocalizer<HomeController> _localizer;
+        private readonly IStringLocalizer<CommonController> _localizer;
         private readonly IDentistService _dentistService;
         private readonly IPatientService _patientService;
         private readonly ICommonService _commonService;
 
-        public HomeController(IStringLocalizer<HomeController> localizer, IDentistService dentistService, IPatientService patientService, ICommonService commonService)
+        public CommonController(IStringLocalizer<CommonController> localizer, IDentistService dentistService, IPatientService patientService, ICommonService commonService)
         {
             _localizer = localizer;
             _dentistService = dentistService;
