@@ -784,6 +784,7 @@ namespace FreeSmile
                     .IsUnicode(false)
                     .HasColumnName("username");
 
+                entity.Property(e => e.VisibleBd).HasColumnName("visibleBd");
                 entity.Property(e => e.VisibleContact).HasColumnName("visibleContact");
 
                 entity.Property(e => e.VisibleMail).HasColumnName("visibleMail");

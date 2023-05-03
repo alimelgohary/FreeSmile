@@ -32,6 +32,7 @@ namespace FreeSmile.Models
         public int? Age { get; set; }
         public bool VisibleMail { get; set; }
         public bool VisibleContact { get; set; }
+        public bool VisibleBd { get; set; }
         public string? Otp { get; set; }
         public DateTime? OtpExp { get; set; }
         public bool Suspended { get; set; }
