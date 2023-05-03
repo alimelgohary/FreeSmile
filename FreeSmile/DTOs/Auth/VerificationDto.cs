@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
-namespace FreeSmile.DTOs
+namespace FreeSmile.DTOs.Auth
 {
     public class VerificationDto
     {
@@ -22,13 +22,13 @@ namespace FreeSmile.DTOs
         [DisplayName(nameof(NatIdPhoto))]
         [Required(ErrorMessage = "required")]
         [MaxFileSize(5, ErrorMessage = "TooLarge")]
-        [AllowedExtensions(new[] {".jpg", ".jpeg", ".png", ".jpe", ".jfif", ".bmp" }, ErrorMessage = "imagesonly")]
+        [AllowedExtensions(new[] { ".jpg", ".jpeg", ".png", ".jpe", ".jfif", ".bmp" }, ErrorMessage = "imagesonly")]
         public IFormFile NatIdPhoto { get; set; } = null!;
 
         [DisplayName(nameof(ProofOfDegreePhoto))]
         [Required(ErrorMessage = "required")]
         [MaxFileSize(5, ErrorMessage = "TooLarge")]
-        [AllowedExtensions(new[] {".jpg", ".jpeg", ".png", ".jpe", ".jfif", ".bmp"}, ErrorMessage = "imagesonly")]
+        [AllowedExtensions(new[] { ".jpg", ".jpeg", ".png", ".jpe", ".jfif", ".bmp" }, ErrorMessage = "imagesonly")]
         public IFormFile ProofOfDegreePhoto { get; set; } = null!;
 
     }

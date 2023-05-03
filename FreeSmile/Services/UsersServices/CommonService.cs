@@ -12,6 +12,7 @@ using static FreeSmile.Services.MyConstants;
 using static FreeSmile.Services.AuthHelper;
 using System.Diagnostics.CodeAnalysis;
 using DTOs;
+using FreeSmile.DTOs.Settings;
 
 namespace FreeSmile.Services
 {

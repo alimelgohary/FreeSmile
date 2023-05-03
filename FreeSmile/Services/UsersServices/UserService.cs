@@ -1,6 +1,6 @@
 ﻿using FreeSmile.ActionFilters;
 using FreeSmile.Controllers;
-using FreeSmile.DTOs;
+using FreeSmile.DTOs.Auth;
 using FreeSmile.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;

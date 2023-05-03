@@ -3,7 +3,7 @@ using FreeSmile.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 
-namespace FreeSmile.DTOs
+namespace FreeSmile.DTOs.Settings
 {
     public class SetCommonSettingsDto
     {
@@ -33,8 +33,8 @@ namespace FreeSmile.DTOs
 
 
         public bool VisibleMail { get; set; }
-        
-        
+
+
         public bool VisibleContact { get; set; }
 
 

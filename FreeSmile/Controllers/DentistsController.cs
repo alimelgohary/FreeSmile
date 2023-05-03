@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using FreeSmile.DTOs;
 using FreeSmile.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using static FreeSmile.Services.Helper;
 using FreeSmile.ActionFilters;
 using Swashbuckle.AspNetCore.Annotations;
-using DTOs;
+using FreeSmile.DTOs.Settings;
+using FreeSmile.DTOs.Auth;
 
 namespace FreeSmile.Controllers
 {

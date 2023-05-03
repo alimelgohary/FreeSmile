@@ -1,4 +1,4 @@
-﻿using FreeSmile.DTOs;
+﻿using FreeSmile.DTOs.Settings;
 
 namespace FreeSmile.Services
 {

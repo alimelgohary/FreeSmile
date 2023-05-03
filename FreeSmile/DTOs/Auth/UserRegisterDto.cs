@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
-namespace FreeSmile.DTOs
+namespace FreeSmile.DTOs.Auth
 {
     public class UserRegisterDto
     {
@@ -15,16 +15,16 @@ namespace FreeSmile.DTOs
         [StringLength(50, MinimumLength = 3, ErrorMessage = "maxMinChar")]
         [Unique(nameof(User), nameof(Username))]
         public string Username { get; set; } = null!;
-        
-        
+
+
         [Required(ErrorMessage = "required")]
         [DisplayName(nameof(Email))]
         [RegularExpression("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", ErrorMessage = "invalidvalue")] // Provide a real validation, .Net validation sucks, .edu.eg
         [MaxLength(100, ErrorMessage = "maxchar")]
         [UniqueVerified(nameof(User), nameof(Email))]
         public string Email { get; set; } = null!;
-        
-        
+
+
         [DisplayName(nameof(Password))]
         [Required(ErrorMessage = "required")]
         [StringLength(50, MinimumLength = 10, ErrorMessage = "maxMinchar")]
@@ -46,7 +46,7 @@ namespace FreeSmile.DTOs
         public bool Gender { get; set; }
 
         [DisplayName(nameof(Birthdate))]
-        [Age(5, 120, ErrorMessage ="ageminmax")]
+        [Age(5, 120, ErrorMessage = "ageminmax")]
         [ValidDate()]
         public string? Birthdate { get; set; }
     }

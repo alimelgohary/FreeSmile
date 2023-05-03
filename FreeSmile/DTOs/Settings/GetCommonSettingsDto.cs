@@ -1,6 +1,6 @@
 ﻿using DTOs;
 
-namespace FreeSmile.DTOs
+namespace FreeSmile.DTOs.Settings
 {
     public class GetCommonSettingsDto : GetBasicUserInfo
     {

@@ -1,5 +1,5 @@
 ﻿using FreeSmile.ActionFilters;
-using FreeSmile.DTOs;
+using FreeSmile.DTOs.Settings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 

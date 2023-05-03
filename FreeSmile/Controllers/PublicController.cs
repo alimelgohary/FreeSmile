@@ -4,7 +4,7 @@ using FreeSmile.Services;
 using System.Security.Claims;
 using Swashbuckle.AspNetCore.Annotations;
 using FreeSmile.DTOs;
-using DTOs;
+using FreeSmile.DTOs.Settings;
 
 namespace FreeSmile.Controllers
 {

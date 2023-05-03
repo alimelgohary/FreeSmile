@@ -1,4 +1,5 @@
 ﻿using FreeSmile.DTOs;
+using FreeSmile.DTOs.Settings;
 using FreeSmile.Models;
 using static FreeSmile.Services.AuthHelper;
 using static FreeSmile.Services.Helper;

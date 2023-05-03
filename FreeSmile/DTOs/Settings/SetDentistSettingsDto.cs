@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace FreeSmile.DTOs
+namespace FreeSmile.DTOs.Settings
 {
     public class SetDentistSettingsDto : SetCommonSettingsDto
     {

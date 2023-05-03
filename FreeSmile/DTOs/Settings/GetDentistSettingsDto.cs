@@ -1,6 +1,4 @@
-﻿using FreeSmile.DTOs;
-
-namespace DTOs
+﻿namespace FreeSmile.DTOs.Settings
 {
     public class GetDentistSettingsDto : GetCommonSettingsDto
     {

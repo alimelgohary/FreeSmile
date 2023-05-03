@@ -1,12 +1,12 @@
 ﻿using FreeSmile.ActionFilters;
 using FreeSmile.Controllers;
-using FreeSmile.DTOs;
 using FreeSmile.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using static FreeSmile.Services.Helper;
 using static FreeSmile.Services.DirectoryHelper;
-using DTOs;
+using FreeSmile.DTOs.Settings;
+using FreeSmile.DTOs.Auth;
 
 namespace FreeSmile.Services
 {

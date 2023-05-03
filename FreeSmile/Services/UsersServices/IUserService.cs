@@ -1,4 +1,4 @@
-﻿using FreeSmile.DTOs;
+﻿using FreeSmile.DTOs.Auth;
 using static FreeSmile.Services.Helper;
 
 namespace FreeSmile.Services
