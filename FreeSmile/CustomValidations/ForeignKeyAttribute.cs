@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System;
 
 namespace FreeSmile.CustomValidations
 {
@@ -54,7 +55,7 @@ namespace FreeSmile.CustomValidations
 
             var result = command.ExecuteScalar();
 
-            if (result.ToString() == 1.ToString())
+            if (result?.ToString() == 1.ToString())
                 return true;
             else
                 return false;
@@ -64,7 +65,7 @@ namespace FreeSmile.CustomValidations
         {
             if(noun.EndsWith('y'))
             {
-                return noun.Substring(0, noun.Length - 1) + "ies";
+                return string.Concat(noun.AsSpan(0, noun.Length - 1), "ies");
             }
             return noun + 's';
         }

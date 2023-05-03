@@ -14,7 +14,7 @@ namespace FreeSmile.CustomValidations
             RequiredAgeMin = requiredAgeMin;
         }
 
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
         {
             if (value is null)
                 return true;

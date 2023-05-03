@@ -20,7 +20,7 @@ namespace FreeSmile.CustomValidations
             if (value == null)
                 return true;
             
-            if (IsUnique(colName, value.ToString()))
+            if (IsUnique(colName, value.ToString()!))
                 return true;
             
             return false;
@@ -46,7 +46,7 @@ namespace FreeSmile.CustomValidations
 
             var result = command.ExecuteScalar();
             
-            if (result.ToString() == 0.ToString())
+            if (result?.ToString() == 0.ToString())
                 return true;
             else
                 return false;
