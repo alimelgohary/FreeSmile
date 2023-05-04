@@ -25,6 +25,8 @@
   "university": "University",
   "verificationrequestsuccess": "Verification request sent successfully",
   "alreadyrequested": "You have already requested verification",
+  "request": "Your verification request",
+  "deletedrequest": "Your verification request is deleted successfully",
   "verifyemailfirst": "You must verify your email first",
   "usernotfound": "User not found",
   "otpexpired": "We are sorry. Your OTP expired, Click on resend OTP",

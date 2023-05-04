@@ -177,6 +177,22 @@ namespace FreeSmile.Controllers
 
             return StatusCode(res.StatusCode, res);
         }
+
+        [SwaggerOperation(Summary = "Deletes dentist's verification request")]
+        [ServiceFilter(typeof(ValidUser), Order = 1)]
+        [ServiceFilter(typeof(NotSuspended), Order = 2)]
+        [ServiceFilter(typeof(VerifiedEmail), Order = 3)]
+        [Authorize(Roles = "Dentist")]
+        [HttpDelete("DeleteDentistVerificationRequest")]
+        public async Task<IActionResult> DeleteVerificationRequestAsync()
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+
+            RegularResponse res = await _dentistService.DeleteVerificationRequestAsync(user_id_int);
+
+            return StatusCode(res.StatusCode, res);
+        }
     }
 }
 

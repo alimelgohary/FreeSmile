@@ -7,6 +7,7 @@ namespace FreeSmile.Services
     public interface IDentistService
     {
         public Task<RegularResponse> AddVerificationRequestAsync(VerificationDto verificationDto, int ownerId);
+        public Task<RegularResponse> DeleteVerificationRequestAsync(int user_id_int);
         public Task<GetDentistSettingsDto> GetSettingsAsync(int user_id);
         public Task<GetDentistSettingsDto> UpdateSettingsAsync(SetDentistSettingsDto settings, int user_id);
         public Task<GetDentistSettingsDto> GetPublicSettingsAsync(int auth_user_id_int, int other_user_id);

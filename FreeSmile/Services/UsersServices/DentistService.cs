@@ -101,6 +101,22 @@ namespace FreeSmile.Services
             }
         }
 
+        public async Task<RegularResponse> DeleteVerificationRequestAsync(int user_id_int)
+        {
+            var CurrentRequest = await _context.VerificationRequests.FirstOrDefaultAsync(x => x.OwnerId == user_id_int);
+            if (CurrentRequest is null)
+                throw new NotFoundException(_localizer["NotFound", _localizer["request"]]);
+
+            _context.Remove(CurrentRequest);
+            await _context.SaveChangesAsync();
+
+            var userDir = GetVerificationPathUser(user_id_int);
+            if (Directory.Exists(userDir))
+                Directory.Delete(userDir, true);
+
+            return RegularResponse.Success(message: _localizer["DeletedRequest"],
+                                            nextPage: Pages.pendingVerificationAcceptance.ToString());
+        }
         public async Task<GetDentistSettingsDto> GetSettingsAsync(int user_id)
         {
             var lang = Thread.CurrentThread.CurrentCulture.Name;
