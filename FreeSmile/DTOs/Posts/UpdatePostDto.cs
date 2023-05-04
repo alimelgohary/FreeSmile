@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using FreeSmile.Models;
 
-namespace FreeSmile.DTOs
+namespace FreeSmile.DTOs.Posts
 {
     public class UpdatePostDto
     {
-        [DisplayName(nameof(updated_post_id))]
+        [DisplayName(nameof(post_id))]
         [Required(ErrorMessage = "required")]
         [ForeignKey(nameof(Post), "post_id")]
-        public int? updated_post_id { get; set; }
+        public int? post_id { get; set; }
 
         [DisplayName(nameof(Title))]
         [Required(ErrorMessage = "required")]

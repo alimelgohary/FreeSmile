@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using FreeSmile.CustomValidations;
 
-namespace FreeSmile.DTOs
+namespace FreeSmile.DTOs.Posts
 {
     public class UpdateCaseDto : UpdatePostDto
     {

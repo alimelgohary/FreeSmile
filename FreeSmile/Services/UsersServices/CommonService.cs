@@ -603,7 +603,7 @@ namespace FreeSmile.Services
         public async Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id)
         {
             Case? case1 = await _context.Cases.Include(x => x.CaseNavigation)
-                                              .FirstOrDefaultAsync(x => x.CaseId == (int)value.updated_post_id! && x.CaseNavigation.WriterId == user_id);
+                                              .FirstOrDefaultAsync(x => x.CaseId == (int)value.post_id! && x.CaseNavigation.WriterId == user_id);
             if (case1 is null)
                 throw new NotFoundException(_localizer["notfound", _localizer["thispost"]]);
 
