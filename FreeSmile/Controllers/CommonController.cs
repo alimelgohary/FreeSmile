@@ -7,6 +7,7 @@ using System.Security.Claims;
 using static FreeSmile.Services.Helper;
 using FreeSmile.ActionFilters;
 using Swashbuckle.AspNetCore.Annotations;
+using FreeSmile.DTOs.Posts;
 
 namespace FreeSmile.Controllers
 {

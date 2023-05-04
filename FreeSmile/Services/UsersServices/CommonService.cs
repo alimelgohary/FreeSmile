@@ -13,6 +13,7 @@ using static FreeSmile.Services.AuthHelper;
 using System.Diagnostics.CodeAnalysis;
 using DTOs;
 using FreeSmile.DTOs.Settings;
+using FreeSmile.DTOs.Posts;
 
 namespace FreeSmile.Services
 {

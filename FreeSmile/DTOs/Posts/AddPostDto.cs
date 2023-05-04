@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 
-namespace FreeSmile.DTOs
+namespace FreeSmile.DTOs.Posts
 {
     public class AddPostDto
     {
