@@ -18,7 +18,6 @@ namespace FreeSmile.Services
         // TODO: GET: article_by_id
         // TODO: GET: listing_by_id
         // TODO: GET: sharing_by_id
-        // TODO: create case for dentist          // TODO: edit case for dentist    // TODO: delete case for dentist
         // TODO: create sharing for dentist       // TODO: edit sharing for dentist // TODO: delete sharing for dentist
         // TODO: create article                   // TODO: edit article             // TODO: delete article
         // TODO: POST: create listing             // TODO: PUT: edit listing        // TODO: DELETE: listing

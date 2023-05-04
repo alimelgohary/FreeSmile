@@ -227,15 +227,14 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
         }
 
-        [Authorize(Roles = "Patient,Dentist,Admin,SuperAdmin")]
-        [SwaggerOperation(Summary = $"Takes {nameof(case_post_id)} as query & deletes a case (patient or dentist or admin). This should return {nameof(RegularResponse)} with a success message")]
-        [HttpDelete("DeleteCase")]
-        public async Task<IActionResult> DeleteCaseAsync(int case_post_id)
+        [SwaggerOperation(Summary = $"Takes {nameof(post_id)} as query & deletes a post of any type (case-patient or case-dentist or sharing or listing or article). Admin also can delete any violated post. This should return {nameof(RegularResponse)} with a success message")]
+        [HttpDelete("DeletePost")]
+        public async Task<IActionResult> DeleteAnyPostTypeAsync(int post_id)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
 
-            RegularResponse res = await _commonService.DeletePostAsync(user_id_int, case_post_id);
+            RegularResponse res = await _commonService.DeletePostAsync(user_id_int, post_id);
             
             return StatusCode(res.StatusCode, res);
         }
