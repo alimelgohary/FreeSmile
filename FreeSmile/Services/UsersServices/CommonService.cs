@@ -446,7 +446,7 @@ namespace FreeSmile.Services
             return null;
         }
 
-        public async Task<byte[]?> GetProfilePictureDangerousAsync(int user_id, byte size)
+        public async Task<byte[]?> GetProfilePictureDangerousAsync(int user_id, byte size = 1)
         {
             var imagePath = GetProfilePicturesPath(user_id, size);
             if (File.Exists(imagePath))
