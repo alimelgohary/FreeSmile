@@ -1,5 +1,4 @@
 ﻿using FreeSmile.ActionFilters;
-using FreeSmile.Controllers;
 using FreeSmile.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -7,6 +6,9 @@ using static FreeSmile.Services.Helper;
 using static FreeSmile.Services.DirectoryHelper;
 using FreeSmile.DTOs.Settings;
 using FreeSmile.DTOs.Auth;
+using FreeSmile.DTOs.Posts;
+using System.Globalization;
+using Humanizer;
 
 namespace FreeSmile.Services
 {
@@ -180,6 +182,61 @@ namespace FreeSmile.Services
             return await GetSettingsAsync(user_id);
         }
 
+        public async Task<List<GetCaseDto>> GetPatientsCasesAsync(int user_id, int page, int size, int gov_id, int case_type_id)
+        {
+            bool isEnglish = Thread.CurrentThread.CurrentCulture.Name == "en";
+            bool allTypes = case_type_id == 0;
+            if (gov_id == 0)
+            {
+                var dentist = await _context.Dentists.AsNoTracking()
+                                                     .Select(x =>
+                                                        new
+                                                        {
+                                                            x.DentistId,
+                                                            gov_id = x.CurrentUniversityNavigation.Gov.GovId
+                                                        }).FirstOrDefaultAsync(x => x.DentistId == user_id);
+                gov_id = dentist!.gov_id;
+            }
+
+            var excluded_user_ids = await _commonService.GetUserEnemiesAsync(user_id);
+
+            var result = from cas in _context.Cases.AsNoTracking()
+                         join post in _context.Posts.AsNoTracking() on cas.CaseId equals post.PostId
+                         join user in _context.Users.AsNoTracking() on post.WriterId equals user.Id
+                         join patient in _context.Patients.AsNoTracking() on user.Id equals patient.PatientId
+                         where !excluded_user_ids.Contains(post.WriterId)
+                         where cas.GovernateId == gov_id
+                         where allTypes || cas.CaseTypeId == case_type_id
+                         orderby post.TimeUpdated ?? post.TimeWritten descending
+                         select new GetCaseDto
+                         {
+                             UserInfo = new()
+                             {
+                                 UserId = post.WriterId,
+                                 FullName = user.Fullname,
+                                 Username = user.Username,
+                                 ProfilePicture = null,
+                             },
+                             PostId = post.PostId,
+                             Title = post.Title,
+                             Body = post.Body,
+                             TimeWritten = post.TimeWritten.Humanize(default, default, CultureInfo.CurrentCulture),
+                             TimeUpdated = post.TimeUpdated != null ? post.TimeUpdated.Humanize(default, default, CultureInfo.CurrentCulture) : null,
+                             Images = null,
+                             Phone = user.VisibleContact ? user.Phone : null,
+                             Governorate = isEnglish ? cas.Governate.NameEn : cas.Governate.NameAr,
+                             CaseType = isEnglish ? cas.CaseType.NameEn : cas.CaseType.NameAr,
+                         };
+
+            var list = result.Skip(--page * size).Take(size).ToList();
+            await Parallel.ForEachAsync(list, async (post, cancellationToken) =>
+            {
+                post.UserInfo.ProfilePicture = await _commonService.GetProfilePictureDangerousAsync(post.UserInfo.UserId, 1);
+                post.Images = await _commonService.GetPostImagesAsync(post.PostId);
+            });
+
+            return list;
+        }
     }
 }
 

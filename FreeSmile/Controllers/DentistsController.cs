@@ -8,6 +8,8 @@ using FreeSmile.ActionFilters;
 using Swashbuckle.AspNetCore.Annotations;
 using FreeSmile.DTOs.Settings;
 using FreeSmile.DTOs.Auth;
+using FreeSmile.DTOs.Posts;
+using FreeSmile.DTOs;
 
 namespace FreeSmile.Controllers
 {
@@ -51,6 +53,18 @@ namespace FreeSmile.Controllers
             var res = await _dentistService.UpdateSettingsAsync(value, user_id_int);
 
             return Ok(res);
+        }
+
+        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Page)}, {nameof(pageSize.Size)}, {nameof(gov_id.GovernorateId)}, {nameof(caseTypeDto.CaseTypeId)} as query and returns patients cases in the requested governorate, and caseType. DEFAULT is dentist's university location and all types. (returns List of {nameof(GetCaseDto)})")]
+        [HttpGet("GetPatientsCases")]
+        public async Task<IActionResult> GetPatientsCasesAsync([FromQuery] PageSize pageSize, [FromQuery] GovernorateDto gov_id, [FromQuery] CaseTypeDto caseTypeDto)
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+
+            List<GetCaseDto> result = await _dentistService.GetPatientsCasesAsync(user_id_int, pageSize.Page, pageSize.Size, gov_id.GovernorateId, caseTypeDto.CaseTypeId);
+
+            return Ok(result);
         }
 
         #region DummyActions
