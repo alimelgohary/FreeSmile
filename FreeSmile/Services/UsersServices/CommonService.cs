@@ -76,6 +76,20 @@ namespace FreeSmile.Services
             return !user2_blocked_user1 && !user2_is_blocked_by_user1;
         }
 
+        public async Task<IEnumerable<int>> GetUserEnemiesAsync(int user_id)
+        {
+            var excluded = await _context.Users.AsNoTracking()
+                                         .Select(x =>
+                                            new
+                                            {
+                                                x.Id,
+                                                Blockeds = x.Blockeds.Select(x => x.Id),
+                                                Blockers = x.Blockers.Select(x => x.Id)
+                                            })
+                                         .FirstOrDefaultAsync(x => x.Id == user_id);
+
+            return excluded!.Blockeds.Concat(excluded.Blockers);
+        }
         public async Task<ReviewDto> GetReviewAsync(int user_id)
         {
             var review = await _context.Reviews

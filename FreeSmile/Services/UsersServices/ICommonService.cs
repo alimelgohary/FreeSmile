@@ -12,6 +12,7 @@ namespace FreeSmile.Services
         public Task<Role> GetCurrentRole(int user_id);
         public Task DeletePostDangerousAsync(int id);
         public Task<bool> CanUsersCommunicateAsync(int user_id, int other_user_id);
+        public Task<IEnumerable<int>> GetUserEnemiesAsync(int user_id);
         public Task<ReviewDto> GetReviewAsync(int user_id);
         public Task<RegularResponse> AddUpdateReviewAsync(ReviewDto value, int user_id);
         public Task<RegularResponse> DeleteReviewAsync(int user_id);

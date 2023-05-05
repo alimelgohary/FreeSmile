@@ -3,11 +3,12 @@ using Microsoft.Extensions.Localization;
 using FreeSmile.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using static FreeSmile.Services.Helper;
 using FreeSmile.ActionFilters;
 using Swashbuckle.AspNetCore.Annotations;
 using DTOs;
 using FreeSmile.DTOs.Settings;
+using FreeSmile.DTOs;
+using FreeSmile.DTOs.Posts;
 
 namespace FreeSmile.Controllers
 {
@@ -51,5 +52,22 @@ namespace FreeSmile.Controllers
 
             return Ok(res);
         }
+
+        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Page)}, {nameof(pageSize.Size)}, {nameof(gov_id.GovernorateId)} as query and returns dentists cases in the requested governorate (Default Cairo) (returns List of {nameof(GetCaseDto)})")]
+        [HttpGet("GetDentistsCases")]
+        public async Task<IActionResult> GetDentistsCasesAsync([FromQuery] PageSize pageSize, [FromQuery] GovernorateDto gov_id)
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+
+            List<GetCaseDto> result= await _patientService.GetDentistsCases(user_id_int, pageSize.Page, pageSize.Size, gov_id.GovernorateId);
+
+            return Ok(result);
+        }
+
+        #region DummyActions
+        [HttpPost("Dummy")]
+        public void DummyAction2(GetCaseDto v) { } // Only for including GetCaseDto in Swagger
+        #endregion
     }
 }

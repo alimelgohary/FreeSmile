@@ -1,7 +1,10 @@
 ﻿using FreeSmile.ActionFilters;
+using FreeSmile.DTOs.Posts;
 using FreeSmile.DTOs.Settings;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using System.Globalization;
 
 namespace FreeSmile.Services
 {
@@ -73,6 +76,52 @@ namespace FreeSmile.Services
             };
         }
 
+        public async Task<List<GetCaseDto>> GetDentistsCases(int user_id, int page, int size, int gov_id)
+        {
+            bool isEnglish = Thread.CurrentThread.CurrentCulture.Name == "en";
 
+            var excluded_user_ids = await _commonService.GetUserEnemiesAsync(user_id);
+
+            var result = from cas in _context.Cases.AsNoTracking()
+                         join post in _context.Posts.AsNoTracking() on cas.CaseId equals post.PostId
+                         join user in _context.Users.AsNoTracking() on post.WriterId equals user.Id
+                         join dentist in _context.Dentists.AsNoTracking() on user.Id equals dentist.DentistId
+                         where !excluded_user_ids.Contains(post.WriterId)
+                         where cas.GovernateId == gov_id
+                         orderby post.TimeUpdated ?? post.TimeWritten descending
+                         select new GetCaseDto
+                         {
+                             UserInfo = new()
+                             {
+                                 UserId = post.WriterId,
+                                 FullName = user.Fullname,
+                                 Username = user.Username,
+                                 ProfilePicture = null,
+                             },
+                             DentistInfo = new()
+                             {
+                                 AcademicDegree = isEnglish ? dentist.CurrentDegreeNavigation.NameEn : dentist.CurrentDegreeNavigation.NameAr,
+                                 University = isEnglish ? dentist.CurrentUniversityNavigation.NameEn : dentist.CurrentUniversityNavigation.NameAr
+                             },
+                             PostId = post.PostId,
+                             Title = post.Title,
+                             Body = post.Body,
+                             TimeWritten = post.TimeWritten.Humanize(default, default, CultureInfo.CurrentCulture),
+                             TimeUpdated = post.TimeUpdated != null ? post.TimeUpdated.Humanize(default, default, CultureInfo.CurrentCulture) : null,
+                             Images = null,
+                             Phone = user.VisibleContact ? user.Phone : null,
+                             Governorate = isEnglish ? cas.Governate.NameEn : cas.Governate.NameAr,
+                             CaseType = isEnglish ? cas.CaseType.NameEn : cas.CaseType.NameAr,
+                         };
+
+            var list = result.Skip(--page * size).Take(size).ToList();
+            await Parallel.ForEachAsync(list, async (post, cancellationToken) =>
+            {
+                post.UserInfo.ProfilePicture = await _commonService.GetProfilePictureDangerousAsync(post.UserInfo.UserId, 1);
+                post.Images = await _commonService.GetPostImagesAsync(post.PostId);
+            });
+
+            return list;
+        }
     }
 }
