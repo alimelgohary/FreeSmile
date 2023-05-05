@@ -411,9 +411,7 @@ namespace FreeSmile.Services
             if ((other_user_id == 0 && auth_user_id != 0) || auth_user_id == other_user_id) //0 1
             {
                 // authenticated user asking for his profile picture
-                var imagePath = GetProfilePicturesPath(auth_user_id, size);
-                if (File.Exists(imagePath))
-                    return await File.ReadAllBytesAsync(imagePath);
+                return await GetProfilePictureDangerousAsync(auth_user_id, size);
             }
             else if (other_user_id != 0 && auth_user_id != 0) // 1 1 
             {
@@ -423,21 +421,24 @@ namespace FreeSmile.Services
                     if (await CanUsersCommunicateAsync(auth_user_id, other_user_id) == false)
                         throw new GeneralException(_localizer["personnotavailable"]);
 
-                    var imagePath = GetProfilePicturesPath(other_user_id, size);
-                    if (File.Exists(imagePath))
-                        return await File.ReadAllBytesAsync(imagePath);
+                    return await GetProfilePictureDangerousAsync(other_user_id, size);
                 }
             }
             else if (other_user_id != 0 && auth_user_id == 0) // 1 0
             {
                 // stranger asking for some user's profile
-                var imagePath = GetProfilePicturesPath(other_user_id, size);
-                if (File.Exists(imagePath))
-                    return await File.ReadAllBytesAsync(imagePath);
+                return await GetProfilePictureDangerousAsync(other_user_id, size);
             }
             return null;
         }
 
+        public async Task<byte[]?> GetProfilePictureDangerousAsync(int user_id, byte size)
+        {
+            var imagePath = GetProfilePicturesPath(user_id, size);
+            if (File.Exists(imagePath))
+                return await File.ReadAllBytesAsync(imagePath);
+            return null;
+        }
         public async Task<byte[]> AddUpdateProfilePictureAsync(AddProfilePictureDto value, int user_id)
         {
             var userDir = GetProfilePicturesUser(user_id);
@@ -542,7 +543,7 @@ namespace FreeSmile.Services
                 {
                     CaseId = post_id,
                     CaseTypeId = (int)value.CaseTypeId!,
-                    GovernateId = value.GovernorateId
+                    GovernateId = gov_id
                 };
                 await _context.AddAsync(case1);
                 await _context.SaveChangesAsync();
@@ -598,6 +599,21 @@ namespace FreeSmile.Services
                 throw;
             }
 
+        }
+
+        public async Task<List<byte[]>?> GetPostImagesAsync(int postId)
+        {
+            var path = GetPostsPathPost(postId);
+            List<byte[]> imageList = new List<byte[]>();
+            await Parallel.ForEachAsync(Directory.EnumerateFiles(path), async (file, token) =>
+            {
+                byte[] bytes = await File.ReadAllBytesAsync(file);
+                lock (imageList)
+                {
+                    imageList.Add(bytes);
+                }
+            });
+            return imageList;
         }
 
         public async Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id)
@@ -666,7 +682,7 @@ namespace FreeSmile.Services
                                                 VisibleBd = x.VisibleBd
                                             })
                                             .FirstOrDefaultAsync(x => x.UserId == user_id);
-            user!.ProfilePicture = await GetProfilePictureAsync(user_id, user_id, size: 1);
+            user!.ProfilePicture = await GetProfilePictureDangerousAsync(user_id, size: 1);
 
             return user;
         }

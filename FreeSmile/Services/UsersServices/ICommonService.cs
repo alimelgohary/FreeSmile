@@ -25,10 +25,12 @@ namespace FreeSmile.Services
         public Task<List<GetMessageDto>> GetChatHistoryAsync(int user_id, int other_user_id, int page, int size);
         public Task<List<RecentMessagesDto>> GetRecentMessagesAsync(int user_id, int page, int size);
         public Task<byte[]?> GetProfilePictureAsync(int auth_user_id, int other_user_id, byte size);
+        public Task<byte[]?> GetProfilePictureDangerousAsync(int user_id, byte size);
         public Task<byte[]> AddUpdateProfilePictureAsync(AddProfilePictureDto value, int user_id);
         public RegularResponse DeleteProfilePictureAsync(int user_id);
         public Task<int> AddCaseAsync(AddCaseDto value, int user_id);
         public Task<int> AddPostAsync(AddPostDto value, int user_id);
+        public Task<List<byte[]>?> GetPostImagesAsync(int postId);
         public Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id);
         public Task<RegularResponse> DeletePostAsync(int user_id, int case_post_id);
         public Task<GetCommonSettingsDto> GetCommonSettingsAsync(int user_id);
