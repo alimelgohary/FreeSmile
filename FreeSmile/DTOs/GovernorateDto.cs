@@ -7,7 +7,7 @@ namespace FreeSmile.DTOs
     public class GovernorateDto
     {
         [DisplayName(nameof(GovernorateId))]
-        [ForeignKey(nameof(Governate), "gov_id")]
-        public int GovernorateId { get; set; } = 1;
+        [ForeignKey(nameof(Governate), "gov_id", bypassZero: true)]
+        public int GovernorateId { get; set; }
     }
 }

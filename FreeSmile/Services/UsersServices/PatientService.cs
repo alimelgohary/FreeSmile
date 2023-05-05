@@ -76,9 +76,11 @@ namespace FreeSmile.Services
             };
         }
 
-        public async Task<List<GetCaseDto>> GetDentistsCases(int user_id, int page, int size, int gov_id)
+        public async Task<List<GetCaseDto>> GetDentistsCases(int user_id, int page, int size, int gov_id, int case_type_id)
         {
             bool isEnglish = Thread.CurrentThread.CurrentCulture.Name == "en";
+            bool allGov = gov_id == 0;
+            bool allTypes = case_type_id == 0;
 
             var excluded_user_ids = await _commonService.GetUserEnemiesAsync(user_id);
 
@@ -87,7 +89,8 @@ namespace FreeSmile.Services
                          join user in _context.Users.AsNoTracking() on post.WriterId equals user.Id
                          join dentist in _context.Dentists.AsNoTracking() on user.Id equals dentist.DentistId
                          where !excluded_user_ids.Contains(post.WriterId)
-                         where cas.GovernateId == gov_id
+                         where allGov || cas.GovernateId == gov_id
+                         where allTypes || cas.CaseTypeId == case_type_id
                          orderby post.TimeUpdated ?? post.TimeWritten descending
                          select new GetCaseDto
                          {

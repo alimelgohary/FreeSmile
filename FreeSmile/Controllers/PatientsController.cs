@@ -53,14 +53,14 @@ namespace FreeSmile.Controllers
             return Ok(res);
         }
 
-        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Page)}, {nameof(pageSize.Size)}, {nameof(gov_id.GovernorateId)} as query and returns dentists cases in the requested governorate (Default Cairo) (returns List of {nameof(GetCaseDto)})")]
+        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Page)}, {nameof(pageSize.Size)}, {nameof(gov_id.GovernorateId)}, {nameof(caseTypeDto.CaseTypeId)} as query and returns dentists cases in the requested governorate, and caseType. DEFAULT is all governorates and all types. (returns List of {nameof(GetCaseDto)})")]
         [HttpGet("GetDentistsCases")]
-        public async Task<IActionResult> GetDentistsCasesAsync([FromQuery] PageSize pageSize, [FromQuery] GovernorateDto gov_id)
+        public async Task<IActionResult> GetDentistsCasesAsync([FromQuery] PageSize pageSize, [FromQuery] GovernorateDto gov_id, [FromQuery] CaseTypeDto caseTypeDto)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
 
-            List<GetCaseDto> result= await _patientService.GetDentistsCases(user_id_int, pageSize.Page, pageSize.Size, gov_id.GovernorateId);
+            List<GetCaseDto> result= await _patientService.GetDentistsCases(user_id_int, pageSize.Page, pageSize.Size, gov_id.GovernorateId, caseTypeDto.CaseTypeId);
 
             return Ok(result);
         }
