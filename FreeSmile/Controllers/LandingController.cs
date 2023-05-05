@@ -55,6 +55,7 @@ namespace FreeSmile.Controllers
         {
             return Ok(_context.Reviews.OrderByDescending(y => y.ReviewId).Skip(size * --page).Take(size).Select(
                 x => new {
+                    reviewerId = x.Reviewer.Id,
                     reviewer = x.Reviewer.Username,
                     rating = x.Rating,
                     opinion = x.Opinion
