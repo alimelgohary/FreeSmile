@@ -550,7 +550,7 @@ namespace FreeSmile
                     .HasDefaultValueSql("(getutcdate())");
 
                 entity.Property(e => e.Title)
-                    .HasMaxLength(20)
+                    .HasMaxLength(50)
                     .HasColumnName("title");
 
                 entity.Property(e => e.WriterId).HasColumnName("writer_id");
