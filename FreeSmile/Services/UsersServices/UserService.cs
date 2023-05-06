@@ -263,15 +263,11 @@ namespace FreeSmile.Services
 
             try
             {
-                user.Notifications.Add(new()
-                {
-                    Temp = await _context.NotificationTemplates.FirstOrDefaultAsync(x => x.TempName == NotificationTemplates.Reset_Password.ToString())
-                });
-                await _context.SaveChangesAsync();
+                await _commonService.AddNotificationDangerousAsync(user.Id, NotificationTemplates.Reset_Password);
             }
             catch (Exception ex)
             {
-                _logger.LogError("{Message}", ex.Message);
+                _logger.LogError(ex.ToString());
             }
 
             return RegularResponse.Success(
@@ -294,15 +290,11 @@ namespace FreeSmile.Services
 
             try
             {
-                user.Notifications.Add(new()
-                {
-                    Temp = await _context.NotificationTemplates.FirstOrDefaultAsync(x => x.TempName == NotificationTemplates.Changed_Password.ToString())
-                });
-                await _context.SaveChangesAsync();
+                await _commonService.AddNotificationDangerousAsync(user.Id, NotificationTemplates.Changed_Password);
             }
             catch (Exception ex)
             {
-                _logger.LogError("{Message}", ex.Message);
+                _logger.LogError(ex.ToString());
             }
 
             return RegularResponse.Success(
@@ -353,14 +345,15 @@ namespace FreeSmile.Services
             user.OtpExp = DateTime.UtcNow + MyConstants.OTP_AGE;
 
             await _context.SaveChangesAsync();
-
-            SendEmail(user.Email,
-                    _localizer["otpemailsubject"],
-                    MyConstants.otpemailfilename,
-                    _localizer["lang"],
-            true,
-                    user.Username, MyConstants.OTP_AGE.Minutes, user.Otp);
-
+            
+            string lang = Thread.CurrentThread.CurrentCulture.Name;
+            SendEmail(mailTo: user.Email,
+                      subject: _localizer["otpemailsubject"],
+                      htmlFileName: MyConstants.otpemailfilename,
+                      lang: lang,
+                      gmailApi: true,
+                      user.Username, MyConstants.OTP_AGE.Minutes, user.Otp);
+        
             return RegularResponse.Success(
                 message: _localizer["SentOtpSuccessfully", user.Email],
                 nextPage: Pages.same.ToString()
@@ -381,14 +374,14 @@ namespace FreeSmile.Services
 
             await _context.SaveChangesAsync();
 
+            string lang = Thread.CurrentThread.CurrentCulture.Name;
+            SendEmail(mailTo: user.Email,
+                      subject: _localizer["otpemailsubject"],
+                      htmlFileName: MyConstants.otpemailfilename,
+                      lang:lang,
+                      gmailApi: true,
+                      user.Username, MyConstants.OTP_AGE.Minutes, user.Otp);
             
-                SendEmail(user.Email,
-                        _localizer["otpemailsubject"],
-                        MyConstants.otpemailfilename,
-                        _localizer["lang"],
-                true,
-                        user.Username, MyConstants.OTP_AGE.Minutes, user.Otp);
-
             return RegularResponse.Success(
                 message: _localizer["SentOtpSuccessfully", ObscureEmail(user.Email)],
                 nextPage: Pages.same.ToString()
