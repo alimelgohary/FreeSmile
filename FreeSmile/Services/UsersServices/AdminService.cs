@@ -1,6 +1,8 @@
 ﻿using FreeSmile.DTOs.Admins;
 using Microsoft.Extensions.Localization;
 using static FreeSmile.Services.DirectoryHelper;
+using static FreeSmile.Services.Helper;
+using static FreeSmile.Services.EmailService;
 using Microsoft.EntityFrameworkCore;
 using FreeSmile.ActionFilters;
 
@@ -12,13 +14,15 @@ namespace FreeSmile.Services
         private readonly IStringLocalizer<AdminService> _localizer;
         private readonly FreeSmileContext _context;
         private readonly ICommonService _commonService;
+        private readonly IDentistService _dentistService;
 
-        public AdminService(ILogger<AdminService> logger, FreeSmileContext context, IStringLocalizer<AdminService> localizer, ICommonService commonService)
+        public AdminService(ILogger<AdminService> logger, FreeSmileContext context, IStringLocalizer<AdminService> localizer, ICommonService commonService, IDentistService dentistService)
         {
             _logger = logger;
             _context = context;
             _localizer = localizer;
             _commonService = commonService;
+            _dentistService = dentistService;
         }
 
         public async Task<int> GetNumberOfVerificationRequestsAsync()
@@ -65,6 +69,74 @@ namespace FreeSmile.Services
                 return request;
             }
             throw new NotFoundException(_localizer["NotFound", _localizer["request"]]);
+        }
+
+        public async Task<RegularResponse> AcceptVerificationRequestAsync(int dentist_id)
+        {
+            //TODO: Make this a transaction?
+            var v = await _context.VerificationRequests.AsNoTracking()
+                                  .Select(x => new { x.OwnerId, x.UniversityRequested, x.DegreeRequested })
+                                  .FirstOrDefaultAsync(x => x.OwnerId == dentist_id);
+            
+            var dentist = await _context.Dentists.FindAsync(dentist_id)!;
+            dentist!.IsVerifiedDentist = true;
+            dentist.CurrentDegree = v!.DegreeRequested;
+            dentist.CurrentUniversity = v.UniversityRequested;
+            await _context.SaveChangesAsync();
+            await _dentistService.DeleteVerificationRequestAsync(dentist_id);
+            
+            try
+            {
+                string lang = Thread.CurrentThread.CurrentCulture.Name; // TODO: Should use dentist lang not admin lang
+                var userInfo = await _context.Users.AsNoTracking()
+                                               .Select(x => new { x.Id, x.Username, x.Email })
+                                               .FirstOrDefaultAsync(u => u.Id == dentist_id);
+                
+                SendEmail(mailTo: userInfo!.Email,
+                          subject: _localizer["RequestAcceptEmailSubject"],
+                          htmlFileName: MyConstants.acceptemailfilename,
+                          lang: lang,
+                          gmailApi: true,
+                          userInfo.Username, lang);
+                
+                await _commonService.AddNotificationDangerousAsync(dentist_id, NotificationTemplates.Verification_Success);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+            }
+            return RegularResponse.Success(message: _localizer["requestaccepted"]);
+        }
+
+        public async Task<RegularResponse> RejectVerificationRequestAsync(int dentist_id, int reject_reason)
+        {
+            await _dentistService.DeleteVerificationRequestAsync(dentist_id);
+
+            try
+            {
+                string lang = Thread.CurrentThread.CurrentCulture.Name; // TODO: Should use dentist lang not admin lang
+
+                var userInfo = await _context.Users.AsNoTracking()
+                                                   .Select(x => new { x.Id, x.Username, x.Email })
+                                                   .FirstOrDefaultAsync(u => u.Id == dentist_id);
+                
+                var temp = await _context.NotificationTemplates.AsNoTracking()
+                                                                .Select(x => new { x.TempId, body = x.Lang(lang) })
+                                                                .FirstOrDefaultAsync(x => x.TempId == reject_reason);
+                SendEmail(mailTo: userInfo!.Email,
+                          subject: _localizer["RequestRejectEmailSubject"],
+                          htmlFileName: MyConstants.rejectemailfilename,
+                          lang: lang,
+                          gmailApi: true,
+                          userInfo.Username, temp!.body, lang);
+
+                await _commonService.AddNotificationDangerousAsync(dentist_id, (NotificationTemplates)reject_reason);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+            }
+            return RegularResponse.Success(message: _localizer["requestrejected"]);
         }
     }
 }

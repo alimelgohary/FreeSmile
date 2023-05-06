@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using FreeSmile.ActionFilters;
 using Swashbuckle.AspNetCore.Annotations;
 using FreeSmile.DTOs.Admins;
+using FreeSmile.DTOs;
+using static FreeSmile.Services.Helper;
 
 namespace FreeSmile.Controllers
 {
@@ -41,6 +43,21 @@ namespace FreeSmile.Controllers
             return Ok(result);
         }
 
+        [SwaggerOperation(Summary = $"Takes {nameof(dentistId.Id)}, {nameof(rejectReasonDto.rejectReason)} as Query & Rejects dentist verification request and emails reason to dentist (1: Incorrect_Info, 2: Photos_Not_Clear, 3: Missing_Photos). This should return {nameof(RegularResponse)} with a success message")]
+        [HttpPut("RejectVerificationRequest")]
+        public async Task<IActionResult> RejectVerificationRequestAsync([FromQuery] DentistId dentistId, [FromQuery] RejectReasonDto rejectReasonDto)
+        {
+            var result = await _adminService.RejectVerificationRequestAsync((int)dentistId.Id!, (int)rejectReasonDto.rejectReason!);
+            return Ok(result);
+        }
+
+        [SwaggerOperation(Summary = $"Takes {nameof(dentistId.Id)} as Query & Accepts dentist verification request and emails success message to dentist. This should return {nameof(RegularResponse)} with a success message")]
+        [HttpPut("AcceptVerificationRequest")]
+        public async Task<IActionResult> AcceptVerificationRequestAsync([FromQuery] DentistId dentistId)
+        {
+            var result = await _adminService.AcceptVerificationRequestAsync((int)dentistId.Id!);
+            return Ok(result);
+        }
         #region DummyActions
         [HttpPost("Dummy")]
         public void DummyAction2(GetVerificationRequestDto v) { } // Only for including GetVerificationRequestDto in Swagger

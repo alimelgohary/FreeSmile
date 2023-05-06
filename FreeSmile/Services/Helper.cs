@@ -155,7 +155,7 @@ namespace FreeSmile.Services
         }
         public enum NotificationTemplates
         {
-            Incorrect_Info,
+            Incorrect_Info = 1,
             Photos_Not_Clear,
             Missing_Photos,
             Verification_Success,

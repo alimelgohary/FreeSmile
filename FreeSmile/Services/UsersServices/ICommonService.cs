@@ -36,7 +36,7 @@ namespace FreeSmile.Services
         public Task<RegularResponse> DeletePostAsync(int user_id, int case_post_id);
         public Task<GetCommonSettingsDto> GetCommonSettingsAsync(int user_id);
         public Task<GetCommonSettingsDto> UpdateCommonSettingsAsync(SetCommonSettingsDto settings, int user_id);
+        public Task AddNotificationDangerousAsync(int owner_id, NotificationTemplates temp_name, string? post_title = null, int? post_id = null, string? actor_username = null);
 
-        // TODO: Don't forget to not include blocked or blocking people posts
     }
 }

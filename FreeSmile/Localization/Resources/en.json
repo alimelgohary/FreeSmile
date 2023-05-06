@@ -98,5 +98,10 @@
   "fbusername": "Facebook username",
   "linkedusername": "LinkedIn username",
   "gscholarusername": "Google Scholar username",
-  "researchgateusername": "ResearchGate username"
+  "researchgateusername": "ResearchGate username",
+  "requestrejectemailsubject": "FreeSmile: Your dentist verification request is rejected",
+  "requestacceptemailsubject": "FreeSmile: Your dentist verification request is accepted",
+  "rejectreason": "Reason of rejection",
+  "requestrejected": "Verification request is rejected",
+  "requestaccepted": "Verification request is accepted successfully"
 }

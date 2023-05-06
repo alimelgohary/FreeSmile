@@ -719,5 +719,18 @@ namespace FreeSmile.Services
 
             return await GetCommonSettingsAsync(user_id);
         }
+
+        public async Task AddNotificationDangerousAsync(int owner_id, NotificationTemplates temp_name, string? post_title, int? post_id, string? actor_username)
+        {
+            await _context.Notifications.AddAsync(new Notification()
+            {
+                OwnerId = owner_id,
+                TempId = (int)temp_name,
+                PostTitle = post_title,
+                PostId = post_id,
+                ActorUsername = actor_username
+            });
+            await _context.SaveChangesAsync();
+        }
     }
 }

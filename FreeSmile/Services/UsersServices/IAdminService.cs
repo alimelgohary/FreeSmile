@@ -1,4 +1,5 @@
 ﻿using FreeSmile.DTOs.Admins;
+using static FreeSmile.Services.Helper;
 
 namespace FreeSmile.Services
 {
@@ -7,11 +8,11 @@ namespace FreeSmile.Services
         public Task<int> GetNumberOfVerificationRequestsAsync();
         public Task<GetVerificationRequestDto> GetVerificationRequestAsync(int number);
         public Task<List<byte[]>> GetVerificationImagesAsync(int dentist_id);
+        public Task<RegularResponse> AcceptVerificationRequestAsync(int dentist_id);
+        public Task<RegularResponse> RejectVerificationRequestAsync(int dentist_id, int reject_reason);
 
-        // TODO: PUT: admin reject verification request
-        // TODO: PUT: admin accept verification request
         // TODO: PUT: admin suspend user by ID (post, comment, review)
-        // TODO: PUT: admin show reviews (From landing controller)
+        // TODO: PUT: admin show all reviews (From landing endpoint)
         // TODO: DELETE: admin delete offensive reviews
         // TODO: GET: superadmin show admins
         // TODO: PUT: superadmin suspend admin
