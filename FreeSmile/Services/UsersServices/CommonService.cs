@@ -144,7 +144,7 @@ namespace FreeSmile.Services
         {
             List<Notification> notifications;
             List<GetNotificationDto> actualNotifications = new();
-
+            string lang = Thread.CurrentThread.CurrentCulture.Name;
             notifications = await _context.Notifications
                                 .AsNoTracking()
                                 .Where(x => x.OwnerId == user_id)
@@ -160,7 +160,7 @@ namespace FreeSmile.Services
                     NotificationId = notification.NotificationId,
                     HumanizedTime = notification.SentAt.Humanize(culture: CultureInfo.CurrentCulture)!,
                     Seen = (bool)notification.Seen!,
-                    Body = string.Format(notification.Temp.Lang(_localizer["lang"]), notification.ActorUsername, notification.PostTitle),
+                    Body = string.Format(notification.Temp.Lang(lang), notification.ActorUsername, notification.PostTitle),
                     NextPage = string.Format(notification.Temp.NextPage, notification.PostId),
                     Icon = notification.Temp.Icon
                 });
