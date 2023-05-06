@@ -178,7 +178,7 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
         }
 
-        [SwaggerOperation(Summary = "Deletes dentist's verification request")]
+        [SwaggerOperation(Summary = $"Deletes dentist's verification request. Should return {nameof(RegularResponse)} with a success message")]
         [ServiceFilter(typeof(ValidUser), Order = 1)]
         [ServiceFilter(typeof(NotSuspended), Order = 2)]
         [ServiceFilter(typeof(VerifiedEmail), Order = 3)]
