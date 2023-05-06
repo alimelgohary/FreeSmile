@@ -117,7 +117,7 @@ namespace FreeSmile.Services
                 Directory.Delete(userDir, true);
 
             return RegularResponse.Success(message: _localizer["DeletedRequest"],
-                                            nextPage: Pages.pendingVerificationAcceptance.ToString());
+                                            nextPage: Pages.verifyDentist.ToString());
         }
         public async Task<GetDentistSettingsDto> GetSettingsAsync(int user_id)
         {
