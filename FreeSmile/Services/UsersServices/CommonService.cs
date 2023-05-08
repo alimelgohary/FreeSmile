@@ -619,14 +619,16 @@ namespace FreeSmile.Services
         {
             var path = GetPostsPathPost(postId);
             List<byte[]> imageList = new List<byte[]>();
+            if (!Directory.Exists(path))
+                return imageList;
             await Parallel.ForEachAsync(Directory.EnumerateFiles(path), async (file, token) =>
+        {
+            byte[] bytes = await File.ReadAllBytesAsync(file);
+            lock (imageList)
             {
-                byte[] bytes = await File.ReadAllBytesAsync(file);
-                lock (imageList)
-                {
-                    imageList.Add(bytes);
-                }
-            });
+                imageList.Add(bytes);
+            }
+        });
             return imageList;
         }
 
