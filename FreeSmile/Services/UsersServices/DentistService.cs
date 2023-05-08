@@ -186,6 +186,7 @@ namespace FreeSmile.Services
         {
             bool isEnglish = Thread.CurrentThread.CurrentCulture.Name == "en";
             bool allTypes = case_type_id == 0;
+            // Default governorate = dentist univeristy location
             if (gov_id == 0)
             {
                 var dentist = await _context.Dentists.AsNoTracking()
@@ -200,32 +201,34 @@ namespace FreeSmile.Services
 
             var excluded_user_ids = await _commonService.GetUserEnemiesAsync(user_id);
 
-            var result = from cas in _context.Cases.AsNoTracking()
-                         join post in _context.Posts.AsNoTracking() on cas.CaseId equals post.PostId
-                         join user in _context.Users.AsNoTracking() on post.WriterId equals user.Id
-                         join patient in _context.Patients.AsNoTracking() on user.Id equals patient.PatientId
-                         where !excluded_user_ids.Contains(post.WriterId)
-                         where cas.GovernateId == gov_id
-                         where allTypes || cas.CaseTypeId == case_type_id
-                         orderby post.TimeUpdated ?? post.TimeWritten descending
+            var result = from home in _context.DentistHomeViews.AsNoTracking()
+                         where !excluded_user_ids.Contains(home.UserId)
+                         where home.GovId == gov_id
+                         where allTypes || home.CaseTypeId == case_type_id
+                         orderby home.TimeUpdated ?? home.TimeWritten descending
                          select new GetCaseDto
                          {
                              UserInfo = new()
                              {
-                                 UserId = post.WriterId,
-                                 FullName = user.Fullname,
-                                 Username = user.Username,
+                                 UserId = home.UserId,
+                                 FullName = home.FullName,
+                                 Username = home.Username,
                                  ProfilePicture = null,
                              },
-                             PostId = post.PostId,
-                             Title = post.Title,
-                             Body = post.Body,
-                             TimeWritten = post.TimeWritten.Humanize(default, default, CultureInfo.CurrentCulture),
-                             TimeUpdated = post.TimeUpdated != null ? post.TimeUpdated.Humanize(default, default, CultureInfo.CurrentCulture) : null,
+                             DentistInfo = home.AcademicDegreeEn == null ? null : new()
+                             {
+                                 AcademicDegree = isEnglish ? home.AcademicDegreeEn : home.AcademicDegreeAr!,
+                                 University = isEnglish ? home.CurrentUnivrsityEn! : home.CurrentUnivrsityAr!,
+                             },
+                             PostId = home.PostId,
+                             Title = home.Title,
+                             Body = home.Body,
+                             TimeWritten = home.TimeWritten.Humanize(default, default, CultureInfo.CurrentCulture),
+                             TimeUpdated = home.TimeUpdated == null ? null : home.TimeUpdated.Humanize(default, default, CultureInfo.CurrentCulture),
                              Images = null,
-                             Phone = user.VisibleContact ? user.Phone : null,
-                             Governorate = isEnglish ? cas.Governate.NameEn : cas.Governate.NameAr,
-                             CaseType = isEnglish ? cas.CaseType.NameEn : cas.CaseType.NameAr,
+                             Phone = home.Phone,
+                             Governorate = isEnglish ? home.GovNameEn : home.GovNameAr,
+                             CaseType = isEnglish ? home.CaseTypeEn : home.CaseTypeAr,
                          };
 
             var list = result.Skip(--page * size).Take(size).ToList();

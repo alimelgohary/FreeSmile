@@ -84,37 +84,34 @@ namespace FreeSmile.Services
 
             var excluded_user_ids = await _commonService.GetUserEnemiesAsync(user_id);
 
-            var result = from cas in _context.Cases.AsNoTracking()
-                         join post in _context.Posts.AsNoTracking() on cas.CaseId equals post.PostId
-                         join user in _context.Users.AsNoTracking() on post.WriterId equals user.Id
-                         join dentist in _context.Dentists.AsNoTracking() on user.Id equals dentist.DentistId
-                         where !excluded_user_ids.Contains(post.WriterId)
-                         where allGov || cas.GovernateId == gov_id
+            var result = from cas in _context.PatientHomeViews.AsNoTracking()
+                         where !excluded_user_ids.Contains(cas.UserId)
+                         where allGov || cas.GovId == gov_id
                          where allTypes || cas.CaseTypeId == case_type_id
-                         orderby post.TimeUpdated ?? post.TimeWritten descending
+                         orderby cas.TimeUpdated ?? cas.TimeWritten descending
                          select new GetCaseDto
                          {
                              UserInfo = new()
                              {
-                                 UserId = post.WriterId,
-                                 FullName = user.Fullname,
-                                 Username = user.Username,
+                                 UserId = cas.UserId,
+                                 FullName = cas.FullName,
+                                 Username = cas.Username,
                                  ProfilePicture = null,
                              },
                              DentistInfo = new()
                              {
-                                 AcademicDegree = isEnglish ? dentist.CurrentDegreeNavigation.NameEn : dentist.CurrentDegreeNavigation.NameAr,
-                                 University = isEnglish ? dentist.CurrentUniversityNavigation.NameEn : dentist.CurrentUniversityNavigation.NameAr
+                                 AcademicDegree = isEnglish ? cas.AcademicDegreeEn : cas.AcademicDegreeAr,
+                                 University = isEnglish ? cas.CurrentUnivrsityEn : cas.CurrentUnivrsityAr,
                              },
-                             PostId = post.PostId,
-                             Title = post.Title,
-                             Body = post.Body,
-                             TimeWritten = post.TimeWritten.Humanize(default, default, CultureInfo.CurrentCulture),
-                             TimeUpdated = post.TimeUpdated != null ? post.TimeUpdated.Humanize(default, default, CultureInfo.CurrentCulture) : null,
+                             PostId = cas.PostId,
+                             Title = cas.Title,
+                             Body = cas.Body,
+                             TimeWritten = cas.TimeWritten.Humanize(default, default, CultureInfo.CurrentCulture),
+                             TimeUpdated = cas.TimeUpdated == null ? null : cas.TimeUpdated.Humanize(default, default, CultureInfo.CurrentCulture),
                              Images = null,
-                             Phone = user.VisibleContact ? user.Phone : null,
-                             Governorate = isEnglish ? cas.Governate.NameEn : cas.Governate.NameAr,
-                             CaseType = isEnglish ? cas.CaseType.NameEn : cas.CaseType.NameAr,
+                             Phone = cas.Phone,
+                             Governorate = isEnglish ? cas.GovNameEn : cas.GovNameAr,
+                             CaseType = isEnglish ? cas.CaseTypeEn : cas.CaseTypeAr,
                          };
 
             var list = result.Skip(--page * size).Take(size).ToList();
