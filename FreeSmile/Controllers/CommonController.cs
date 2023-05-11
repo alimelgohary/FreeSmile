@@ -207,8 +207,8 @@ namespace FreeSmile.Controllers
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
-
-            int res = await _commonService.AddCaseAsync(value, user_id_int);
+            string role = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value!;
+            int res = await _commonService.AddCaseAsync(value, user_id_int, role);
 
             return Ok(res);
         }
@@ -220,8 +220,9 @@ namespace FreeSmile.Controllers
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
+            string role = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value!;
 
-            RegularResponse res = await _commonService.UpdateCaseAsync(value, user_id_int);
+            RegularResponse res = await _commonService.UpdateCaseAsync(value, user_id_int, role);
 
             return StatusCode(res.StatusCode, res);
         }
@@ -232,8 +233,9 @@ namespace FreeSmile.Controllers
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
+            string role = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value!;
 
-            RegularResponse res = await _commonService.DeletePostAsync(user_id_int, post_id);
+            RegularResponse res = await _commonService.DeletePostAsync(user_id_int, post_id, role);
             
             return StatusCode(res.StatusCode, res);
         }

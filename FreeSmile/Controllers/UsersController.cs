@@ -65,8 +65,9 @@ namespace FreeSmile.Controllers
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
+            string role = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value!;
 
-            RegularResponse res = await _userService.VerifyAccount(dto.Otp, user_id_int);
+            RegularResponse res = await _userService.VerifyAccount(dto.Otp, user_id_int, role, Response.Cookies);
             return StatusCode(res.StatusCode, res);
         }
 
@@ -85,7 +86,8 @@ namespace FreeSmile.Controllers
             if (!string.IsNullOrEmpty(user_id))
             {
                 int user_id_int = int.Parse(user_id);
-                RegularResponse res = await _userService.RequestEmailOtp(user_id_int);
+                string role = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value!;
+                RegularResponse res = await _userService.RequestEmailOtp(user_id_int, role);
                 return StatusCode(res.StatusCode, res);
             }
 

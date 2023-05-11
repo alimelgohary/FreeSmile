@@ -9,9 +9,9 @@ namespace FreeSmile.Services
         public Task<RegularResponse> AddPatientAsync(UserRegisterDto user, IResponseCookies cookies);
         public Task<RegularResponse> AddDentistAsync(UserRegisterDto user, IResponseCookies cookies);
         public Task<RegularResponse> AddAdminAsync(UserRegisterDto user, IResponseCookies cookies);
-        public Task<RegularResponse> VerifyAccount(string otp, int user_id);
+        public Task<RegularResponse> VerifyAccount(string otp, int user_id, string roleString, IResponseCookies cookies);
         public Task<RegularResponse> Login(UserLoginDto value, IResponseCookies cookies);
-        public Task<RegularResponse> RequestEmailOtp(int user_id);
+        public Task<RegularResponse> RequestEmailOtp(int user_id, string roleString);
         public Task<RegularResponse> ChangePassword(ResetPasswordDto value);
         public Task<RegularResponse> ChangePassword(ChangeKnownPasswordDto value, int user_id_int);
         public Task<RegularResponse> RequestEmailOtp(string usernameOrEmail);

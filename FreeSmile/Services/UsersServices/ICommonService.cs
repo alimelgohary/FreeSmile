@@ -1,7 +1,6 @@
 ﻿using FreeSmile.DTOs;
 using FreeSmile.DTOs.Posts;
 using FreeSmile.DTOs.Settings;
-using FreeSmile.Models;
 using static FreeSmile.Services.AuthHelper;
 using static FreeSmile.Services.Helper;
 
@@ -29,11 +28,11 @@ namespace FreeSmile.Services
         public Task<byte[]?> GetProfilePictureDangerousAsync(int user_id, byte size = 1);
         public Task<byte[]> AddUpdateProfilePictureAsync(AddProfilePictureDto value, int user_id);
         public RegularResponse DeleteProfilePictureAsync(int user_id);
-        public Task<int> AddCaseAsync(AddCaseDto value, int user_id);
+        public Task<int> AddCaseAsync(AddCaseDto value, int user_id, string roleString);
         public Task<int> AddPostAsync(AddPostDto value, int user_id);
         public Task<List<byte[]>?> GetPostImagesAsync(int postId);
-        public Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id);
-        public Task<RegularResponse> DeletePostAsync(int user_id, int case_post_id);
+        public Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id, string roleString);
+        public Task<RegularResponse> DeletePostAsync(int user_id, int case_post_id, string roleString);
         public Task<GetCommonSettingsDto> GetCommonSettingsAsync(int user_id);
         public Task<GetCommonSettingsDto> UpdateCommonSettingsAsync(SetCommonSettingsDto settings, int user_id);
         public Task AddNotificationDangerousAsync(int owner_id, NotificationTemplates temp_name, string? post_title = null, int? post_id = null, string? actor_username = null);

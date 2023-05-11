@@ -1,5 +1,4 @@
 ﻿using FreeSmile.ActionFilters;
-using FreeSmile.Controllers;
 using FreeSmile.DTOs.Auth;
 using FreeSmile.Models;
 using Microsoft.EntityFrameworkCore;
@@ -156,11 +155,11 @@ namespace FreeSmile.Services
 
         }
 
-        public async Task<RegularResponse> VerifyAccount(string otp, int user_id)
+        public async Task<RegularResponse> VerifyAccount(string otp, int user_id, string roleString, IResponseCookies cookies)
         {
             User? user = await _context.Users.FindAsync(user_id);
 
-            Role role = await _commonService.GetCurrentRole(user!.Id);
+            Role role = Enum.Parse<Role>(roleString);
 
             if (user.IsVerified)
                 throw new GeneralException(
@@ -184,10 +183,14 @@ namespace FreeSmile.Services
 
             string nextPage = (role == Role.Dentist) ? Pages.verifyDentist.ToString() : Pages.home.ToString() + role.ToString();
 
+            TimeSpan loginTokenAge = MyConstants.LOGIN_TOKEN_AGE;
+            string token = GetToken(user.Id, loginTokenAge, role, verifiedEmail: true);
+            cookies.Append(MyConstants.AUTH_COOKIE_KEY, token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.None, MaxAge = loginTokenAge, Secure = true });
 
             return RegularResponse.Success(
                 message: _localizer["EmailVerificationSuccess"],
-                nextPage: nextPage
+                nextPage: nextPage,
+                token : token
             );
         }
 
@@ -205,19 +208,16 @@ namespace FreeSmile.Services
                 throw new GeneralException(_localizer["UserSuspended"]);
 
             Role role = await _commonService.GetCurrentRole(user.Id);
-
-            TimeSpan loginTokenAge = MyConstants.LOGIN_TOKEN_AGE;
-
-            string token = GetToken(user.Id, loginTokenAge, role);
-            cookies.Append(MyConstants.AUTH_COOKIE_KEY, token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.None, MaxAge = loginTokenAge, Secure = true });
-
+            bool verifiedEmail = true;
+            bool verifiedDentist = true;
             string nextPage = Pages.home.ToString() + role.ToString();
 
             if (role == Role.Dentist)
             {
                 var dentist = await _context.Dentists.FindAsync(user.Id);
-                if (dentist.IsVerifiedDentist == false)
+                if (dentist!.IsVerifiedDentist == false)
                 {
+                    verifiedDentist = false;
                     if (!_context.VerificationRequests.Any(req => req.OwnerId == user.Id))
                     {
                         nextPage = Pages.verifyDentist.ToString();
@@ -230,7 +230,14 @@ namespace FreeSmile.Services
             }
 
             if (user.IsVerified == false)
+            {
                 nextPage = Pages.verifyEmail.ToString();
+                verifiedEmail = false;
+            }
+
+            TimeSpan loginTokenAge = MyConstants.LOGIN_TOKEN_AGE;
+            string token = GetToken(user.Id, loginTokenAge, role, verifiedEmail, verifiedDentist);
+            cookies.Append(MyConstants.AUTH_COOKIE_KEY, token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.None, MaxAge = loginTokenAge, Secure = true });
 
             return RegularResponse.Success(
                 token: token,
@@ -280,8 +287,6 @@ namespace FreeSmile.Services
         {
             User? user = await _context.Users.FindAsync(user_id);
 
-            Role role = await _commonService.GetCurrentRole(user!.Id);
-
             if (StorePassword(request.CurrentPassword, user.Salt) != user.Password)
                 throw new GeneralException(_localizer["IncorrectCurrentPassword"]);
 
@@ -302,7 +307,7 @@ namespace FreeSmile.Services
             );
         }
 
-        public async Task<RegularResponse> RequestEmailOtp(int user_id)
+        public async Task<RegularResponse> RequestEmailOtp(int user_id, string roleString)
         {
 
             User? user = await _context.Users.FindAsync(user_id);
@@ -317,7 +322,7 @@ namespace FreeSmile.Services
 
             if (user.IsVerified)
             {
-                Role role = await _commonService.GetCurrentRole(user.Id);
+                Role role = Enum.Parse<Role>(roleString);
                 string nextPage = Pages.home.ToString() + role.ToString();
                 if (role == Role.Dentist)
                 {
@@ -345,7 +350,7 @@ namespace FreeSmile.Services
             user.OtpExp = DateTime.UtcNow + MyConstants.OTP_AGE;
 
             await _context.SaveChangesAsync();
-            
+
             string lang = Thread.CurrentThread.CurrentCulture.Name;
             SendEmail(mailTo: user.Email,
                       subject: _localizer["otpemailsubject"],
@@ -353,7 +358,7 @@ namespace FreeSmile.Services
                       lang: lang,
                       gmailApi: true,
                       user.Username, MyConstants.OTP_AGE.Minutes, user.Otp);
-        
+
             return RegularResponse.Success(
                 message: _localizer["SentOtpSuccessfully", user.Email],
                 nextPage: Pages.same.ToString()
@@ -378,10 +383,10 @@ namespace FreeSmile.Services
             SendEmail(mailTo: user.Email,
                       subject: _localizer["otpemailsubject"],
                       htmlFileName: MyConstants.otpemailfilename,
-                      lang:lang,
+                      lang: lang,
                       gmailApi: true,
                       user.Username, MyConstants.OTP_AGE.Minutes, user.Otp);
-            
+
             return RegularResponse.Success(
                 message: _localizer["SentOtpSuccessfully", ObscureEmail(user.Email)],
                 nextPage: Pages.same.ToString()

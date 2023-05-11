@@ -531,9 +531,9 @@ namespace FreeSmile.Services
             return RegularResponse.Success(message: _localizer["ProfilePicDeleted"]);
         }
 
-        public async Task<int> AddCaseAsync(AddCaseDto value, int user_id)
+        public async Task<int> AddCaseAsync(AddCaseDto value, int user_id, string roleString)
         {
-            Role role = await GetCurrentRole(user_id);
+            Role role = Enum.Parse<Role>(roleString);
             if (value.GovernorateId == 0 && role == Role.Patient)
                 throw new GeneralException(_localizer["Required", _localizer["GovernorateId"]]);
 
@@ -632,14 +632,14 @@ namespace FreeSmile.Services
             return imageList;
         }
 
-        public async Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id)
+        public async Task<RegularResponse> UpdateCaseAsync(UpdateCaseDto value, int user_id, string roleString)
         {
             Case? case1 = await _context.Cases.Include(x => x.CaseNavigation)
                                               .FirstOrDefaultAsync(x => x.CaseId == (int)value.post_id! && x.CaseNavigation.WriterId == user_id);
             if (case1 is null)
                 throw new NotFoundException(_localizer["notfound", _localizer["thispost"]]);
 
-            Role role = await GetCurrentRole(user_id);
+            Role role = Enum.Parse<Role>(roleString);
             if (value.GovernorateId == 0 && role == Role.Patient)
                 throw new GeneralException(_localizer["Required", _localizer["GovernorateId"]]);
 
@@ -664,9 +664,9 @@ namespace FreeSmile.Services
             return RegularResponse.Success(message: _localizer["PostEditedSuccess"]);
         }
 
-        public async Task<RegularResponse> DeletePostAsync(int user_id, int case_post_id)
+        public async Task<RegularResponse> DeletePostAsync(int user_id, int case_post_id, string roleString)
         {
-            Role role = await GetCurrentRole(user_id);
+            Role role = Enum.Parse<Role>(roleString);
             if (role == Role.Admin || role == Role.SuperAdmin)
             {
                 await DeletePostDangerousAsync(case_post_id);
