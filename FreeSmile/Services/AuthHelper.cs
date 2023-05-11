@@ -81,62 +81,64 @@ namespace FreeSmile.Services
             SuperAdmin
         }
 
-        private static List<Claim> COMMON_CLAIMS(int sub)
+        private static List<Claim> COMMON_CLAIMS(int sub, bool verifiedEmail = false, bool verifiedDentist = false)
         {
             return new()
             {
                 new(ClaimTypes.NameIdentifier, sub.ToString()),
+                new("verifiedEmail", verifiedEmail.ToString()),
+                new("verifiedDentist", verifiedDentist.ToString())
             };
         }
 
-        private static ClaimsIdentity PATIENT_CLAIMS(int sub)
+        private static ClaimsIdentity PATIENT_CLAIMS(int sub, bool verifiedEmail = false, bool verifiedDentist = false)
         {
             return new(
-                COMMON_CLAIMS(sub).Concat(new Claim[]
+                COMMON_CLAIMS(sub, verifiedEmail, verifiedDentist).Concat(new Claim[]
                     {
                         new (ClaimTypes.Role, Role.Patient.ToString()),
                     })
                 );
         }
 
-        private static ClaimsIdentity ADMIN_CLAIMS(int sub)
+        private static ClaimsIdentity ADMIN_CLAIMS(int sub, bool verifiedEmail = false, bool verifiedDentist = false)
         {
             return new(
-                COMMON_CLAIMS(sub).Concat(new Claim[]
+                COMMON_CLAIMS(sub, verifiedEmail, verifiedDentist).Concat(new Claim[]
                     {
                         new (ClaimTypes.Role, Role.Admin.ToString())
                     })
                 );
         }
 
-        private static ClaimsIdentity DENTIST_CLAIMS(int sub)
+        private static ClaimsIdentity DENTIST_CLAIMS(int sub, bool verifiedEmail = false, bool verifiedDentist = false)
         {
             return new(
-                COMMON_CLAIMS(sub).Concat(new Claim[]
+                COMMON_CLAIMS(sub, verifiedEmail, verifiedDentist).Concat(new Claim[]
                     {
                         new (ClaimTypes.Role, Role.Dentist.ToString())
                     })
                 );
         }
 
-        private static ClaimsIdentity SUPER_ADMIN_CLAIMS(int sub)
+        private static ClaimsIdentity SUPER_ADMIN_CLAIMS(int sub, bool verifiedEmail = false, bool verifiedDentist = false)
         {
             return new(
-                COMMON_CLAIMS(sub).Concat(new Claim[]
+                COMMON_CLAIMS(sub, verifiedEmail, verifiedDentist).Concat(new Claim[]
                     {
                         new (ClaimTypes.Role, Role.SuperAdmin.ToString())
                     })
                 );
         }
 
-        public static string GetToken(int user_id, TimeSpan tokenAge, Role role)
+        public static string GetToken(int user_id, TimeSpan tokenAge, Role role, bool verifiedEmail = false, bool verifiedDentist = false)
         {
             string token = role switch
             {
-                Role.Admin => GenerateToken(ADMIN_CLAIMS(user_id), tokenAge),
-                Role.Dentist => GenerateToken(DENTIST_CLAIMS(user_id), tokenAge),
-                Role.SuperAdmin => GenerateToken(SUPER_ADMIN_CLAIMS(user_id), tokenAge),
-                _ => GenerateToken(PATIENT_CLAIMS(user_id), tokenAge),
+                Role.Admin => GenerateToken(ADMIN_CLAIMS(user_id, verifiedEmail, true), tokenAge),
+                Role.Dentist => GenerateToken(DENTIST_CLAIMS(user_id, verifiedEmail, verifiedDentist), tokenAge),
+                Role.SuperAdmin => GenerateToken(SUPER_ADMIN_CLAIMS(user_id, verifiedEmail, true), tokenAge),
+                _ => GenerateToken(PATIENT_CLAIMS(user_id, verifiedEmail, true), tokenAge),
             };
             return token;
         }
