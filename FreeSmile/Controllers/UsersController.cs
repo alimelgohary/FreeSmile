@@ -121,7 +121,7 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
         }
 
-        [SwaggerOperation(Summary = "Slow verison, MUST use in verify email, verify dentist and waiting pages gives error if token expired or suspended user or not verified email or not verified dentist, else it returns the suitable home according to user type for ex (nextpage = \"homeAdmin\")")]
+        [SwaggerOperation(Summary = $"Slow verison, MUST use in {nameof(Pages.verifyEmail)}, {nameof(Pages.verifyDentist)} and {nameof(Pages.pendingVerificationAcceptance)} pages gives error if token expired or suspended user or not verified email or not verified dentist, else it returns the suitable home according to user type for ex (nextpage = \"homeAdmin\")")]
         [Authorize]
         [ServiceFilter(typeof(NotSuspended), Order = 1)]
         [ServiceFilter(typeof(VerifiedEmail), Order = 2)]
@@ -145,7 +145,7 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
         }
 
-        [SwaggerOperation(Summary = "TURBOOOOOOOOOOOOOO gives error if token expired or suspended user or not verified email or not verified dentist, else it returns the suitable home according to user type for ex (nextpage = \"homeAdmin\")")]
+        [SwaggerOperation(Summary = $"TURBO verison, use anywhere except {nameof(Pages.verifyEmail)}, {nameof(Pages.verifyDentist)} and {nameof(Pages.pendingVerificationAcceptance)}")]
         [Authorize]
         [ServiceFilter(typeof(NotSuspended), Order = 1)]
         [ServiceFilter(typeof(VerifiedEmailTurbo), Order = 2)]
