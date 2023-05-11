@@ -388,9 +388,9 @@ namespace FreeSmile.Services
             );
         }
 
-        public async Task<RegularResponse> RedirectToHome(int user_id)
+        public RegularResponse RedirectToHome(int user_id, string roleString)
         {
-            Role role = await _commonService.GetCurrentRole(user_id);
+            Role role = Enum.Parse<Role>(roleString);
             return RegularResponse.Success(
                 nextPage: Pages.home.ToString() + role.ToString()
             );

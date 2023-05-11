@@ -121,13 +121,30 @@ namespace FreeSmile.Controllers
             RegularResponse res = await _userService.ChangePassword(dto, user_id_int);
             return StatusCode(res.StatusCode, res);
         }
-        [SwaggerOperation(Summary = "gives error if token expired or suspended user or not verified email or not verified dentist, else it returns the suitable home according to user type for ex (nextpage = \"homeAdmin\")")]
-        [ServiceFilter(typeof(ValidUser), Order = 1)]
-        [ServiceFilter(typeof(NotSuspended), Order = 2)]
-        [ServiceFilter(typeof(VerifiedEmail), Order = 3)]
-        [ServiceFilter(typeof(VerifiedIfDentist), Order = 4)]
+
+        [SwaggerOperation(Summary = "Slow verison, MUST use in verify email, verify dentist and waiting pages gives error if token expired or suspended user or not verified email or not verified dentist, else it returns the suitable home according to user type for ex (nextpage = \"homeAdmin\")")]
+        [Authorize]
+        [ServiceFilter(typeof(NotSuspended), Order = 1)]
+        [ServiceFilter(typeof(VerifiedEmail), Order = 2)]
+        [ServiceFilter(typeof(VerifiedIfDentist), Order = 3)]
         [HttpGet("IsAllowedToHome")]
-        public async Task<IActionResult> RedirectToHome()
+        public IActionResult RedirectToHome()
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+            string role = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value!;
+
+            RegularResponse res = _userService.RedirectToHome(user_id_int, role);
+            if (HttpContext.Items.TryGetValue(MyConstants.AUTH_COOKIE_KEY, out object? value))
+            {
+                // This gets a new token with VerifiedDentist=True
+                // When user is waiting for verification and an admin verified him, so when calling this action, the old cookie is replaced by new cookie
+                res.Token = value!.ToString();
+                TimeSpan loginTokenAge = MyConstants.LOGIN_TOKEN_AGE;
+                Response.Cookies.Append(MyConstants.AUTH_COOKIE_KEY, value.ToString()!, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.None, MaxAge = loginTokenAge, Secure = true });
+            }
+            return StatusCode(res.StatusCode, res);
+        }
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
