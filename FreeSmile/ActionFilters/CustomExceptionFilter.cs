@@ -94,7 +94,7 @@ namespace FreeSmile.ActionFilters
     internal class UnauthorizedException : Exception
     {
         public string NextPage;
-        public UnauthorizedException(string? message, string NextPage ="same") : base(message)
+        public UnauthorizedException(string? message, string NextPage ="login") : base(message)
         {
             this.NextPage = NextPage;
         }

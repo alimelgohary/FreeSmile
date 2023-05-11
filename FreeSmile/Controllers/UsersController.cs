@@ -97,7 +97,7 @@ namespace FreeSmile.Controllers
                 return StatusCode(res.StatusCode, res);
             }
 
-            return Unauthorized();
+            throw new UnauthorizedException(_localizer["unauthorized"]);
         }
 
         [HttpPut("ForgotPassword")]
@@ -184,7 +184,7 @@ namespace FreeSmile.Controllers
             int user_id_int = int.Parse(user_id!);
             RegularResponse res = await _userService.DeleteMyAccount(value, user_id_int, Response.Cookies);
             return StatusCode(res.StatusCode, res);
-            
+
         }
 
         [SwaggerOperation(Summary = "content type: multipart/form-data, lets dentist send national id photo, proof photo to be checked by an admin for verification")]
