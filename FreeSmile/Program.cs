@@ -1,15 +1,11 @@
 using FreeSmile;
-using FreeSmile.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using FreeSmile.Services;
 using Microsoft.Extensions.Localization;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Serilog;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using FreeSmile.ActionFilters;
 
 Helper.CheckEnvironmentVariables("_Jwt_Secret",
@@ -109,7 +105,9 @@ builder.Services.AddDbContext<FreeSmileContext>(optionsBuilder =>
 builder.Services.AddScoped<ValidUser>();
 builder.Services.AddScoped<NotSuspended>();
 builder.Services.AddScoped<VerifiedEmail>();
+builder.Services.AddScoped<VerifiedEmailTurbo>();
 builder.Services.AddScoped<VerifiedIfDentist>();
+builder.Services.AddScoped<VerifiedIfDentistTurbo>();
 #endregion
 
 

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using FreeSmile.ActionFilters;
 using Swashbuckle.AspNetCore.Annotations;
-using DTOs;
 using FreeSmile.DTOs.Settings;
 using FreeSmile.DTOs;
 using FreeSmile.DTOs.Posts;
@@ -14,9 +13,8 @@ namespace FreeSmile.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [ServiceFilter(typeof(ValidUser), Order = 1)]
-    [ServiceFilter(typeof(NotSuspended), Order = 2)]
-    [ServiceFilter(typeof(VerifiedEmail), Order = 3)]
+    [ServiceFilter(typeof(NotSuspended), Order = 1)]
+    [ServiceFilter(typeof(VerifiedEmailTurbo), Order = 2)]
     [Authorize(Roles = "Patient")]
     public class PatientsController : ControllerBase
     {

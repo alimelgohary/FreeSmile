@@ -15,10 +15,9 @@ namespace FreeSmile.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [ServiceFilter(typeof(ValidUser), Order = 1)]
-    [ServiceFilter(typeof(NotSuspended), Order = 2)]
-    [ServiceFilter(typeof(VerifiedEmail), Order = 3)]
-    [ServiceFilter(typeof(VerifiedIfDentist), Order = 4)]
+    [ServiceFilter(typeof(NotSuspended), Order = 1)]
+    [ServiceFilter(typeof(VerifiedEmailTurbo), Order = 2)]
+    [ServiceFilter(typeof(VerifiedIfDentistTurbo), Order = 3)]
     [Authorize(Roles = "Dentist")]
     public class DentistsController : ControllerBase
     {

@@ -40,9 +40,8 @@ namespace FreeSmile.Controllers
 
 
         [Authorize(Roles = "SuperAdmin")]
-        [ServiceFilter(typeof(ValidUser), Order = 1)]
-        [ServiceFilter(typeof(NotSuspended), Order = 2)]
-        [ServiceFilter(typeof(VerifiedEmail), Order = 3)]
+        [ServiceFilter(typeof(NotSuspended), Order = 1)]
+        [ServiceFilter(typeof(VerifiedEmail), Order = 2)]
         [HttpPost("RegisterAdmin")]
         public async Task<IActionResult> RegisterAdminAsync([FromBody] UserRegisterDto value)
         {
@@ -60,8 +59,7 @@ namespace FreeSmile.Controllers
 
 
         [Authorize]
-        [ServiceFilter(typeof(ValidUser), Order = 1)]
-        [ServiceFilter(typeof(NotSuspended), Order = 2)]
+        [ServiceFilter(typeof(NotSuspended), Order = 1)]
         [HttpPut("VerifyAccount")]
         public async Task<IActionResult> VerifyMyAccount([FromBody] OtpDto dto)
         {
@@ -108,10 +106,9 @@ namespace FreeSmile.Controllers
         }
 
         [Authorize]
-        [ServiceFilter(typeof(ValidUser), Order = 1)]
-        [ServiceFilter(typeof(NotSuspended), Order = 2)]
-        [ServiceFilter(typeof(VerifiedEmail), Order = 3)]
-        [ServiceFilter(typeof(VerifiedIfDentist), Order = 4)]
+        [ServiceFilter(typeof(NotSuspended), Order = 1)]
+        [ServiceFilter(typeof(VerifiedEmailTurbo), Order = 2)]
+        [ServiceFilter(typeof(VerifiedIfDentistTurbo), Order = 3)]
         [HttpPut("ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangeKnownPasswordDto dto)
         {
@@ -145,13 +142,23 @@ namespace FreeSmile.Controllers
             }
             return StatusCode(res.StatusCode, res);
         }
+
+        [SwaggerOperation(Summary = "TURBOOOOOOOOOOOOOO gives error if token expired or suspended user or not verified email or not verified dentist, else it returns the suitable home according to user type for ex (nextpage = \"homeAdmin\")")]
+        [Authorize]
+        [ServiceFilter(typeof(NotSuspended), Order = 1)]
+        [ServiceFilter(typeof(VerifiedEmailTurbo), Order = 2)]
+        [ServiceFilter(typeof(VerifiedIfDentistTurbo), Order = 3)]
+        [HttpGet("IsAllowedToHomeTurbo")]
+        public IActionResult RedirectToHomeTurbo()
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
+            string role = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value!;
 
-            RegularResponse res = await _userService.RedirectToHome(user_id_int);
+            RegularResponse res = _userService.RedirectToHome(user_id_int, role);
             return StatusCode(res.StatusCode, res);
         }
+        
         [SwaggerOperation(summary: "Removes the token Cookie")]
         [HttpGet("Logout")]
         public IActionResult Logout()
@@ -167,8 +174,7 @@ namespace FreeSmile.Controllers
 
         [SwaggerOperation(summary: "Takes your current password and deletes your account")]
         [Authorize]
-        [ServiceFilter(typeof(ValidUser), Order = 1)]
-        [ServiceFilter(typeof(NotSuspended), Order = 2)]
+        [ServiceFilter(typeof(NotSuspended), Order = 1)]
         [HttpDelete("DeleteMyAccount")]
         public async Task<IActionResult> DeleteMyAccount([FromBody] DeleteMyAccountDto value)
         {
@@ -180,9 +186,8 @@ namespace FreeSmile.Controllers
         }
 
         [SwaggerOperation(Summary = "content type: multipart/form-data, lets dentist send national id photo, proof photo to be checked by an admin for verification")]
-        [ServiceFilter(typeof(ValidUser), Order = 1)]
-        [ServiceFilter(typeof(NotSuspended), Order = 2)]
-        [ServiceFilter(typeof(VerifiedEmail), Order = 3)]
+        [ServiceFilter(typeof(NotSuspended), Order = 1)]
+        [ServiceFilter(typeof(VerifiedEmailTurbo), Order = 2)]
         [Authorize(Roles = "Dentist")]
         [HttpPost("RequestVerification")]
         public async Task<IActionResult> AddVerificationRequestAsync([FromForm] VerificationDto value)
@@ -196,9 +201,8 @@ namespace FreeSmile.Controllers
         }
 
         [SwaggerOperation(Summary = $"Deletes dentist's verification request. Should return {nameof(RegularResponse)} with a success message")]
-        [ServiceFilter(typeof(ValidUser), Order = 1)]
-        [ServiceFilter(typeof(NotSuspended), Order = 2)]
-        [ServiceFilter(typeof(VerifiedEmail), Order = 3)]
+        [ServiceFilter(typeof(NotSuspended), Order = 1)]
+        [ServiceFilter(typeof(VerifiedEmailTurbo), Order = 2)]
         [Authorize(Roles = "Dentist")]
         [HttpDelete("DeleteDentistVerificationRequest")]
         public async Task<IActionResult> DeleteVerificationRequestAsync()
