@@ -7,6 +7,9 @@ using Swashbuckle.AspNetCore.Annotations;
 using FreeSmile.DTOs.Admins;
 using FreeSmile.DTOs;
 using static FreeSmile.Services.Helper;
+using static FreeSmile.Services.AuthHelper;
+using FreeSmile.CustomValidations;
+using FreeSmile.DTOs.Posts;
 
 namespace FreeSmile.Controllers
 {
@@ -57,9 +60,40 @@ namespace FreeSmile.Controllers
             var result = await _adminService.AcceptVerificationRequestAsync((int)dentistId.Id!);
             return Ok(result);
         }
+
+        [SwaggerOperation(Summary = $"Gets All posts. It returns list of {nameof(GetPostDto)} without dentist info")]
+        [HttpGet("GetAllPosts")]
+        public async Task<IActionResult> GetAllPosts([FromQuery] PageSize pageSize)
+        {
+            var res = await _adminService.GetAllPosts(pageSize.Page, pageSize.Size);
+            return Ok(res);
+        }
+
+        [Authorize(Roles = nameof(Role.SuperAdmin))]
+        [SwaggerOperation(Summary = $"Gets Logs for super admin only. It returns List of {nameof(LogDto)}")]
+        [HttpGet("GetLogs")]
+        public async Task<IActionResult> GetLogsAsync([FromQuery][ValidDate()] string? date)
+        {
+            var res = await _adminService.GetLogsAsync(date);
+            return Ok(res);
+        }
+
+        [Authorize(Roles = nameof(Role.SuperAdmin))]
+        [SwaggerOperation(Summary = $"Gets Logs for super admin only. It returns List of {nameof(LogSummaryDto)}")]
+        [HttpGet("GetLogsSummary")]
+        public async Task<IActionResult> GetLogsSummaryAsync([FromQuery][ValidDate()] string? date)
+        {
+            var res = await _adminService.GetLogsSummaryAsync(date);
+            return Ok(res);
+        }
+
         #region DummyActions
         [HttpPost("Dummy")]
         public void DummyAction2(GetVerificationRequestDto v) { } // Only for including GetVerificationRequestDto in Swagger
+        [HttpPost("Dummy2")]
+        public void DummyAction3(LogDto v) { } // Only for including LogDto in Swagger
+        [HttpPost("Dummy3")]
+        public void DummyAction4(LogSummaryDto v) { } // Only for including LogSummaryDto in Swagger
         #endregion
 
     }
