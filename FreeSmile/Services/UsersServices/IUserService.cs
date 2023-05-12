@@ -5,7 +5,7 @@ namespace FreeSmile.Services
 {
     public interface IUserService
     {
-        public Task<RegularResponse> AddUserAsync(UserRegisterDto user);
+        public Task<int> AddUserAsync(UserRegisterDto user);
         public Task<RegularResponse> AddPatientAsync(UserRegisterDto user, IResponseCookies cookies);
         public Task<RegularResponse> AddDentistAsync(UserRegisterDto user, IResponseCookies cookies);
         public Task<RegularResponse> AddAdminAsync(UserRegisterDto user, IResponseCookies cookies);

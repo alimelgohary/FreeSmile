@@ -23,7 +23,7 @@ namespace FreeSmile.Services
             _localizer = localizer;
             _commonService = commonService;
         }
-        public async Task<RegularResponse> AddUserAsync(UserRegisterDto userDto)
+        public async Task<int> AddUserAsync(UserRegisterDto userDto)
         {
             // Allow duplicate emails if user not verified yet
             _context.Users.RemoveRange(_context.Users.Where(x => x.Email == userDto.Email && x.IsVerified == false));
@@ -47,20 +47,19 @@ namespace FreeSmile.Services
             await _context.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            return new RegularResponse() { Id = user.Id };
+            return user.Id;
         }
 
         public async Task<RegularResponse> AddPatientAsync(UserRegisterDto userDto, IResponseCookies cookies)
         {
-            RegularResponse response;
             using var transaction = _context.Database.BeginTransaction();
             try
             {
-                response = await AddUserAsync(userDto);
+                int userId = await AddUserAsync(userDto);
 
                 var patient = new Patient()
                 {
-                    PatientId = response.Id
+                    PatientId = userId
                 };
                 await _context.AddAsync(patient);
                 await _context.SaveChangesAsync();
@@ -71,33 +70,30 @@ namespace FreeSmile.Services
                 string token = GetToken(patient.PatientId, tokenAge, Role.Patient);
                 cookies.Append(MyConstants.AUTH_COOKIE_KEY, token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.None, MaxAge = tokenAge, Secure = true });
 
-                response = RegularResponse.Success(
-                    id: patient.PatientId,
+                return RegularResponse.Success(
+                    //id: patient.PatientId,
                     token: token,
                     message: _localizer["RegisterSuccess"],
                     nextPage: Pages.verifyEmail.ToString()
                 );
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 transaction.Rollback();
                 throw;
             }
-            return response;
         }
 
         public async Task<RegularResponse> AddDentistAsync(UserRegisterDto userDto, IResponseCookies cookies)
         {
-            RegularResponse response;
-
             using var transaction = _context.Database.BeginTransaction();
             try
             {
-                response = await AddUserAsync(userDto);
+                int userId = await AddUserAsync(userDto);
 
                 var dentist = new Dentist()
                 {
-                    DentistId = response.Id
+                    DentistId = userId
                     // current university and current degree are defaulted at first
                 };
                 await _context.AddAsync(dentist);
@@ -108,8 +104,8 @@ namespace FreeSmile.Services
                 string token = GetToken(dentist.DentistId, tokenAge, Role.Dentist);
                 cookies.Append(MyConstants.AUTH_COOKIE_KEY, token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.None, MaxAge = tokenAge, Secure = true });
 
-                response = RegularResponse.Success(
-                    id: dentist.DentistId,
+                return RegularResponse.Success(
+                    //id: dentist.DentistId,
                     token: token,
                     message: _localizer["RegisterSuccess"],
                     nextPage: Pages.verifyEmail.ToString());
@@ -119,29 +115,26 @@ namespace FreeSmile.Services
                 transaction.Rollback();
                 throw;
             }
-            return response;
-
         }
 
         public async Task<RegularResponse> AddAdminAsync(UserRegisterDto userDto, IResponseCookies cookies)
         {
-            RegularResponse response;
             using var transaction = _context.Database.BeginTransaction();
             try
             {
-                response = await AddUserAsync(userDto);
+                int userId = await AddUserAsync(userDto);
 
                 var admin = new Admin()
                 {
-                    AdminId = response.Id
+                    AdminId = userId
                 };
                 await _context.AddAsync(admin);
                 await _context.SaveChangesAsync();
 
                 await transaction.CommitAsync();
 
-                response = RegularResponse.Success(
-                    id: admin.AdminId,
+                return RegularResponse.Success(
+                    //id: admin.AdminId,
                     message: _localizer["RegisterSuccess"],
                     nextPage: Pages.same.ToString() // only superadmins can register admins so they will not verify them too && also no token is sent
                 );
@@ -151,8 +144,6 @@ namespace FreeSmile.Services
                 transaction.Rollback();
                 throw;
             }
-            return response;
-
         }
 
         public async Task<RegularResponse> VerifyAccount(string otp, int user_id, string roleString, IResponseCookies cookies)

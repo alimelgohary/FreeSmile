@@ -97,7 +97,7 @@ namespace FreeSmile.Services
         }
         public class RegularResponse
         {
-            public int Id { get; set; }
+            //public int Id { get; set; }
             public string? Token { get; set; }
             public string? Error { get; set; }
             public string? Message { get; set; }
@@ -114,22 +114,22 @@ namespace FreeSmile.Services
                     NextPage = Pages.same.ToString()
                 };
             }
-            public static RegularResponse Success(int id = 0, string? token = null, string? message = null, string? nextPage = "same")
+            public static RegularResponse Success(string? token = null, string? message = null, string? nextPage = "same")
             {
                 return new RegularResponse()
                 {
-                    Id = id,
+                    //Id = id,
                     Token = token,
                     Message = message,
                     NextPage = nextPage,
                     StatusCode = StatusCodes.Status200OK,
                 };
             }
-            public static RegularResponse BadRequestError(int id = 0, string? error = null, string? nextPage = "same")
+            public static RegularResponse BadRequestError(string? error = null, string? nextPage = "same")
             {
                 return new RegularResponse()
                 {
-                    Id = id,
+                    //Id = id,
                     Error = error,
                     NextPage = nextPage,
                     StatusCode = StatusCodes.Status400BadRequest,
