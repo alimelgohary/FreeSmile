@@ -103,5 +103,9 @@
   "requestacceptemailsubject": "FreeSmile: تم قبول طلب التحقق من حسابك كطبيب",
   "rejectreason": "سبب الرفض",
   "requestrejected": "تم رفض طلب التفعيل",
-  "requestaccepted": "تم قبول طلب التفعيل بنجاح"
+  "requestaccepted": "تم قبول طلب التفعيل بنجاح",
+  "patientphone": "رقم هاتف المريض",
+  "price": "السعر",
+  "listingcategoryid": "تصنيف المنتج",
+  "articlecategoryid":  "تصنيف المقال"
 }

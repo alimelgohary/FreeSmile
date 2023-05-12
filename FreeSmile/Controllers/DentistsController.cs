@@ -66,6 +66,39 @@ namespace FreeSmile.Controllers
             return Ok(result);
         }
 
+        [SwaggerOperation(Summary = $"Takes {nameof(AddSharingDto)} as Form Data & creates a sharing patient post. GovernorateId is optional. Default is Dentist's current university location. This should return integer created post id if Success")]
+        [HttpPost("AddSharing")]
+        public async Task<IActionResult> AddSharingAsync([FromForm] AddSharingDto value)
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+            int res = await _dentistService.AddSharingAsync(value, user_id_int);
+
+            return Ok(res);
+        }
+
+        [SwaggerOperation(Summary = $"Takes {nameof(AddListingDto)} as Form Data & creates a listing post (product). GovernorateId is optional. Default is Dentist's current university location. This should return integer created post id if Success")]
+        [HttpPost("AddListing")]
+        public async Task<IActionResult> AddListingAsync([FromForm] AddListingDto value)
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+            int res = await _dentistService.AddListingAsync(value, user_id_int);
+
+            return Ok(res);
+        }
+
+        [SwaggerOperation(Summary = $"Takes {nameof(AddArticleDto)} as Form Data & creates an article. This should return integer created post id if Success")]
+        [HttpPost("AddArticle")]
+        public async Task<IActionResult> AddArticleAsync([FromForm] AddArticleDto value)
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+            int res = await _dentistService.AddArticleAsync(value, user_id_int);
+
+            return Ok(res);
+        }
+
         #region DummyActions
         [HttpPost("Dummy")]
         public void DummyAction2(VerificationDto v) { } // Only for including VerificationDto in Swagger

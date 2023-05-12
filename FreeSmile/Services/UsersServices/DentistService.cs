@@ -240,6 +240,107 @@ namespace FreeSmile.Services
 
             return list;
         }
+
+        public async Task<int> AddSharingAsync(AddSharingDto value, int user_id)
+        {
+            int gov_id = value.GovernorateId;
+            if (value.GovernorateId == 0)
+            {
+                gov_id = (await _context.Dentists.AsNoTracking()
+                                                 .Select(x => new
+                                                 {
+                                                     x.DentistId,
+                                                     x.CurrentUniversityNavigation.GovId
+                                                 }).FirstOrDefaultAsync(x => x.DentistId == user_id))!.GovId;
+            }
+
+            using var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                var post_id = await _commonService.AddPostAsync(value, user_id);
+
+                var sharing = new SharingPatient()
+                {
+                    SharingId = post_id,
+                    CaseTypeId = (int)value.CaseTypeId!,
+                    GovernateId = gov_id,
+                    PatientPhoneNumber = value.PatientPhone
+                };
+                await _context.AddAsync(sharing);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return sharing.SharingId;
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
+
+        public async Task<int> AddListingAsync(AddListingDto value, int user_id)
+        {
+            int gov_id = value.GovernorateId;
+            if (value.GovernorateId == 0)
+            {
+                gov_id = (await _context.Dentists.AsNoTracking()
+                                                 .Select(x => new
+                                                 {
+                                                     x.DentistId,
+                                                     x.CurrentUniversityNavigation.GovId
+                                                 }).FirstOrDefaultAsync(x => x.DentistId == user_id))!.GovId;
+            }
+
+            using var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                var post_id = await _commonService.AddPostAsync(value, user_id);
+
+                var listing = new Listing()
+                {
+                    ListingId = post_id,
+                    CatId = (int)value.ListingCategoryId!,
+                    GovernateId = gov_id,
+                    Price = (decimal)value.Price!
+                };
+                await _context.AddAsync(listing);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return listing.ListingId;
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
+
+        public async Task<int> AddArticleAsync(AddArticleDto value, int user_id)
+        {
+            using var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                var post_id = await _commonService.AddPostAsync(value, user_id);
+
+                var article = new Article()
+                {
+                    ArticleId = post_id,
+                    CatId = (int)value.ArticleCategoryId!,
+                };
+                await _context.AddAsync(article);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return article.ArticleId;
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
     }
 }
 
