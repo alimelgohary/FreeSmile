@@ -544,8 +544,12 @@ namespace FreeSmile.Services
             }
             else
             {
-                Dentist? d = await _context.Dentists.Include(x => x.CurrentUniversityNavigation).FirstOrDefaultAsync(x => x.DentistId == user_id);
-                gov_id = d!.CurrentUniversityNavigation.GovId;
+                gov_id = (await _context.Dentists.AsNoTracking()
+                                                 .Select(x => new
+                                                 {
+                                                     x.DentistId,
+                                                     x.CurrentUniversityNavigation.GovId
+                                                 }).FirstOrDefaultAsync(x => x.DentistId == user_id))!.GovId;
             }
 
             using var transaction = _context.Database.BeginTransaction();
