@@ -358,7 +358,7 @@ namespace FreeSmile.Services
                                     LastMessageTime = m.SentAt.Humanize(default, default, CultureInfo.CurrentCulture),
                                     IsSender = user_id == m.SenderId,
                                 })
-                                            .Skip(--page * size)
+                             .Skip(--page * size)
                              .Take(size)
                              .ToList();
 
