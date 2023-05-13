@@ -332,63 +332,45 @@ namespace FreeSmile.Services
             return messages;
         }
 
-        public async Task<List<RecentMessagesDto>> GetRecentMessagesAsync(int user_id, int page, int size)
+        public async Task<List<RecentMessagesDto>> GetRecentMessagesAsync(int user_id, int page, int size, string? q)
         {
             List<RecentMessagesDto> returnedList = new();
 
-            var lastMessages = _context.Messages.AsNoTracking()
-                                             .Join(
-                                                _context.Messages
-                                                .GroupBy(m => new { m.SenderId, m.ReceiverId })
-                                                .Select(g => g.Max(m => m.MessageId)),
-                                                    m => m.MessageId,
-                                                    maxId => maxId,
-                                                    (m, max) => m)
-                                            .Where(m => m.SenderId == user_id || m.ReceiverId == user_id)
-                                            .OrderByDescending(m => m.MessageId)
-                                            .ToHashSet(new PairEqualityComparer()) //Treat sender,receiver == receiver,sender
+            bool allMessages = string.IsNullOrEmpty(q);
+            var lastMessages = (from m in _context.Messages.AsNoTracking()
+                                where m.SenderId == user_id || m.ReceiverId == user_id
+                                where m.MessageId == (
+                                    from msg in _context.Messages.AsNoTracking()
+                                    where (msg.SenderId == m.SenderId && msg.ReceiverId == m.ReceiverId) ||
+                                          (msg.SenderId == m.ReceiverId && msg.ReceiverId == m.SenderId)
+                                    select msg.MessageId
+                                ).Max()
+                                join u in _context.Users.AsNoTracking() on user_id == m.SenderId ? m.ReceiverId : m.SenderId equals u.Id
+                                where allMessages || (u.Username + " " + u.Fullname).Contains(q!)
+                                orderby m.MessageId descending
+                                select new RecentMessagesDto
+                                {
+                                    UserId = u.Id,
+                                    FullName = u.Fullname,
+                                    Username = u.Username,
+                                    Seen = m.Seen,
+                                    LastMessage = m.Body,
+                                    LastMessageTime = m.SentAt.Humanize(default, default, CultureInfo.CurrentCulture),
+                                    IsSender = user_id == m.SenderId,
+                                })
                                             .Skip(--page * size)
-                                            .Take(size);
+                             .Take(size)
+                             .ToList();
 
+            var userEnemies = await GetUserEnemiesAsync(user_id);
             foreach (var message in lastMessages)
             {
-                bool isAvailable = true;
-                bool isSender = message.SenderId == user_id;
-                GetBasicUserInfo? otherUser;
-                if (isSender)
-                {
-                    otherUser = await _context.Users.Select(x => new GetBasicUserInfo() { UserId = x.Id, FullName = x.Fullname, Username = x.Username }).FirstOrDefaultAsync(x => x.UserId == message.ReceiverId)!;
+                message.IsAvailable = userEnemies.Contains(message.UserId) == false;
+                if (message.IsAvailable)
+                    message.ProfilePicture = await GetProfilePictureDangerousAsync(message.UserId);
                 }
-                else
-                {
-                    otherUser = await _context.Users.Select(x => new GetBasicUserInfo() { UserId = x.Id, FullName = x.Fullname, Username = x.Username }).FirstOrDefaultAsync(x => x.UserId == message.SenderId)!;
+            return lastMessages;
                 }
-
-                byte[]? otherProfile = null;
-                try
-                {
-                    otherProfile = await GetProfilePictureAsync(user_id, otherUser!.UserId, size: 1);
-                }
-                catch (GeneralException) //IsBlocked
-                {
-                    isAvailable = false;
-                }
-
-                returnedList.Add(new()
-                {
-                    UserId = otherUser!.UserId,
-                    FullName = otherUser.FullName,
-                    Username = otherUser.Username,
-                    ProfilePicture = otherProfile,
-                    Seen = message.Seen,
-                    LastMessage = message.Body,
-                    LastMessageTime = message.SentAt.Humanize(culture: CultureInfo.CurrentCulture),
-                    IsAvailable = isAvailable,
-                    IsSender = isSender
-                });
-            }
-            return returnedList;
-        }
         public class PairEqualityComparer : IEqualityComparer<Message>
         {
             public bool Equals(Message? x, Message? y)

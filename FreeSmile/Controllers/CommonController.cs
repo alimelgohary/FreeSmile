@@ -158,20 +158,20 @@ namespace FreeSmile.Controllers
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
-
+            
             List<GetMessageDto> res = await _commonService.GetChatHistoryAsync(user_id_int, receiver_user_id, pageSize.Page, pageSize.Size, after);
 
             return Ok(res);
         }
 
-        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Page)}, {nameof(pageSize.Size)} as query and returns last messages with all people(returns List of {nameof(RecentMessagesDto)})")]
+        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Page)}, {nameof(pageSize.Size)}, {nameof(q)} (query search last messages) as query and returns last messages with all people(returns List of {nameof(RecentMessagesDto)})")]
         [HttpGet("GetRecentMessages")]
-        public async Task<IActionResult> GetRecentMessagesAsync([FromQuery] PageSize pageSize)
+        public async Task<IActionResult> GetRecentMessagesAsync([FromQuery] PageSize pageSize, [FromQuery] string? q)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
 
-            List<RecentMessagesDto> res = await _commonService.GetRecentMessagesAsync(user_id_int, pageSize.Page, pageSize.Size);
+            List<RecentMessagesDto> res = await _commonService.GetRecentMessagesAsync(user_id_int, pageSize.Page, pageSize.Size, q);
 
             return Ok(res);
         }
