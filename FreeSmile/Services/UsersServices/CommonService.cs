@@ -11,7 +11,6 @@ using static FreeSmile.Services.DirectoryHelper;
 using static FreeSmile.Services.MyConstants;
 using static FreeSmile.Services.AuthHelper;
 using System.Diagnostics.CodeAnalysis;
-using DTOs;
 using FreeSmile.DTOs.Settings;
 using FreeSmile.DTOs.Posts;
 
@@ -295,14 +294,16 @@ namespace FreeSmile.Services
             };
         }
 
-        public async Task<List<GetMessageDto>> GetChatHistoryAsync(int user_id, int other_user_id, int page, int size)
+        public async Task<List<GetMessageDto>> GetChatHistoryAsync(int user_id, int other_user_id, int page, int size, int after)
         {
             if (!await _context.Users.AnyAsync(x => x.Id == other_user_id))
                 throw new GeneralException(_localizer["UserNotFound"]);
 
+            bool allMessages = after == 0;
             var messages = _context.Messages.AsNoTracking()
                                             .Where(x => (x.SenderId == user_id && x.ReceiverId == other_user_id)
                                                      || (x.ReceiverId == user_id && x.SenderId == other_user_id))
+                                            .Where(x => (allMessages || x.MessageId > after))
                                             .OrderByDescending(x => x.MessageId)
                                             .Select(x => new GetMessageDto()
                                             {
