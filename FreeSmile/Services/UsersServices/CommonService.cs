@@ -605,17 +605,24 @@ namespace FreeSmile.Services
         public async Task<List<byte[]>?> GetPostImagesAsync(int postId)
         {
             var path = GetPostsPathPost(postId);
-            List<byte[]> imageList = new List<byte[]>();
             if (!Directory.Exists(path))
-                return imageList;
-            await Parallel.ForEachAsync(Directory.EnumerateFiles(path), async (file, token) =>
-        {
-            byte[] bytes = await File.ReadAllBytesAsync(file);
-            lock (imageList)
-            {
-                imageList.Add(bytes);
-            }
-        });
+                return new();
+
+            var paths = Directory.GetFiles(path);
+            Array.Sort(paths);
+
+            List<byte[]> imageList = new(paths.Length);
+            List<Task<byte[]>> tasks = new(paths.Length);
+
+            foreach (var item in paths)
+                tasks.Add(Task.Run(async () => await File.ReadAllBytesAsync(item)));
+
+            Task.WaitAll(tasks.ToArray());
+
+            foreach (var task in tasks)
+                if (task.Exception == null && task.Result != null)
+                    imageList.Add(task.Result);
+
             return imageList;
         }
 
