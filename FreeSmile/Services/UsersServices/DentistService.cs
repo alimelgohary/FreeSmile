@@ -208,6 +208,7 @@ namespace FreeSmile.Services
                          orderby home.TimeUpdated ?? home.TimeWritten descending
                          select new GetCaseDto
                          {
+                             IsOwner = home.UserId == user_id,
                              UserInfo = new()
                              {
                                  UserId = home.UserId,

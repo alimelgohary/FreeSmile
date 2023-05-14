@@ -13,5 +13,6 @@ namespace FreeSmile.DTOs.Posts
         public string? TimeUpdated { get; set; } = null;
         public List<byte[]>? Images { get; set; } = null;
         public string? Phone { get; set; } = null;
+        public bool IsOwner { get; set; }
     }
 }
