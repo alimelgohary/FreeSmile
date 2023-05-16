@@ -107,5 +107,6 @@
   "patientphone": "Patient phone number",
   "price": "Price",
   "listingcategoryid": "Listing category",
-  "articlecategoryid": "Article category"
+  "articlecategoryid": "Article category",
+  "previouslyfetched": "Previously fetched"
 }

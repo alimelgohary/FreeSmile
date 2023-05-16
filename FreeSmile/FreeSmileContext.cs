@@ -22,6 +22,7 @@ namespace FreeSmile
         public virtual DbSet<Admin> Admins { get; set; } = null!;
         public virtual DbSet<Article> Articles { get; set; } = null!;
         public virtual DbSet<ArticleCat> ArticleCats { get; set; } = null!;
+        public virtual DbSet<ArticlesView> ArticlesViews { get; set; } = null!;
         public virtual DbSet<Case> Cases { get; set; } = null!;
         public virtual DbSet<CaseType> CaseTypes { get; set; } = null!;
         public virtual DbSet<Comment> Comments { get; set; } = null!;
@@ -30,6 +31,7 @@ namespace FreeSmile
         public virtual DbSet<DentistHomeView> DentistHomeViews { get; set; } = null!;
         public virtual DbSet<Governate> Governates { get; set; } = null!;
         public virtual DbSet<Listing> Listings { get; set; } = null!;
+        public virtual DbSet<ListingsView> ListingsViews { get; set; } = null!;
         public virtual DbSet<Message> Messages { get; set; } = null!;
         public virtual DbSet<Notification> Notifications { get; set; } = null!;
         public virtual DbSet<NotificationTemplate> NotificationTemplates { get; set; } = null!;
@@ -139,6 +141,52 @@ namespace FreeSmile
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("nameEn");
+            });
+
+            modelBuilder.Entity<ArticlesView>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("articles_view");
+
+                entity.Property(e => e.AcademicDegreeAr).HasMaxLength(20);
+
+                entity.Property(e => e.AcademicDegreeEn)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ArticleCatAr).HasMaxLength(50);
+
+                entity.Property(e => e.ArticleCatEn)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ArticleCatId).HasColumnName("article_cat_id");
+
+                entity.Property(e => e.Body).HasMaxLength(500);
+
+                entity.Property(e => e.CurrentUnivrsityAr).HasMaxLength(100);
+
+                entity.Property(e => e.CurrentUnivrsityEn)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FullName).HasMaxLength(100);
+
+                entity.Property(e => e.Phone)
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .HasColumnName("phone");
+
+                entity.Property(e => e.TimeUpdated).HasColumnType("datetime");
+
+                entity.Property(e => e.TimeWritten).HasColumnType("datetime");
+
+                entity.Property(e => e.Title).HasMaxLength(50);
+
+                entity.Property(e => e.Username)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<Case>(entity =>
@@ -426,6 +474,64 @@ namespace FreeSmile
                     .WithOne(p => p.Listing)
                     .HasForeignKey<Listing>(d => d.ListingId)
                     .HasConstraintName("FK__listings__listin__39E294A9");
+            });
+
+            modelBuilder.Entity<ListingsView>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("listings_view");
+
+                entity.Property(e => e.AcademicDegreeAr).HasMaxLength(20);
+
+                entity.Property(e => e.AcademicDegreeEn)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Body).HasMaxLength(500);
+
+                entity.Property(e => e.CurrentUnivrsityAr).HasMaxLength(100);
+
+                entity.Property(e => e.CurrentUnivrsityEn)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FullName).HasMaxLength(100);
+
+                entity.Property(e => e.GovId).HasColumnName("gov_id");
+
+                entity.Property(e => e.GovNameAr).HasMaxLength(50);
+
+                entity.Property(e => e.GovNameEn)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Phone)
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .HasColumnName("phone");
+
+                entity.Property(e => e.Price)
+                    .HasColumnType("money")
+                    .HasColumnName("price");
+
+                entity.Property(e => e.ProductCatAr).HasMaxLength(50);
+
+                entity.Property(e => e.ProductCatEn)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductCatId).HasColumnName("product_cat_id");
+
+                entity.Property(e => e.TimeUpdated).HasColumnType("datetime");
+
+                entity.Property(e => e.TimeWritten).HasColumnType("datetime");
+
+                entity.Property(e => e.Title).HasMaxLength(50);
+
+                entity.Property(e => e.Username)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<Message>(entity =>

@@ -10,6 +10,8 @@ using FreeSmile.DTOs.Settings;
 using FreeSmile.DTOs.Auth;
 using FreeSmile.DTOs.Posts;
 using FreeSmile.DTOs;
+using FreeSmile.CustomValidations;
+using System.ComponentModel.DataAnnotations;
 
 namespace FreeSmile.Controllers
 {
@@ -30,6 +32,7 @@ namespace FreeSmile.Controllers
             _dentistService = dentistService;
         }
 
+
         [SwaggerOperation(Summary = $"Gets Dentist profile settings in the form of {nameof(GetDentistSettingsDto)}")]
         [HttpGet("GetSettings")]
         public async Task<IActionResult> GetSettingsAsync()
@@ -41,6 +44,7 @@ namespace FreeSmile.Controllers
 
             return Ok(res);
         }
+
 
         [SwaggerOperation(Summary = $"Takes a {nameof(SetDentistSettingsDto)} as JSON and updates Dentist profile settings. Send new values of each field, DO NOT SEND USERNAME IF IT'S NOT UPDATED. It returns updated settings as {nameof(GetDentistSettingsDto)}")]
         [HttpPut("UpdateSettings")]
@@ -54,17 +58,48 @@ namespace FreeSmile.Controllers
             return Ok(res);
         }
 
-        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Page)}, {nameof(pageSize.Size)}, {nameof(gov_id.GovernorateId)}, {nameof(caseTypeDto.CaseTypeId)} as query and returns patients cases in the requested governorate, and caseType. DEFAULT is dentist's university location and all types. (returns List of {nameof(GetCaseDto)})")]
+
+        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Size)}, {nameof(previouslyFetched)} as integer array (id1,id2,id3), {nameof(gov_id.GovernorateId)}, {nameof(caseTypeDto.CaseTypeId)} as query and returns patients cases in the requested governorate, and caseType. DEFAULT is dentist's university location and all types. (returns List of {nameof(GetCaseDto)})")]
         [HttpGet("GetPatientsCases")]
-        public async Task<IActionResult> GetPatientsCasesAsync([FromQuery] PageSize pageSize, [FromQuery] GovernorateDto gov_id, [FromQuery] CaseTypeDto caseTypeDto)
+        public async Task<IActionResult> GetPatientsCasesAsync([FromQuery] SizeDto pageSize, [FromQuery][CommaArrayInt()][Display(Name = nameof(previouslyFetched))] string? previouslyFetched, [FromQuery] QueryGovernorate gov_id, [FromQuery] QueryCaseType caseTypeDto)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
 
-            List<GetCaseDto> result = await _dentistService.GetPatientsCasesAsync(user_id_int, pageSize.Page, pageSize.Size, gov_id.GovernorateId, caseTypeDto.CaseTypeId);
+            int[] ids = previouslyFetched?.Split(',').Select(x => int.Parse(x)).ToArray() ?? Array.Empty<int>();
+            List<GetCaseDto> result = await _dentistService.GetPatientsCasesAsync(user_id_int, pageSize.Size, ids, gov_id.GovernorateId, caseTypeDto.CaseTypeId);
 
             return Ok(result);
         }
+
+
+        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Size)}, {nameof(previouslyFetched)} as integer array (id1,id2,id3), {nameof(gov_id.GovernorateId)}, {nameof(productCatDto.ListingCategoryId)}, {nameof(sortBy)} 0 : Date Desc, 1 : Date Asc, 2 : Price Asc, 3 : Price Desc as query and returns products listed in the requested governorate, and product category. DEFAULT is dentist's university location and all cats. (returns List of {nameof(GetListingDto)})")]
+        [HttpGet("GetListings")]
+        public async Task<IActionResult> GetListingsAsync([FromQuery] SizeDto pageSize, [FromQuery][CommaArrayInt()][Display(Name = nameof(previouslyFetched))] string? previouslyFetched, [FromQuery] QueryGovernorate gov_id, [FromQuery] QueryProductCat productCatDto, [FromQuery] byte sortBy)
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+
+            int[] ids = previouslyFetched?.Split(',').Select(x => int.Parse(x)).ToArray() ?? Array.Empty<int>();
+            List<GetListingDto> result = await _dentistService.GetListingsAsync(user_id_int, pageSize.Size, ids, gov_id.GovernorateId, productCatDto.ListingCategoryId, sortBy);
+
+            return Ok(result);
+        }
+
+
+        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Size)}, {nameof(previouslyFetched)} as integer array (id1,id2,id3), {nameof(queryArticleCat.ArticleCategoryId)}, {nameof(sortBy)} 0 : Date Desc, 1 : Date Asc, 2 : Likes Desc, 3 : Comments Desc as query and returns articles in the requested category. DEFAULT is all cats. (returns List of {nameof(GetArticleDto)})")]
+        [HttpGet("GetArticles")]
+        public async Task<IActionResult> GetArticlesAsync([FromQuery] SizeDto pageSize, [FromQuery][CommaArrayInt()][Display(Name = nameof(previouslyFetched))] string? previouslyFetched, [FromQuery] QueryArticleCat queryArticleCat, [FromQuery] byte sortBy)
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+
+            int[] ids = previouslyFetched?.Split(',').Select(x => int.Parse(x)).ToArray() ?? Array.Empty<int>();
+            List<GetArticleDto> result = await _dentistService.GetArticlesAsync(user_id_int, pageSize.Size, ids, queryArticleCat.ArticleCategoryId, sortBy);
+
+            return Ok(result);
+        }
+
 
         [SwaggerOperation(Summary = $"Takes {nameof(AddSharingDto)} as Form Data & creates a sharing patient post. GovernorateId is optional. Default is Dentist's current university location. This should return integer created post id if Success")]
         [HttpPost("AddSharing")]
@@ -77,17 +112,19 @@ namespace FreeSmile.Controllers
             return Ok(res);
         }
 
+
         [SwaggerOperation(Summary = $"Takes {nameof(UpdateSharingDto)} as JSON & updates a sharing patient post. This should return {nameof(RegularResponse)} with a success message")]
         [HttpPut("UpdateSharing")]
         public async Task<IActionResult> UpdateSharingAsync([FromBody] UpdateSharingDto value)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
-            
+
             RegularResponse res = await _dentistService.UpdateSharingAsync(value, user_id_int);
 
             return StatusCode(res.StatusCode, res);
         }
+
 
         [SwaggerOperation(Summary = $"Takes {nameof(AddListingDto)} as Form Data & creates a listing post (product). GovernorateId is optional. Default is Dentist's current university location. This should return integer created post id if Success")]
         [HttpPost("AddListing")]
@@ -99,6 +136,7 @@ namespace FreeSmile.Controllers
 
             return Ok(res);
         }
+
 
         [SwaggerOperation(Summary = $"Takes {nameof(UpdateListingDto)} as JSON & updates a listing. This should return {nameof(RegularResponse)} with a success message")]
         [HttpPut("UpdateListing")]
@@ -112,6 +150,7 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
         }
 
+
         [SwaggerOperation(Summary = $"Takes {nameof(AddArticleDto)} as Form Data & creates an article. This should return integer created post id if Success")]
         [HttpPost("AddArticle")]
         public async Task<IActionResult> AddArticleAsync([FromForm] AddArticleDto value)
@@ -122,6 +161,7 @@ namespace FreeSmile.Controllers
 
             return Ok(res);
         }
+
 
         [SwaggerOperation(Summary = $"Takes {nameof(UpdateArticleDto)} as JSON & updates article. This should return {nameof(RegularResponse)} with a success message")]
         [HttpPut("UpdateArticle")]
@@ -134,6 +174,7 @@ namespace FreeSmile.Controllers
 
             return StatusCode(res.StatusCode, res);
         }
+
 
         #region DummyActions
         [HttpPost("Dummy")]

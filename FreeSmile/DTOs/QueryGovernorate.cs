@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace FreeSmile.DTOs
 {
-    public class GovernorateDto
+    public class QueryGovernorate
     {
         [DisplayName(nameof(GovernorateId))]
         [ForeignKey(nameof(Governate), "gov_id", bypassZero: true)]

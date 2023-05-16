@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace FreeSmile.DTOs
 {
-    public class CaseTypeDto
+    public class QueryCaseType
     {
         [DisplayName(nameof(CaseTypeId))]
         [ForeignKey(nameof(CaseType), "case_type_id", bypassZero: true)]

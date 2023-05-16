@@ -182,7 +182,7 @@ namespace FreeSmile.Services
             return await GetSettingsAsync(user_id);
         }
 
-        public async Task<List<GetCaseDto>> GetPatientsCasesAsync(int user_id, int page, int size, int gov_id, int case_type_id)
+        public async Task<List<GetCaseDto>> GetPatientsCasesAsync(int user_id, int size, int[] previouslyFetched, int gov_id, int case_type_id)
         {
             bool isEnglish = Thread.CurrentThread.CurrentCulture.Name == "en";
             bool allTypes = case_type_id == 0;
@@ -205,6 +205,7 @@ namespace FreeSmile.Services
                          where !excluded_user_ids.Contains(home.UserId)
                          where home.GovId == gov_id
                          where allTypes || home.CaseTypeId == case_type_id
+                         where !previouslyFetched.Contains(home.PostId)
                          orderby home.TimeUpdated ?? home.TimeWritten descending
                          select new GetCaseDto
                          {
@@ -226,13 +227,15 @@ namespace FreeSmile.Services
                              Body = home.Body,
                              TimeWritten = home.TimeWritten.Humanize(default, default, CultureInfo.CurrentCulture),
                              TimeUpdated = home.TimeUpdated == null ? null : home.TimeUpdated.Humanize(default, default, CultureInfo.CurrentCulture),
+                             Written = (DateTime)home.TimeWritten!,
+                             Updated = home.TimeUpdated,
                              Images = null,
                              Phone = home.Phone,
                              Governorate = isEnglish ? home.GovNameEn : home.GovNameAr,
                              CaseType = isEnglish ? home.CaseTypeEn : home.CaseTypeAr,
                          };
 
-            var list = result.Skip(--page * size).Take(size).ToList();
+            var list = result.Take(size).ToList();
             await Parallel.ForEachAsync(list, async (post, cancellationToken) =>
             {
                 post.UserInfo.ProfilePicture = await _commonService.GetProfilePictureDangerousAsync(post.UserInfo.UserId, 1);
@@ -421,6 +424,138 @@ namespace FreeSmile.Services
             await _context.SaveChangesAsync();
 
             return RegularResponse.Success(message: _localizer["PostEditedSuccess"]);
+        }
+
+        public async Task<List<GetListingDto>> GetListingsAsync(int user_id, int size, int[] previouslyFetched, int gov_id, int listingCategoryId, byte sortBy)
+        {
+            bool isEnglish = Thread.CurrentThread.CurrentCulture.Name == "en";
+            bool allCats = listingCategoryId == 0;
+            // Default governorate = dentist univeristy location
+            if (gov_id == 0)
+            {
+                var dentist = await _context.Dentists.AsNoTracking()
+                                                     .Select(x =>
+                                                        new
+                                                        {
+                                                            x.DentistId,
+                                                            gov_id = x.CurrentUniversityNavigation.Gov.GovId
+                                                        }).FirstOrDefaultAsync(x => x.DentistId == user_id);
+                gov_id = dentist!.gov_id;
+            }
+
+            var excluded_user_ids = await _commonService.GetUserEnemiesAsync(user_id);
+
+            var result = from home in _context.ListingsViews.AsNoTracking()
+                         where !excluded_user_ids.Contains(home.UserId)
+                         where home.GovId == gov_id
+                         where allCats || home.ProductCatId == listingCategoryId
+                         where !previouslyFetched.Contains(home.PostId)
+                         select new GetListingDto
+                         {
+                             IsOwner = home.UserId == user_id,
+                             UserInfo = new()
+                             {
+                                 UserId = home.UserId,
+                                 FullName = home.FullName,
+                                 Username = home.Username,
+                                 ProfilePicture = null,
+                             },
+                             DentistInfo = new()
+                             {
+                                 AcademicDegree = isEnglish ? home.AcademicDegreeEn : home.AcademicDegreeAr!,
+                                 University = isEnglish ? home.CurrentUnivrsityEn! : home.CurrentUnivrsityAr!,
+                             },
+                             PostId = home.PostId,
+                             Title = home.Title,
+                             Body = home.Body,
+                             TimeWritten = home.TimeWritten.Humanize(default, default, CultureInfo.CurrentCulture),
+                             TimeUpdated = home.TimeUpdated == null ? null : home.TimeUpdated.Humanize(default, default, CultureInfo.CurrentCulture),
+                             Written = (DateTime)home.TimeWritten!,
+                             Updated = home.TimeUpdated,
+                             Images = null,
+                             Phone = home.Phone,
+                             Governorate = isEnglish ? home.GovNameEn : home.GovNameAr,
+                             ProductCategory = isEnglish ? home.ProductCatEn : home.ProductCatAr,
+                             Price = home.Price
+                         };
+            
+            //0 : Date Desc, 1 : Date Asc, 2 : Price Asc, 3 : Price Desc
+            result = sortBy switch
+            {
+                0 => result.OrderByDescending(x => x.Updated ?? x.Written),
+                1 => result.OrderBy(x => x.Updated ?? x.Written),
+                2 => result.OrderBy(x => x.Price),
+                3 => result.OrderByDescending(x => x.Price),
+                _ => result.OrderByDescending(x => x.Updated ?? x.Written),
+            };
+            
+            var list = result.Take(size).ToList();
+            await Parallel.ForEachAsync(list, async (post, cancellationToken) =>
+            {
+                post.UserInfo.ProfilePicture = await _commonService.GetProfilePictureDangerousAsync(post.UserInfo.UserId, 1);
+                post.Images = await _commonService.GetPostImagesAsync(post.PostId);
+            });
+
+            return list;
+        }
+
+        public async Task<List<GetArticleDto>> GetArticlesAsync(int user_id, int size, int[] previouslyFetched, int articleCategoryId, byte sortBy)
+        {
+            bool isEnglish = Thread.CurrentThread.CurrentCulture.Name == "en";
+            bool allCats = articleCategoryId == 0;
+            var excluded_user_ids = await _commonService.GetUserEnemiesAsync(user_id);
+
+            var result = from home in _context.ArticlesViews.AsNoTracking()
+                         where !excluded_user_ids.Contains(home.UserId)
+                         where allCats || home.ArticleCatId== articleCategoryId
+                         where !previouslyFetched.Contains(home.PostId)
+                         select new GetArticleDto
+                         {
+                             IsOwner = home.UserId == user_id,
+                             UserInfo = new()
+                             {
+                                 UserId = home.UserId,
+                                 FullName = home.FullName,
+                                 Username = home.Username,
+                                 ProfilePicture = null,
+                             },
+                             DentistInfo = new()
+                             {
+                                 AcademicDegree = isEnglish ? home.AcademicDegreeEn : home.AcademicDegreeAr!,
+                                 University = isEnglish ? home.CurrentUnivrsityEn! : home.CurrentUnivrsityAr!,
+                             },
+                             PostId = home.PostId,
+                             Title = home.Title,
+                             Body = home.Body,
+                             TimeWritten = home.TimeWritten.Humanize(default, default, CultureInfo.CurrentCulture),
+                             TimeUpdated = home.TimeUpdated == null ? null : home.TimeUpdated.Humanize(default, default, CultureInfo.CurrentCulture),
+                             Written = (DateTime)home.TimeWritten!,
+                             Updated = home.TimeUpdated,
+                             Images = null,
+                             Phone = home.Phone,
+                             ArticleCateogry = isEnglish ? home.ArticleCatEn : home.ArticleCatAr,
+                             Likes = home.Likes ?? 0,
+                             Comments = home.Comments ?? 0
+                         };
+
+            // 0 : Date Desc, 1 : Date Asc, 2 : Likes Desc, 3 : Comments Desc 
+            result = sortBy switch
+            {
+                0 => result.OrderByDescending(x => x.Updated ?? x.Written),
+                1 => result.OrderBy(x => x.Updated ?? x.Written),
+                2 => result.OrderByDescending(x => x.Likes),
+                3 => result.OrderByDescending(x => x.Comments),
+                _ => result.OrderByDescending(x => x.Updated ?? x.Written),
+            };
+
+            var list = result.Take(size).ToList();
+            await Parallel.ForEachAsync(list, async (post, cancellationToken) =>
+            {
+                post.UserInfo.ProfilePicture = await _commonService.GetProfilePictureDangerousAsync(post.UserInfo.UserId, 1);
+                post.Images = await _commonService.GetPostImagesAsync(post.PostId);
+            });
+
+            return list;
         }
     }
 }

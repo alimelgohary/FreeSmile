@@ -107,5 +107,6 @@
   "patientphone": "رقم هاتف المريض",
   "price": "السعر",
   "listingcategoryid": "تصنيف المنتج",
-  "articlecategoryid":  "تصنيف المقال"
+  "articlecategoryid": "تصنيف المقال",
+  "previouslyfetched": "تم جلبه مسبقا",
 }

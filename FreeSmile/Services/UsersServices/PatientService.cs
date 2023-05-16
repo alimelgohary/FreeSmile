@@ -108,6 +108,8 @@ namespace FreeSmile.Services
                              Body = cas.Body,
                              TimeWritten = cas.TimeWritten.Humanize(default, default, CultureInfo.CurrentCulture),
                              TimeUpdated = cas.TimeUpdated == null ? null : cas.TimeUpdated.Humanize(default, default, CultureInfo.CurrentCulture),
+                             Written = (DateTime)cas.TimeWritten!,
+                             Updated = cas.TimeUpdated,
                              Images = null,
                              Phone = cas.Phone,
                              Governorate = isEnglish ? cas.GovNameEn : cas.GovNameAr,

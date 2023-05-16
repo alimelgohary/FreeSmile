@@ -53,7 +53,7 @@ namespace FreeSmile.Controllers
 
         [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Page)}, {nameof(pageSize.Size)}, {nameof(gov_id.GovernorateId)}, {nameof(caseTypeDto.CaseTypeId)} as query and returns dentists cases in the requested governorate, and caseType. DEFAULT is all governorates and all types. (returns List of {nameof(GetCaseDto)})")]
         [HttpGet("GetDentistsCases")]
-        public async Task<IActionResult> GetDentistsCasesAsync([FromQuery] PageSize pageSize, [FromQuery] GovernorateDto gov_id, [FromQuery] CaseTypeDto caseTypeDto)
+        public async Task<IActionResult> GetDentistsCasesAsync([FromQuery] PageSize pageSize, [FromQuery] QueryGovernorate gov_id, [FromQuery] QueryCaseType caseTypeDto)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
