@@ -219,7 +219,7 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
         }
 
-        [SwaggerOperation(Summary = $"Gets basic user info for any user, returns error if suspended or blocked. Should return {nameof(RoleWithBasicUserInfo)}")]
+        [SwaggerOperation(Summary = $"Takes {nameof(userId.Id)} as query & Gets basic user info for any user, returns error if suspended or blocked. Should return {nameof(RoleWithBasicUserInfo)}")]
         [HttpGet("GetBasicUserInfo")]
         public async Task<IActionResult> GetBasicUserInfo([FromQuery] UserId userId)
         {
