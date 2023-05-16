@@ -13,12 +13,12 @@ namespace FreeSmile.Services
         public Task<GetDentistSettingsDto> UpdateSettingsAsync(SetDentistSettingsDto settings, int user_id);
         public Task<GetDentistSettingsDto> GetPublicSettingsAsync(int auth_user_id_int, int other_user_id);
         public Task<List<GetCaseDto>> GetPatientsCasesAsync(int user_id, int page, int size, int gov_id, int case_type_id);
-        public Task<int> AddSharingAsync(AddSharingDto value, int user_id_int);
-        public Task<int> AddListingAsync(AddListingDto value, int user_id_int);
-        public Task<int> AddArticleAsync(AddArticleDto value, int user_id_int);
-        Task<RegularResponse> UpdateSharingAsync(UpdateSharingDto value, int user_id_int);
-        Task<RegularResponse> UpdateListingAsync(UpdateListingDto value, int user_id_int);
-        Task<RegularResponse> UpdateArticleAsync(UpdateArticleDto value, int user_id_int);
+        public Task<int> AddSharingAsync(AddSharingDto value, int user_id);
+        public Task<int> AddListingAsync(AddListingDto value, int user_id);
+        public Task<int> AddArticleAsync(AddArticleDto value, int user_id);
+        public Task<RegularResponse> UpdateSharingAsync(UpdateSharingDto value, int user_id);
+        public Task<RegularResponse> UpdateListingAsync(UpdateListingDto value, int user_id);
+        public Task<RegularResponse> UpdateArticleAsync(UpdateArticleDto value, int user_id);
 
         // TODO: GET: post_by_id
         // TODO: GET: article_by_id
