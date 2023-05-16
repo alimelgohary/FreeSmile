@@ -7,6 +7,8 @@ using static FreeSmile.Services.Helper;
 using FreeSmile.ActionFilters;
 using Swashbuckle.AspNetCore.Annotations;
 using FreeSmile.DTOs.Auth;
+using FreeSmile.DTOs;
+using DTOs;
 
 namespace FreeSmile.Controllers
 {
@@ -216,6 +218,24 @@ namespace FreeSmile.Controllers
 
             return StatusCode(res.StatusCode, res);
         }
+
+        [SwaggerOperation(Summary = $"Gets basic user info for any user, returns error if suspended or blocked. Should return {nameof(RoleWithBasicUserInfo)}")]
+        [HttpGet("GetBasicUserInfo")]
+        public async Task<IActionResult> GetBasicUserInfo([FromQuery] UserId userId)
+        {
+            string? auth_user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int auth_user_id_int = 0;
+            if (!string.IsNullOrEmpty(auth_user_id))
+                auth_user_id_int = int.Parse(auth_user_id);
+            
+            var res = await _userService.GetBasicUserInfo(auth_user_id_int, (int)userId.Id!);
+            return Ok(res);
+        }
+
+        #region DummyActions
+        [HttpPost("Dummy1")]
+        public void Dummy1(RoleWithBasicUserInfo v) { } // Only for including RoleWithBasicUserInfo in Swagger schemas
+        #endregion
     }
 }
 

@@ -1,4 +1,5 @@
-﻿using FreeSmile.DTOs.Auth;
+﻿using DTOs;
+using FreeSmile.DTOs.Auth;
 using static FreeSmile.Services.Helper;
 
 namespace FreeSmile.Services
@@ -16,8 +17,7 @@ namespace FreeSmile.Services
         public Task<RegularResponse> ChangePassword(ChangeKnownPasswordDto value, int user_id_int);
         public Task<RegularResponse> RequestEmailOtp(string usernameOrEmail);
         public RegularResponse RedirectToHome(int user_id, string roleString);
-
         public Task<RegularResponse> DeleteMyAccount(DeleteMyAccountDto value, int user_id, IResponseCookies cookies);
-
+        public Task<RoleWithBasicUserInfo> GetBasicUserInfo(int auth_user, int id);
     }
 }

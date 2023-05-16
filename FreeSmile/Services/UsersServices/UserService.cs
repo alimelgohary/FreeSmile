@@ -1,4 +1,5 @@
-﻿using FreeSmile.ActionFilters;
+﻿using DTOs;
+using FreeSmile.ActionFilters;
 using FreeSmile.DTOs.Auth;
 using FreeSmile.Models;
 using Microsoft.EntityFrameworkCore;
@@ -419,6 +420,19 @@ namespace FreeSmile.Services
                 message: _localizer["AccountDeleted"],
                 nextPage: Pages.login.ToString()
             );
+        }
+
+        public async Task<RoleWithBasicUserInfo> GetBasicUserInfo(int auth_user, int id)
+        {
+            User? user = await _context.Users.FindAsync(id);
+            return new()
+            {
+                UserId = user!.Id,
+                FullName = user.Fullname,
+                Username = user.Username,
+                ProfilePicture = await _commonService.GetProfilePictureAsync(auth_user, id, 1),
+                Role = (await _commonService.GetCurrentRole(id)).ToString()
+            };
         }
     }
 }
