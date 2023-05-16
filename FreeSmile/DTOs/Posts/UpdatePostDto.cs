@@ -14,7 +14,7 @@ namespace FreeSmile.DTOs.Posts
 
         [DisplayName(nameof(Title))]
         [Required(ErrorMessage = "required")]
-        [StringLength(20, MinimumLength = 3, ErrorMessage = "maxMinChar")]
+        [StringLength(50, MinimumLength = 3, ErrorMessage = "maxMinChar")]
         public string Title { get; set; } = null!;
 
         [DisplayName(nameof(Body))]

@@ -16,14 +16,14 @@ namespace FreeSmile.Services
         public Task<int> AddSharingAsync(AddSharingDto value, int user_id_int);
         public Task<int> AddListingAsync(AddListingDto value, int user_id_int);
         public Task<int> AddArticleAsync(AddArticleDto value, int user_id_int);
+        Task<RegularResponse> UpdateSharingAsync(UpdateSharingDto value, int user_id_int);
+        Task<RegularResponse> UpdateListingAsync(UpdateListingDto value, int user_id_int);
+        Task<RegularResponse> UpdateArticleAsync(UpdateArticleDto value, int user_id_int);
 
         // TODO: GET: post_by_id
         // TODO: GET: article_by_id
         // TODO: GET: listing_by_id
         // TODO: GET: sharing_by_id
-        // TODO: edit sharing for dentist // TODO: delete sharing for dentist
-        // TODO: edit article             // TODO: delete article
-        // TODO: PUT: edit listing        // TODO: DELETE: listing
         // TOOD: add portfolio          //TODO: delete portfolio
         // TOOD: PUT: like/unlike article      //TODO: POST: add/remove comment on an article   //TODO: POST: Report a comment
         // TODO: Don't forget to not include blocked or blocking people posts

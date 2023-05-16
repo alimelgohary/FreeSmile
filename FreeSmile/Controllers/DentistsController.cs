@@ -77,6 +77,18 @@ namespace FreeSmile.Controllers
             return Ok(res);
         }
 
+        [SwaggerOperation(Summary = $"Takes {nameof(UpdateSharingDto)} as JSON & updates a sharing patient post. This should return {nameof(RegularResponse)} with a success message")]
+        [HttpPut("UpdateSharing")]
+        public async Task<IActionResult> UpdateSharingAsync([FromBody] UpdateSharingDto value)
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+            
+            RegularResponse res = await _dentistService.UpdateSharingAsync(value, user_id_int);
+
+            return StatusCode(res.StatusCode, res);
+        }
+
         [SwaggerOperation(Summary = $"Takes {nameof(AddListingDto)} as Form Data & creates a listing post (product). GovernorateId is optional. Default is Dentist's current university location. This should return integer created post id if Success")]
         [HttpPost("AddListing")]
         public async Task<IActionResult> AddListingAsync([FromForm] AddListingDto value)
@@ -88,6 +100,18 @@ namespace FreeSmile.Controllers
             return Ok(res);
         }
 
+        [SwaggerOperation(Summary = $"Takes {nameof(UpdateListingDto)} as JSON & updates a listing. This should return {nameof(RegularResponse)} with a success message")]
+        [HttpPut("UpdateListing")]
+        public async Task<IActionResult> UpdateListingAsync([FromBody] UpdateListingDto value)
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+
+            RegularResponse res = await _dentistService.UpdateListingAsync(value, user_id_int);
+
+            return StatusCode(res.StatusCode, res);
+        }
+
         [SwaggerOperation(Summary = $"Takes {nameof(AddArticleDto)} as Form Data & creates an article. This should return integer created post id if Success")]
         [HttpPost("AddArticle")]
         public async Task<IActionResult> AddArticleAsync([FromForm] AddArticleDto value)
@@ -97,6 +121,18 @@ namespace FreeSmile.Controllers
             int res = await _dentistService.AddArticleAsync(value, user_id_int);
 
             return Ok(res);
+        }
+
+        [SwaggerOperation(Summary = $"Takes {nameof(UpdateArticleDto)} as JSON & updates article. This should return {nameof(RegularResponse)} with a success message")]
+        [HttpPut("UpdateArticle")]
+        public async Task<IActionResult> UpdateArticleAsync([FromBody] UpdateArticleDto value)
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+
+            RegularResponse res = await _dentistService.UpdateArticleAsync(value, user_id_int);
+
+            return StatusCode(res.StatusCode, res);
         }
 
         #region DummyActions

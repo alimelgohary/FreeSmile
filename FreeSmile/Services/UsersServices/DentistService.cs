@@ -342,6 +342,86 @@ namespace FreeSmile.Services
                 throw;
             }
         }
+
+        public async Task<RegularResponse> UpdateSharingAsync(UpdateSharingDto value, int user_id)
+        {
+            SharingPatient? sharing = await _context.SharingPatients.Include(x => x.Sharing)
+                                              .FirstOrDefaultAsync(x => x.SharingId == (int)value.post_id! && x.Sharing.WriterId == user_id);
+            if (sharing is null)
+                throw new NotFoundException(_localizer["notfound", _localizer["thispost"]]);
+
+
+            int gov_id = value.GovernorateId;
+            if (value.GovernorateId == 0)
+            {
+                gov_id = (await _context.Dentists.AsNoTracking()
+                                                 .Select(x => new
+                                                 {
+                                                     x.DentistId,
+                                                     x.CurrentUniversityNavigation.GovId
+                                                 }).FirstOrDefaultAsync(x => x.DentistId == user_id))!.GovId;
+            }
+
+            sharing.GovernateId = gov_id;
+            sharing.CaseTypeId = (int)value.CaseTypeId!;
+            sharing.PatientPhoneNumber = value.PatientPhone;
+            
+            sharing.Sharing.Title = value.Title;
+            sharing.Sharing.Body = value.Body;
+            sharing.Sharing.TimeUpdated = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            return RegularResponse.Success(message: _localizer["PostEditedSuccess"]);
+        }
+
+        public async Task<RegularResponse> UpdateListingAsync(UpdateListingDto value, int user_id)
+        {
+            Listing? listing = await _context.Listings.Include(x => x.ListingNavigation)
+                                              .FirstOrDefaultAsync(x => x.ListingId == (int)value.post_id! && x.ListingNavigation.WriterId == user_id);
+            if (listing is null)
+                throw new NotFoundException(_localizer["notfound", _localizer["thispost"]]);
+
+
+            int gov_id = value.GovernorateId;
+            if (value.GovernorateId == 0)
+            {
+                gov_id = (await _context.Dentists.AsNoTracking()
+                                                 .Select(x => new
+                                                 {
+                                                     x.DentistId,
+                                                     x.CurrentUniversityNavigation.GovId
+                                                 }).FirstOrDefaultAsync(x => x.DentistId == user_id))!.GovId;
+            }
+
+            listing.GovernateId = gov_id;
+            listing.CatId = (int)value.ListingCategoryId!;
+            listing.Price = (decimal)value.Price!;
+            
+            listing.ListingNavigation.Title = value.Title;
+            listing.ListingNavigation.Body = value.Body;
+            listing.ListingNavigation.TimeUpdated = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            return RegularResponse.Success(message: _localizer["PostEditedSuccess"]);
+        }
+
+        public async Task<RegularResponse> UpdateArticleAsync(UpdateArticleDto value, int user_id)
+        {
+            Article? article = await _context.Articles.Include(x => x.ArticleNavigation)
+                                                 .FirstOrDefaultAsync(x => x.ArticleId == (int)value.post_id! && x.ArticleNavigation.WriterId == user_id);
+            if (article is null)
+                throw new NotFoundException(_localizer["notfound", _localizer["thispost"]]);
+
+
+            article.CatId = (int)value.ArticleCategoryId!;
+            
+            article.ArticleNavigation.Title = value.Title;
+            article.ArticleNavigation.Body = value.Body;
+            article.ArticleNavigation.TimeUpdated = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            return RegularResponse.Success(message: _localizer["PostEditedSuccess"]);
+        }
     }
 }
 
