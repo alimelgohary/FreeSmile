@@ -8,6 +8,7 @@ using static FreeSmile.Services.Helper;
 using FreeSmile.ActionFilters;
 using Swashbuckle.AspNetCore.Annotations;
 using FreeSmile.DTOs.Posts;
+using FreeSmile.DTOs.Query;
 
 namespace FreeSmile.Controllers
 {

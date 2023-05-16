@@ -10,6 +10,7 @@ using static FreeSmile.Services.Helper;
 using static FreeSmile.Services.AuthHelper;
 using FreeSmile.CustomValidations;
 using FreeSmile.DTOs.Posts;
+using FreeSmile.DTOs.Query;
 
 namespace FreeSmile.Controllers
 {

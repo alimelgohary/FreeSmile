@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace FreeSmile.DTOs
+namespace FreeSmile.DTOs.Query
 {
     public class PageSize : SizeDto
     {

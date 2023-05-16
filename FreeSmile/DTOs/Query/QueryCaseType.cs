@@ -3,7 +3,7 @@ using FreeSmile.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 
-namespace FreeSmile.DTOs
+namespace FreeSmile.DTOs.Query
 {
     public class QueryCaseType
     {

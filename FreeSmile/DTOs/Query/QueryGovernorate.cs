@@ -2,7 +2,7 @@
 using FreeSmile.Models;
 using System.ComponentModel;
 
-namespace FreeSmile.DTOs
+namespace FreeSmile.DTOs.Query
 {
     public class QueryGovernorate
     {

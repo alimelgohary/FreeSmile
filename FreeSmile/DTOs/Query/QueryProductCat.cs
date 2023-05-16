@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using FreeSmile.CustomValidations;
 
-namespace FreeSmile.DTOs
+namespace FreeSmile.DTOs.Query
 {
     public class QueryProductCat
     {

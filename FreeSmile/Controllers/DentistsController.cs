@@ -9,9 +9,9 @@ using Swashbuckle.AspNetCore.Annotations;
 using FreeSmile.DTOs.Settings;
 using FreeSmile.DTOs.Auth;
 using FreeSmile.DTOs.Posts;
-using FreeSmile.DTOs;
 using FreeSmile.CustomValidations;
 using System.ComponentModel.DataAnnotations;
+using FreeSmile.DTOs.Query;
 
 namespace FreeSmile.Controllers
 {
