@@ -8,7 +8,7 @@ namespace FreeSmile.Services
         public Task<GetPatientSettingsDto> GetSettingsAsync(int user_id);
         public Task<GetPatientSettingsDto> UpdateSettingsAsync(SetPatientSettingsDto settings, int user_id);
         public Task<GetPatientSettingsDto> GetPublicSettingsAsync(int auth_user_id_int, int other_user_id);
-        public Task<List<GetCaseDto>> GetDentistsCases(int user_id, int page, int size, int gov_id, int case_type_id);
+        public Task<List<GetCaseDto>> GetDentistsCases(int user_id, int size, int[] previouslyFetched, int gov_id, int case_type_id);
 
         // TODO: GET: post_by_id
         // TODO: GET: search results

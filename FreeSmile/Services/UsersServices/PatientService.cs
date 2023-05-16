@@ -76,7 +76,7 @@ namespace FreeSmile.Services
             };
         }
 
-        public async Task<List<GetCaseDto>> GetDentistsCases(int user_id, int page, int size, int gov_id, int case_type_id)
+        public async Task<List<GetCaseDto>> GetDentistsCases(int user_id, int size, int[] previouslyFetched, int gov_id, int case_type_id)
         {
             bool isEnglish = Thread.CurrentThread.CurrentCulture.Name == "en";
             bool allGov = gov_id == 0;
@@ -88,6 +88,7 @@ namespace FreeSmile.Services
                          where !excluded_user_ids.Contains(cas.UserId)
                          where allGov || cas.GovId == gov_id
                          where allTypes || cas.CaseTypeId == case_type_id
+                         where !previouslyFetched.Contains(cas.PostId)
                          orderby cas.TimeUpdated ?? cas.TimeWritten descending
                          select new GetCaseDto
                          {
@@ -116,7 +117,7 @@ namespace FreeSmile.Services
                              CaseType = isEnglish ? cas.CaseTypeEn : cas.CaseTypeAr,
                          };
 
-            var list = result.Skip(--page * size).Take(size).ToList();
+            var list = result.Take(size).ToList();
             await Parallel.ForEachAsync(list, async (post, cancellationToken) =>
             {
                 post.UserInfo.ProfilePicture = await _commonService.GetProfilePictureDangerousAsync(post.UserInfo.UserId, 1);

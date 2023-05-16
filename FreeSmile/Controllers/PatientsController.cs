@@ -8,6 +8,8 @@ using Swashbuckle.AspNetCore.Annotations;
 using FreeSmile.DTOs.Settings;
 using FreeSmile.DTOs.Posts;
 using FreeSmile.DTOs.Query;
+using FreeSmile.CustomValidations;
+using System.ComponentModel.DataAnnotations;
 
 namespace FreeSmile.Controllers
 {
@@ -51,14 +53,16 @@ namespace FreeSmile.Controllers
             return Ok(res);
         }
 
-        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Page)}, {nameof(pageSize.Size)}, {nameof(gov_id.GovernorateId)}, {nameof(caseTypeDto.CaseTypeId)} as query and returns dentists cases in the requested governorate, and caseType. DEFAULT is all governorates and all types. (returns List of {nameof(GetCaseDto)})")]
+        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Size)}, {nameof(previouslyFetched)} as integer array (id1,id2,id3), {nameof(gov_id.GovernorateId)}, {nameof(caseTypeDto.CaseTypeId)} as query and returns dentists cases in the requested governorate, and caseType. DEFAULT is all governorates and all types. (returns List of {nameof(GetCaseDto)})")]
         [HttpGet("GetDentistsCases")]
-        public async Task<IActionResult> GetDentistsCasesAsync([FromQuery] PageSize pageSize, [FromQuery] QueryGovernorate gov_id, [FromQuery] QueryCaseType caseTypeDto)
+        public async Task<IActionResult> GetDentistsCasesAsync([FromQuery] SizeDto pageSize, [FromQuery][CommaArrayInt()][Display(Name = nameof(previouslyFetched))] string? previouslyFetched, [FromQuery] QueryGovernorate gov_id, [FromQuery] QueryCaseType caseTypeDto)
         {
             string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
             int user_id_int = int.Parse(user_id);
 
-            List<GetCaseDto> result= await _patientService.GetDentistsCases(user_id_int, pageSize.Page, pageSize.Size, gov_id.GovernorateId, caseTypeDto.CaseTypeId);
+            int[] ids = previouslyFetched?.Split(',').Select(x => int.Parse(x)).ToArray() ?? Array.Empty<int>();
+
+            List<GetCaseDto> result= await _patientService.GetDentistsCases(user_id_int, pageSize.Size, ids, gov_id.GovernorateId, caseTypeDto.CaseTypeId);
 
             return Ok(result);
         }
