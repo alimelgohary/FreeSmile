@@ -55,7 +55,7 @@ namespace FreeSmile.Controllers
         public IActionResult GetTypesList()
         {
             string lang = Thread.CurrentThread.CurrentCulture.Name;
-            var types = _context.CaseTypes.AsEnumerable().OrderBy(x => x.Lang(lang)).Select(x => new { id = x.CaseTypeId, name = x.Lang(lang) }).ToList();
+            var types = _context.CaseTypes.AsEnumerable().OrderBy(x => x.CaseTypeId).Select(x => new { id = x.CaseTypeId, name = x.Lang(lang) }).ToList();
             return Ok(types);
         }
 
@@ -64,7 +64,7 @@ namespace FreeSmile.Controllers
         public IActionResult GetArticleCatsList()
         {
             string lang = Thread.CurrentThread.CurrentCulture.Name;
-            var artCats = _context.ArticleCats.AsEnumerable().OrderBy(x => x.Lang(lang)).Select(x => new { id = x.ArticleCatId, name = x.Lang(lang) }).ToList();
+            var artCats = _context.ArticleCats.AsEnumerable().OrderBy(x => x.ArticleCatId).Select(x => new { id = x.ArticleCatId, name = x.Lang(lang) }).ToList();
             return Ok(artCats);
         }
 
@@ -73,7 +73,7 @@ namespace FreeSmile.Controllers
         public IActionResult GetProductCatsList()
         {
             string lang = Thread.CurrentThread.CurrentCulture.Name;
-            var productCats = _context.ProductCats.AsEnumerable().OrderBy(x => x.Lang(lang)).Select(x => new { id = x.ProductCatId, name = x.Lang(lang) }).ToList();
+            var productCats = _context.ProductCats.AsEnumerable().OrderBy(x => x.ProductCatId).Select(x => new { id = x.ProductCatId, name = x.Lang(lang) }).ToList();
             return Ok(productCats);
         }
         [SwaggerOperation(Summary = "(maybe useful for admin dashboard) returns notification templates list as {id, name, body, icon, nextPage}")]
@@ -81,7 +81,7 @@ namespace FreeSmile.Controllers
         public IActionResult GetNotificationTemplatesList()
         {
             string lang = Thread.CurrentThread.CurrentCulture.Name;
-            var productCats = _context.NotificationTemplates.AsEnumerable().OrderBy(x => x.Lang(lang)).Select(x => new { id = x.TempId, name = x.TempName, body = x.Lang(lang), icon = x.Icon, nextPage = x.NextPage }).ToList();
+            var productCats = _context.NotificationTemplates.AsEnumerable().OrderBy(x => x.TempId).Select(x => new { id = x.TempId, name = x.TempName, body = x.Lang(lang), icon = x.Icon, nextPage = x.NextPage }).ToList();
             return Ok(productCats);
         }
     }
