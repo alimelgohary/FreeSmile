@@ -368,9 +368,26 @@ namespace FreeSmile.Services
                 message.IsAvailable = userEnemies.Contains(message.UserId) == false;
                 if (message.IsAvailable)
                     message.ProfilePicture = await GetProfilePictureDangerousAsync(message.UserId);
-                }
+            }
+
+            if (!allMessages && lastMessages.Count < size) // If user is searching and Size not met then load some other users
+            {
+                var users = _context.Users
+                                    .Where(u => !userEnemies.Contains(u.Id))
+                                    .Where(u => !lastMessages.Select(x => x.UserId).Contains(u.Id))
+                                    .Where(u => (u.Username + " " + u.Fullname).Contains(q!))
+                                    .Take(size - lastMessages.Count)
+                                    .Select(u => new RecentMessagesDto
+                                    {
+                                        UserId = u.Id,
+                                        FullName = u.Fullname,
+                                        Username = u.Username,
+                                    });
+
+                lastMessages.AddRange(users);
+            }
             return lastMessages;
-                }
+        }
         public class PairEqualityComparer : IEqualityComparer<Message>
         {
             public bool Equals(Message? x, Message? y)
