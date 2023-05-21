@@ -66,6 +66,7 @@ builder.Services.AddTransient<IDentistService, DentistService>();
 builder.Services.AddTransient<IPatientService, PatientService>();
 builder.Services.AddTransient<IAdminService, AdminService>();
 builder.Services.AddTransient<ICommonService, CommonService>();
+builder.Services.AddTransient<IPublicService, PublicService>();
 #endregion
 
 #region Auth
