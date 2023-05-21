@@ -416,11 +416,7 @@ namespace FreeSmile.Services
             if (auth_user_id == 0 && other_user_id == 0)
                 throw new UnauthorizedException(_localizer["unauthorized"]);
 
-            var user1 = await _context.Users.AsNoTracking().Select(x => new { x.Id, x.Suspended }).FirstOrDefaultAsync(x => x.Id == auth_user_id);
             var user2 = await _context.Users.AsNoTracking().Select(x => new { x.Id, x.Suspended }).FirstOrDefaultAsync(x => x.Id == other_user_id);
-
-            if (user1?.Suspended == true)
-                throw new GeneralException(_localizer["UserSuspended"]);
 
             if ((other_user_id == 0 && auth_user_id != 0) || auth_user_id == other_user_id) //0 1
             {

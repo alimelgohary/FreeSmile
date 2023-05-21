@@ -5,11 +5,15 @@ using System.Security.Claims;
 using Swashbuckle.AspNetCore.Annotations;
 using FreeSmile.DTOs;
 using FreeSmile.DTOs.Settings;
+using FreeSmile.ActionFilters;
 
 namespace FreeSmile.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ServiceFilter(typeof(NotSuspended), Order = 1)]
+    [ServiceFilter(typeof(VerifiedEmailTurbo), Order = 2)]
+    [ServiceFilter(typeof(VerifiedIfDentistTurbo), Order = 3)]
     public class PublicController : ControllerBase
     {
         private readonly IStringLocalizer<PublicController> _localizer;
