@@ -59,7 +59,7 @@ namespace FreeSmile.Controllers
         }
 
 
-        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Size)}, {nameof(previouslyFetched)} as integer array (id1,id2,id3), {nameof(gov_id.GovernorateId)}, {nameof(caseTypeDto.CaseTypeId)} as query and returns patients cases in the requested governorate, and caseType. DEFAULT is dentist's university location and all types. (returns List of {nameof(GetCaseDto)})")]
+        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Size)}, {nameof(previouslyFetched)} as integer array (id1,id2,id3), {nameof(gov_id.GovernorateId)}, {nameof(caseTypeDto.CaseTypeId)} as query and returns patients cases in the requested governorate, and caseType. DEFAULT is dentist's university location and all types. (returns List of {nameof(GetPostDto)})")]
         [HttpGet("GetPatientsCases")]
         public async Task<IActionResult> GetPatientsCasesAsync([FromQuery] SizeDto pageSize, [FromQuery][CommaArrayInt()][Display(Name = nameof(previouslyFetched))] string? previouslyFetched, [FromQuery] QueryGovernorate gov_id, [FromQuery] QueryCaseType caseTypeDto)
         {
@@ -67,13 +67,13 @@ namespace FreeSmile.Controllers
             int user_id_int = int.Parse(user_id);
 
             int[] ids = previouslyFetched?.Split(',').Select(x => int.Parse(x)).ToArray() ?? Array.Empty<int>();
-            List<GetCaseDto> result = await _dentistService.GetPatientsCasesAsync(user_id_int, pageSize.Size, ids, gov_id.GovernorateId, caseTypeDto.CaseTypeId);
+            List<GetPostDto> result = await _dentistService.GetPatientsCasesAsync(user_id_int, pageSize.Size, ids, gov_id.GovernorateId, caseTypeDto.CaseTypeId);
 
             return Ok(result);
         }
 
 
-        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Size)}, {nameof(previouslyFetched)} as integer array (id1,id2,id3), {nameof(gov_id.GovernorateId)}, {nameof(productCatDto.ListingCategoryId)}, {nameof(sortBy)} 0 : Date Desc, 1 : Date Asc, 2 : Price Asc, 3 : Price Desc as query and returns products listed in the requested governorate, and product category. DEFAULT is dentist's university location and all cats. (returns List of {nameof(GetListingDto)})")]
+        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Size)}, {nameof(previouslyFetched)} as integer array (id1,id2,id3), {nameof(gov_id.GovernorateId)}, {nameof(productCatDto.ListingCategoryId)}, {nameof(sortBy)} 0 : Date Desc, 1 : Date Asc, 2 : Price Asc, 3 : Price Desc as query and returns products listed in the requested governorate, and product category. DEFAULT is dentist's university location and all cats. (returns List of {nameof(GetPostDto)})")]
         [HttpGet("GetListings")]
         public async Task<IActionResult> GetListingsAsync([FromQuery] SizeDto pageSize, [FromQuery][CommaArrayInt()][Display(Name = nameof(previouslyFetched))] string? previouslyFetched, [FromQuery] QueryGovernorate gov_id, [FromQuery] QueryProductCat productCatDto, [FromQuery] byte sortBy)
         {
@@ -81,13 +81,13 @@ namespace FreeSmile.Controllers
             int user_id_int = int.Parse(user_id);
 
             int[] ids = previouslyFetched?.Split(',').Select(x => int.Parse(x)).ToArray() ?? Array.Empty<int>();
-            List<GetListingDto> result = await _dentistService.GetListingsAsync(user_id_int, pageSize.Size, ids, gov_id.GovernorateId, productCatDto.ListingCategoryId, sortBy);
+            List<GetPostDto> result = await _dentistService.GetListingsAsync(user_id_int, pageSize.Size, ids, gov_id.GovernorateId, productCatDto.ListingCategoryId, sortBy);
 
             return Ok(result);
         }
 
 
-        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Size)}, {nameof(previouslyFetched)} as integer array (id1,id2,id3), {nameof(queryArticleCat.ArticleCategoryId)}, {nameof(sortBy)} 0 : Date Desc, 1 : Date Asc, 2 : Likes Desc, 3 : Comments Desc as query and returns articles in the requested category. DEFAULT is all cats. (returns List of {nameof(GetArticleDto)})")]
+        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Size)}, {nameof(previouslyFetched)} as integer array (id1,id2,id3), {nameof(queryArticleCat.ArticleCategoryId)}, {nameof(sortBy)} 0 : Date Desc, 1 : Date Asc, 2 : Likes Desc, 3 : Comments Desc as query and returns articles in the requested category. DEFAULT is all cats. (returns List of {nameof(GetPostDto)})")]
         [HttpGet("GetArticles")]
         public async Task<IActionResult> GetArticlesAsync([FromQuery] SizeDto pageSize, [FromQuery][CommaArrayInt()][Display(Name = nameof(previouslyFetched))] string? previouslyFetched, [FromQuery] QueryArticleCat queryArticleCat, [FromQuery] byte sortBy)
         {
@@ -95,7 +95,7 @@ namespace FreeSmile.Controllers
             int user_id_int = int.Parse(user_id);
 
             int[] ids = previouslyFetched?.Split(',').Select(x => int.Parse(x)).ToArray() ?? Array.Empty<int>();
-            List<GetArticleDto> result = await _dentistService.GetArticlesAsync(user_id_int, pageSize.Size, ids, queryArticleCat.ArticleCategoryId, sortBy);
+            List<GetPostDto> result = await _dentistService.GetArticlesAsync(user_id_int, pageSize.Size, ids, queryArticleCat.ArticleCategoryId, sortBy);
 
             return Ok(result);
         }

@@ -16,5 +16,13 @@ namespace FreeSmile.DTOs.Posts
         public bool IsOwner { get; set; }
         public DateTime Written { get; set; }
         public DateTime? Updated { get; set; }
+        public string? Governorate { get; set; } = null!;
+        public string Category { get; set; } = null!;
+        public decimal Price { get; set; }
+        public bool IsCase { get; set; }
+        public bool IsListing { get; set; }
+        public bool IsArticle { get; set; }
+        public int Likes { get; set; }
+        public int Comments { get; set; }
     }
 }

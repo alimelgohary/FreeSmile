@@ -53,7 +53,7 @@ namespace FreeSmile.Controllers
             return Ok(res);
         }
 
-        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Size)}, {nameof(previouslyFetched)} as integer array (id1,id2,id3), {nameof(gov_id.GovernorateId)}, {nameof(caseTypeDto.CaseTypeId)} as query and returns dentists cases in the requested governorate, and caseType. DEFAULT is all governorates and all types. (returns List of {nameof(GetCaseDto)})")]
+        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Size)}, {nameof(previouslyFetched)} as integer array (id1,id2,id3), {nameof(gov_id.GovernorateId)}, {nameof(caseTypeDto.CaseTypeId)} as query and returns dentists cases in the requested governorate, and caseType. DEFAULT is all governorates and all types. (returns List of {nameof(GetPostDto)})")]
         [HttpGet("GetDentistsCases")]
         public async Task<IActionResult> GetDentistsCasesAsync([FromQuery] SizeDto pageSize, [FromQuery][CommaArrayInt()][Display(Name = nameof(previouslyFetched))] string? previouslyFetched, [FromQuery] QueryGovernorate gov_id, [FromQuery] QueryCaseType caseTypeDto)
         {
@@ -62,14 +62,14 @@ namespace FreeSmile.Controllers
 
             int[] ids = previouslyFetched?.Split(',').Select(x => int.Parse(x)).ToArray() ?? Array.Empty<int>();
 
-            List<GetCaseDto> result= await _patientService.GetDentistsCases(user_id_int, pageSize.Size, ids, gov_id.GovernorateId, caseTypeDto.CaseTypeId);
+            List<GetPostDto> result= await _patientService.GetDentistsCases(user_id_int, pageSize.Size, ids, gov_id.GovernorateId, caseTypeDto.CaseTypeId);
 
             return Ok(result);
         }
 
         #region DummyActions
         [HttpPost("Dummy")]
-        public void DummyAction2(GetCaseDto v) { } // Only for including GetCaseDto in Swagger
+        public void DummyAction2(GetPostDto v) { } // Only for including GetCaseDto in Swagger
         #endregion
     }
 }

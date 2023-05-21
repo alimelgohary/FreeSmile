@@ -182,7 +182,7 @@ namespace FreeSmile.Services
             return await GetSettingsAsync(user_id);
         }
 
-        public async Task<List<GetCaseDto>> GetPatientsCasesAsync(int user_id, int size, int[] previouslyFetched, int gov_id, int case_type_id)
+        public async Task<List<GetPostDto>> GetPatientsCasesAsync(int user_id, int size, int[] previouslyFetched, int gov_id, int case_type_id)
         {
             bool isEnglish = Thread.CurrentThread.CurrentCulture.Name == "en";
             bool allTypes = case_type_id == 0;
@@ -207,9 +207,10 @@ namespace FreeSmile.Services
                          where allTypes || home.CaseTypeId == case_type_id
                          where !previouslyFetched.Contains(home.PostId)
                          orderby home.TimeUpdated ?? home.TimeWritten descending
-                         select new GetCaseDto
+                         select new GetPostDto
                          {
                              IsOwner = home.UserId == user_id,
+                             IsCase = true,
                              UserInfo = new()
                              {
                                  UserId = home.UserId,
@@ -232,7 +233,7 @@ namespace FreeSmile.Services
                              Images = null,
                              Phone = home.Phone,
                              Governorate = isEnglish ? home.GovNameEn : home.GovNameAr,
-                             CaseType = isEnglish ? home.CaseTypeEn : home.CaseTypeAr,
+                             Category = isEnglish ? home.CaseTypeEn : home.CaseTypeAr,
                          };
 
             var list = result.Take(size).ToList();
@@ -368,7 +369,7 @@ namespace FreeSmile.Services
             sharing.GovernateId = gov_id;
             sharing.CaseTypeId = (int)value.CaseTypeId!;
             sharing.PatientPhoneNumber = value.PatientPhone;
-            
+
             sharing.Sharing.Title = value.Title;
             sharing.Sharing.Body = value.Body;
             sharing.Sharing.TimeUpdated = DateTime.UtcNow;
@@ -399,7 +400,7 @@ namespace FreeSmile.Services
             listing.GovernateId = gov_id;
             listing.CatId = (int)value.ListingCategoryId!;
             listing.Price = (decimal)value.Price!;
-            
+
             listing.ListingNavigation.Title = value.Title;
             listing.ListingNavigation.Body = value.Body;
             listing.ListingNavigation.TimeUpdated = DateTime.UtcNow;
@@ -417,7 +418,7 @@ namespace FreeSmile.Services
 
 
             article.CatId = (int)value.ArticleCategoryId!;
-            
+
             article.ArticleNavigation.Title = value.Title;
             article.ArticleNavigation.Body = value.Body;
             article.ArticleNavigation.TimeUpdated = DateTime.UtcNow;
@@ -426,7 +427,7 @@ namespace FreeSmile.Services
             return RegularResponse.Success(message: _localizer["PostEditedSuccess"]);
         }
 
-        public async Task<List<GetListingDto>> GetListingsAsync(int user_id, int size, int[] previouslyFetched, int gov_id, int listingCategoryId, byte sortBy)
+        public async Task<List<GetPostDto>> GetListingsAsync(int user_id, int size, int[] previouslyFetched, int gov_id, int listingCategoryId, byte sortBy)
         {
             bool isEnglish = Thread.CurrentThread.CurrentCulture.Name == "en";
             bool allCats = listingCategoryId == 0;
@@ -450,9 +451,10 @@ namespace FreeSmile.Services
                          where home.GovId == gov_id
                          where allCats || home.ProductCatId == listingCategoryId
                          where !previouslyFetched.Contains(home.PostId)
-                         select new GetListingDto
+                         select new GetPostDto
                          {
                              IsOwner = home.UserId == user_id,
+                             IsListing = true,
                              UserInfo = new()
                              {
                                  UserId = home.UserId,
@@ -475,10 +477,10 @@ namespace FreeSmile.Services
                              Images = null,
                              Phone = home.Phone,
                              Governorate = isEnglish ? home.GovNameEn : home.GovNameAr,
-                             ProductCategory = isEnglish ? home.ProductCatEn : home.ProductCatAr,
+                             Category = isEnglish ? home.ProductCatEn : home.ProductCatAr,
                              Price = home.Price
                          };
-            
+
             //0 : Date Desc, 1 : Date Asc, 2 : Price Asc, 3 : Price Desc
             result = sortBy switch
             {
@@ -488,7 +490,7 @@ namespace FreeSmile.Services
                 3 => result.OrderByDescending(x => x.Price),
                 _ => result.OrderByDescending(x => x.Updated ?? x.Written),
             };
-            
+
             var list = result.Take(size).ToList();
             await Parallel.ForEachAsync(list, async (post, cancellationToken) =>
             {
@@ -499,7 +501,7 @@ namespace FreeSmile.Services
             return list;
         }
 
-        public async Task<List<GetArticleDto>> GetArticlesAsync(int user_id, int size, int[] previouslyFetched, int articleCategoryId, byte sortBy)
+        public async Task<List<GetPostDto>> GetArticlesAsync(int user_id, int size, int[] previouslyFetched, int articleCategoryId, byte sortBy)
         {
             bool isEnglish = Thread.CurrentThread.CurrentCulture.Name == "en";
             bool allCats = articleCategoryId == 0;
@@ -507,10 +509,11 @@ namespace FreeSmile.Services
 
             var result = from home in _context.ArticlesViews.AsNoTracking()
                          where !excluded_user_ids.Contains(home.UserId)
-                         where allCats || home.ArticleCatId== articleCategoryId
+                         where allCats || home.ArticleCatId == articleCategoryId
                          where !previouslyFetched.Contains(home.PostId)
-                         select new GetArticleDto
+                         select new GetPostDto
                          {
+                             IsArticle = true,
                              IsOwner = home.UserId == user_id,
                              UserInfo = new()
                              {
@@ -533,7 +536,7 @@ namespace FreeSmile.Services
                              Updated = home.TimeUpdated,
                              Images = null,
                              Phone = home.Phone,
-                             ArticleCateogry = isEnglish ? home.ArticleCatEn : home.ArticleCatAr,
+                             Category = isEnglish ? home.ArticleCatEn : home.ArticleCatAr,
                              Likes = home.Likes ?? 0,
                              Comments = home.Comments ?? 0
                          };

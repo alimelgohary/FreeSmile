@@ -76,7 +76,7 @@ namespace FreeSmile.Services
             };
         }
 
-        public async Task<List<GetCaseDto>> GetDentistsCases(int user_id, int size, int[] previouslyFetched, int gov_id, int case_type_id)
+        public async Task<List<GetPostDto>> GetDentistsCases(int user_id, int size, int[] previouslyFetched, int gov_id, int case_type_id)
         {
             bool isEnglish = Thread.CurrentThread.CurrentCulture.Name == "en";
             bool allGov = gov_id == 0;
@@ -90,8 +90,9 @@ namespace FreeSmile.Services
                          where allTypes || cas.CaseTypeId == case_type_id
                          where !previouslyFetched.Contains(cas.PostId)
                          orderby cas.TimeUpdated ?? cas.TimeWritten descending
-                         select new GetCaseDto
+                         select new GetPostDto
                          {
+                             IsCase = true,
                              UserInfo = new()
                              {
                                  UserId = cas.UserId,
@@ -114,7 +115,7 @@ namespace FreeSmile.Services
                              Images = null,
                              Phone = cas.Phone,
                              Governorate = isEnglish ? cas.GovNameEn : cas.GovNameAr,
-                             CaseType = isEnglish ? cas.CaseTypeEn : cas.CaseTypeAr,
+                             Category = isEnglish ? cas.CaseTypeEn : cas.CaseTypeAr,
                          };
 
             var list = result.Take(size).ToList();
