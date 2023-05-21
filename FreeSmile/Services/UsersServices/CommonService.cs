@@ -65,14 +65,9 @@ namespace FreeSmile.Services
                                                 Blockeds = x.Blockeds.Select(x => x.Id),
                                                 Blockers = x.Blockers.Select(x => x.Id)
                                             })
-                                            .FirstOrDefaultAsync(x => x.Id == other_user_id);
-            if (user2?.Suspended == true)
-                return false;
-
-            bool user2_blocked_user1 = user2?.Blockeds.Where(x => x == user_id).Count() > 0;
-            bool user2_is_blocked_by_user1 = user2?.Blockers.Where(x => x == user_id).Count() > 0;
-
-            return !user2_blocked_user1 && !user2_is_blocked_by_user1;
+                                            .FirstOrDefaultAsync(x => x.Id == other_user_id 
+                                            && (x.Blockers.Contains(user_id) || x.Blockeds.Contains(user_id) || x.Suspended == true));
+            return user2 == null;
         }
 
         public async Task<IEnumerable<int>> GetUserEnemiesAsync(int user_id)
