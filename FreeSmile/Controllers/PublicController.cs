@@ -8,6 +8,9 @@ using FreeSmile.DTOs.Settings;
 using FreeSmile.DTOs.Posts;
 using FreeSmile.ActionFilters;
 using System.ComponentModel.DataAnnotations;
+using FreeSmile.CustomValidations;
+using FreeSmile.DTOs.Query;
+using DTOs;
 
 namespace FreeSmile.Controllers
 {
@@ -98,5 +101,36 @@ namespace FreeSmile.Controllers
             return Ok(caseDto);
         }
 
+        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Size)}, {nameof(previouslyFetched)} as integer array (id1,id2,id3), {nameof(articleId)} as query and returns Comments on a certain article (returns List of {nameof(CommentDto)})")]
+        [HttpGet("GetArticleComments")]
+        public async Task<IActionResult> GetArticleCommentsAsync([FromQuery] SizeDto pageSize, [FromQuery][CommaArrayInt()][Display(Name = nameof(previouslyFetched))] string? previouslyFetched, [FromQuery] int articleId)
+        {
+            string? auth_user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int auth_user_id_int = 0;
+            if (!string.IsNullOrEmpty(auth_user_id))
+                auth_user_id_int = int.Parse(auth_user_id);
+
+            int[] ids = previouslyFetched?.Split(',').Select(x => int.Parse(x)).ToArray() ?? Array.Empty<int>();
+
+            List<CommentDto> result = await _publicService.GetArticleCommentsAsync(auth_user_id_int, pageSize.Size, ids, articleId);
+
+            return Ok(result);
+        }
+
+        [SwaggerOperation(Summary = $"Takes {nameof(pageSize.Size)}, {nameof(previouslyFetched)} as integer array (id1,id2,id3), {nameof(articleId)} as query and returns Likes on a certain article (returns List of {nameof(GetBasicUserInfo)})")]
+        [HttpGet("GetArticleLikes")]
+        public async Task<IActionResult> GetArticleLikesAsync([FromQuery] SizeDto pageSize, [FromQuery][CommaArrayInt()][Display(Name = nameof(previouslyFetched))] string? previouslyFetched, [FromQuery] int articleId)
+        {
+            string? auth_user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int auth_user_id_int = 0;
+            if (!string.IsNullOrEmpty(auth_user_id))
+                auth_user_id_int = int.Parse(auth_user_id);
+
+            int[] ids = previouslyFetched?.Split(',').Select(x => int.Parse(x)).ToArray() ?? Array.Empty<int>();
+
+            List<GetBasicUserInfo> result = await _publicService.GetArticleLikesAsync(auth_user_id_int, pageSize.Size, ids, articleId);
+
+            return Ok(result);
+        }
     }
 }

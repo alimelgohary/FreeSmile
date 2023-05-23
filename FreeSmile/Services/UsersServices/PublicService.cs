@@ -1,4 +1,5 @@
-﻿using FreeSmile.ActionFilters;
+﻿using DTOs;
+using FreeSmile.ActionFilters;
 using FreeSmile.DTOs.Posts;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
@@ -196,6 +197,105 @@ namespace FreeSmile.Services
             result.UserInfo.ProfilePicture = await _commonService.GetProfilePictureDangerousAsync(result.UserInfo.UserId, 1);
             result.Images = await _commonService.GetPostImagesAsync(result.PostId);
             return result;
+        }
+
+        public async Task<List<CommentDto>> GetArticleCommentsAsync(int auth_user_id, int size, int[] previouslyFetched, int articleId)
+        {
+            if (articleId <= 0)
+                throw new NotFoundException(_localizer["NotFound", _localizer["thispost"]]);
+
+            var result = await _context.Articles.AsNoTracking()
+                                   .Select(article => new
+                                   {
+                                       article.ArticleId,
+                                       article.ArticleNavigation.WriterId
+                                   })
+                                   .FirstOrDefaultAsync(x => x.ArticleId == articleId);
+
+            if (result is null)
+                throw new NotFoundException(_localizer["NotFound", _localizer["thispost"]]);
+
+            bool isEnglish = Thread.CurrentThread.CurrentCulture.Name == "en";
+
+            if (await _commonService.CanUsersCommunicateAsync(auth_user_id, result!.WriterId) == false)
+                throw new GeneralException(_localizer["personnotavailable"]);
+
+            var enemies = await _commonService.GetUserEnemiesAsync(auth_user_id);
+
+            var list = await _context.Comments
+                .Where(x => x.ArticleId == articleId)
+                .Where(x => !previouslyFetched.Contains(x.CommentId))
+                .Where(x => !enemies.Contains(x.WriterId))
+                .Select(x => new CommentDto
+                {
+                    CommentId = x.CommentId,
+                    Written = x.TimeWritten,
+                    TimeWritten = x.TimeWritten.Humanize(default, default, CultureInfo.CurrentCulture),
+                    Body = x.Body,
+                    UserInfo = new()
+                    {
+                        UserId = x.Writer.Id,
+                        FullName = x.Writer.Fullname,
+                        Username = x.Writer.Username
+                    },
+                    DentistInfo = new()
+                    {
+                        AcademicDegree = isEnglish ?
+                                         x.Writer.Dentist.CurrentDegreeNavigation.NameEn :
+                                         x.Writer.Dentist.CurrentDegreeNavigation.NameAr,
+                        University = isEnglish ?
+                                     x.Writer.Dentist.CurrentUniversityNavigation.NameEn :
+                                     x.Writer.Dentist.CurrentUniversityNavigation.NameAr
+                    }
+                }).OrderByDescending(x => x.CommentId).Take(size).ToListAsync();
+
+            await Parallel.ForEachAsync(list, async (post, cancellationToken) =>
+            {
+                post.UserInfo.ProfilePicture = await _commonService.GetProfilePictureDangerousAsync(post.UserInfo.UserId, 1);
+            });
+            return list;
+        }
+
+        public async Task<List<GetBasicUserInfo>> GetArticleLikesAsync(int auth_user_id, int size, int[] previouslyFetched, int articleId)
+        {
+            if (articleId <= 0)
+                throw new NotFoundException(_localizer["NotFound", _localizer["thispost"]]);
+
+            var result = await _context.Articles.AsNoTracking()
+                                   .Select(article => new
+                                   {
+                                       article.ArticleId,
+                                       article.ArticleNavigation.WriterId
+                                   })
+                                   .FirstOrDefaultAsync(x => x.ArticleId == articleId);
+
+            if (result is null)
+                throw new NotFoundException(_localizer["NotFound", _localizer["thispost"]]);
+
+            bool isEnglish = Thread.CurrentThread.CurrentCulture.Name == "en";
+
+            if (await _commonService.CanUsersCommunicateAsync(auth_user_id, result!.WriterId) == false)
+                throw new GeneralException(_localizer["personnotavailable"]);
+
+            var enemies = await _commonService.GetUserEnemiesAsync(auth_user_id);
+
+            var list = (await _context.Articles
+                .Where(x => x.ArticleId == articleId)
+                .Select(x => x.Likers.Select(x => new GetBasicUserInfo
+                {
+                    UserId = x.Id,
+                    Username = x.Username,
+                    FullName = x.Fullname
+                })
+                .Where(x => !previouslyFetched.Contains(x.UserId))
+                .Where(x => !enemies.Contains(x.UserId)))
+                .Take(size).FirstOrDefaultAsync())!.ToList();
+
+            await Parallel.ForEachAsync(list, async (like, cancellationToken) =>
+            {
+                like.ProfilePicture = await _commonService.GetProfilePictureDangerousAsync(like.UserId, 1);
+            });
+            return list;
         }
     }
 }

@@ -57,6 +57,9 @@ namespace FreeSmile.Services
 
         public async Task<bool> CanUsersCommunicateAsync(int user_id, int other_user_id)
         {
+            if (user_id == 0 || other_user_id == 0)
+                return true;
+
             var user2 = await _context.Users.AsNoTracking()
                                             .Select(x => new
                                             {
@@ -72,6 +75,9 @@ namespace FreeSmile.Services
 
         public async Task<IEnumerable<int>> GetUserEnemiesAsync(int user_id)
         {
+            if (user_id <= 0)
+                return Enumerable.Empty<int>();
+
             var excluded = await _context.Users.AsNoTracking()
                                          .Select(x =>
                                             new

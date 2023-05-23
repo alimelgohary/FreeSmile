@@ -22,11 +22,11 @@ namespace FreeSmile.Services
         public Task<List<GetPostDto>> GetListingsAsync(int user_id, int size, int[] previouslyFetched, int governorateId, int listingCategoryId, byte sortBy);
         public Task<List<GetPostDto>> GetArticlesAsync(int user_id, int size, int[] previouslyFetched, int articleCategoryId, byte sortBy);
 
-        // TODO: GET comments
-        // TOOD: add portfolio                 //TODO: delete portfolio
+        // TOOD: POST: add portfolio
+        // TODO: DELETE: remove portfolio
         // TOOD: PUT: like/unlike article
-        // TODO: POST: add
-        // TODO: DELETE: comment on an article
+        // TODO: POST: add comment on an article
+        // TODO: DELETE: remove comment on an article
         // TODO: POST: Report a comment
     }
 }
