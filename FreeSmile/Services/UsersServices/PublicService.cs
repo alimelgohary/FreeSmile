@@ -217,10 +217,10 @@ namespace FreeSmile.Services
 
             bool isEnglish = Thread.CurrentThread.CurrentCulture.Name == "en";
 
-            if (await _commonService.CanUsersCommunicateAsync(auth_user_id, result!.WriterId) == false)
-                throw new GeneralException(_localizer["personnotavailable"]);
-
             var enemies = await _commonService.GetUserEnemiesAsync(auth_user_id);
+
+            if (enemies.Contains(result!.WriterId))
+                throw new GeneralException(_localizer["personnotavailable"]);
 
             var list = await _context.Comments
                 .Where(x => x.ArticleId == articleId)
@@ -274,10 +274,10 @@ namespace FreeSmile.Services
 
             bool isEnglish = Thread.CurrentThread.CurrentCulture.Name == "en";
 
-            if (await _commonService.CanUsersCommunicateAsync(auth_user_id, result!.WriterId) == false)
-                throw new GeneralException(_localizer["personnotavailable"]);
-
             var enemies = await _commonService.GetUserEnemiesAsync(auth_user_id);
+
+            if (enemies.Contains(result!.WriterId))
+                throw new GeneralException(_localizer["personnotavailable"]);
 
             var list = (await _context.Articles
                 .Where(x => x.ArticleId == articleId)

@@ -57,7 +57,7 @@ namespace FreeSmile.Services
 
         public async Task<bool> CanUsersCommunicateAsync(int user_id, int other_user_id)
         {
-            if (user_id == 0 || other_user_id == 0)
+            if (user_id == 0 || other_user_id == 0 || user_id == other_user_id)
                 return true;
 
             var user2 = await _context.Users.AsNoTracking()
@@ -88,7 +88,9 @@ namespace FreeSmile.Services
                                             })
                                          .FirstOrDefaultAsync(x => x.Id == user_id);
 
-            return excluded!.Blockeds.Concat(excluded.Blockers);
+            var suspended = _context.Users.Where(x => x.Suspended).Select(x => x.Id);
+
+            return excluded!.Blockeds.Concat(excluded.Blockers).Concat(suspended);
         }
         public async Task<ReviewDto> GetReviewAsync(int user_id)
         {
