@@ -583,12 +583,16 @@ namespace FreeSmile
                     .IsUnicode(false)
                     .HasColumnName("actor_username");
 
+                entity.Property(e => e.Comments).HasColumnName("comments");
+
+                entity.Property(e => e.Likes).HasColumnName("likes");
+
                 entity.Property(e => e.OwnerId).HasColumnName("owner_id");
 
                 entity.Property(e => e.PostId).HasColumnName("post_id");
 
                 entity.Property(e => e.PostTitle)
-                    .HasMaxLength(20)
+                    .HasMaxLength(50)
                     .HasColumnName("post_title");
 
                 entity.Property(e => e.Seen)

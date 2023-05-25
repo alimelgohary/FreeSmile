@@ -560,6 +560,28 @@ namespace FreeSmile.Services
 
             return list;
         }
+
+        public async Task LikeUnlikeArticleAsync(int user_id, int articleId)
+        {
+            if (articleId <= 0)
+                throw new NotFoundException(_localizer["NotFound", _localizer["thispost"]]);
+
+            var result = await _context.Articles.AsNoTracking()
+                                   .Select(article => new
+                                   {
+                                       article.ArticleId,
+                                       article.ArticleNavigation.WriterId
+                                   })
+                                   .FirstOrDefaultAsync(x => x.ArticleId == articleId);
+
+            if (result is null)
+                throw new NotFoundException(_localizer["NotFound", _localizer["thispost"]]);
+
+            if (await _commonService.CanUsersCommunicateAsync(user_id, result.WriterId) == false)
+                throw new GeneralException(_localizer["personnotavailable"]);
+
+            await _context.Database.ExecuteSqlRawAsync($"dbo.likeunlikearticle @ArticleId = {articleId}, @UserId = {user_id};");
+        }
     }
 }
 

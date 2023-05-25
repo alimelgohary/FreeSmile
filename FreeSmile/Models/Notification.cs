@@ -9,9 +9,11 @@ namespace FreeSmile.Models
         public int OwnerId { get; set; }
         public DateTime? SentAt { get; set; }
         public bool? Seen { get; set; }
-        public string? PostTitle { get; set; }
-        public int? PostId { get; set; }
         public string? ActorUsername { get; set; }
+        public string? PostTitle { get; set; }
+        public int? Likes { get; set; }
+        public int? Comments { get; set; }
+        public int? PostId { get; set; }
         public int TempId { get; set; }
 
         public virtual User Owner { get; set; } = null!;

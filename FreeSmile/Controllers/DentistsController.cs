@@ -175,6 +175,18 @@ namespace FreeSmile.Controllers
             return StatusCode(res.StatusCode, res);
         }
 
+        [SwaggerOperation(Summary = $"Takes {nameof(articleId)} as query and Likes or unlikes that certain article")]
+        [HttpPut("LikeUnlikeArticle")]
+        public async Task<IActionResult> LikeUnlikeArticleAsync([FromQuery] int articleId)
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+
+            await _dentistService.LikeUnlikeArticleAsync(user_id_int, articleId);
+
+            return Ok();
+        }
+
 
         #region DummyActions
         [HttpPost("Dummy")]

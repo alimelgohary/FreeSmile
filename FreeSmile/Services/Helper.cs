@@ -162,7 +162,9 @@ namespace FreeSmile.Services
             Article_Like,
             Article_Comment,
             Reset_Password,
-            Changed_Password
+            Changed_Password,
+            Article_Like_Others,
+            Article_Comment_Others
         }
 
     }

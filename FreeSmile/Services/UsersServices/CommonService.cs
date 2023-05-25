@@ -162,7 +162,7 @@ namespace FreeSmile.Services
                     NotificationId = notification.NotificationId,
                     HumanizedTime = notification.SentAt.Humanize(culture: CultureInfo.CurrentCulture)!,
                     Seen = (bool)notification.Seen!,
-                    Body = string.Format(notification.Temp.Lang(lang), notification.ActorUsername, notification.PostTitle),
+                    Body = string.Format(notification.Temp.Lang(lang), notification.ActorUsername, notification.PostTitle?.Truncate(20), notification.Likes, notification.Comments),
                     NextPage = string.Format(notification.Temp.NextPage, notification.PostId),
                     Icon = notification.Temp.Icon
                 });
@@ -732,7 +732,7 @@ namespace FreeSmile.Services
             return await GetCommonSettingsAsync(user_id);
         }
 
-        public async Task AddNotificationDangerousAsync(int owner_id, NotificationTemplates temp_name, string? post_title, int? post_id, string? actor_username)
+        public async Task AddNotificationDangerousAsync(int owner_id, NotificationTemplates temp_name, string? post_title = null, int? post_id = null, string? actor_username = null, int? likes = null, int? comments = null)
         {
             await _context.Notifications.AddAsync(new Notification()
             {

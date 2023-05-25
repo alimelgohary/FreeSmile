@@ -35,7 +35,7 @@ namespace FreeSmile.Services
         public Task<RegularResponse> DeletePostAsync(int user_id, int case_post_id, string roleString);
         public Task<GetCommonSettingsDto> GetCommonSettingsAsync(int user_id);
         public Task<GetCommonSettingsDto> UpdateCommonSettingsAsync(SetCommonSettingsDto settings, int user_id);
-        public Task AddNotificationDangerousAsync(int owner_id, NotificationTemplates temp_name, string? post_title = null, int? post_id = null, string? actor_username = null);
+        public Task AddNotificationDangerousAsync(int owner_id, NotificationTemplates temp_name, string? post_title = null, int? post_id = null, string? actor_username = null, int? likes = null, int? comments = null);
 
     }
 }
