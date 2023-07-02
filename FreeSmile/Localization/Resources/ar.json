@@ -109,4 +109,8 @@
   "listingcategoryid": "تصنيف المنتج",
   "articlecategoryid": "تصنيف المقال",
   "previouslyfetched": "تم جلبه مسبقا",
+  "thiscomment": "هذا التعليق",
+  "commentdeleted": "تم حذف التعليق بنجاح",
+  "commentadded": "تم إضافة التعليق بنجاح",
+  "article": "المقال"
 }

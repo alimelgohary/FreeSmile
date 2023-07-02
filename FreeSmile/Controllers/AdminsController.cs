@@ -11,6 +11,7 @@ using static FreeSmile.Services.AuthHelper;
 using FreeSmile.CustomValidations;
 using FreeSmile.DTOs.Posts;
 using FreeSmile.DTOs.Query;
+using System.Security.Claims;
 
 namespace FreeSmile.Controllers
 {
@@ -23,11 +24,13 @@ namespace FreeSmile.Controllers
     {
         private readonly IStringLocalizer<AdminsController> _localizer;
         private readonly IAdminService _adminService;
+        private readonly IDentistService _dentistService;
 
-        public AdminsController(IStringLocalizer<AdminsController> localizer, IAdminService adminService)
+        public AdminsController(IStringLocalizer<AdminsController> localizer, IAdminService adminService, IDentistService dentistService)
         {
             _localizer = localizer;
             _adminService = adminService;
+            _dentistService = dentistService;
         }
 
         [SwaggerOperation(Summary = $"Gets Number Of Verification Requests. It returns integer")]
@@ -86,6 +89,19 @@ namespace FreeSmile.Controllers
         {
             var res = await _adminService.GetLogsSummaryAsync(date);
             return Ok(res);
+        }
+
+        [SwaggerOperation(Summary = $"Takes {nameof(comment_id)} as query and removes that comment if violated")]
+        [HttpDelete("ArticleRemoveComment")]
+        public async Task<IActionResult> ArticleRemoveCommentAsync([FromQuery] int comment_id)
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+            string role = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value!;
+
+            RegularResponse res = await _dentistService.ArticleRemoveCommentAsync(user_id_int, comment_id, role);
+
+            return StatusCode(res.StatusCode, res);
         }
 
         #region DummyActions

@@ -1,4 +1,5 @@
-﻿using FreeSmile.DTOs.Auth;
+﻿using FreeSmile.DTOs;
+using FreeSmile.DTOs.Auth;
 using FreeSmile.DTOs.Posts;
 using FreeSmile.DTOs.Settings;
 using static FreeSmile.Services.Helper;
@@ -22,11 +23,11 @@ namespace FreeSmile.Services
         public Task<List<GetPostDto>> GetListingsAsync(int user_id, int size, int[] previouslyFetched, int governorateId, int listingCategoryId, byte sortBy);
         public Task<List<GetPostDto>> GetArticlesAsync(int user_id, int size, int[] previouslyFetched, int articleCategoryId, byte sortBy);
         public Task LikeUnlikeArticleAsync(int user_id_int, int articleId);
+        public Task<RegularResponse> ArticleAddCommentAsync(int user_id, AddCommentDto value);
+        public Task<RegularResponse> ArticleRemoveCommentAsync(int user_id, int comment_id, string roleString);
 
         // TOOD: POST: add portfolio
         // TODO: DELETE: remove portfolio
-        // TODO: POST: add comment on an article
-        // TODO: DELETE: remove comment on an article
         // TODO: POST: Report a comment
     }
 }

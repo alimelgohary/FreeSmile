@@ -9,6 +9,8 @@ using FreeSmile.DTOs.Auth;
 using FreeSmile.DTOs.Posts;
 using System.Globalization;
 using Humanizer;
+using FreeSmile.DTOs;
+using static FreeSmile.Services.AuthHelper;
 
 namespace FreeSmile.Services
 {
@@ -581,6 +583,48 @@ namespace FreeSmile.Services
                 throw new GeneralException(_localizer["personnotavailable"]);
 
             await _context.Database.ExecuteSqlRawAsync($"dbo.likeunlikearticle @ArticleId = {articleId}, @UserId = {user_id};");
+        }
+
+        public async Task<RegularResponse> ArticleAddCommentAsync(int user_id, AddCommentDto value)
+        {
+            Article? article = await _context.Articles.AsNoTracking()
+                                               .FirstOrDefaultAsync(x => x.ArticleId == value.ArticleId);
+            if (article is null)
+                throw new NotFoundException(_localizer["notfound", _localizer["article"]]);
+
+            if (await _commonService.CanUsersCommunicateAsync(user_id, (int)value.ArticleId!) == false)
+                throw new GeneralException(_localizer["personnotavailable"]);
+
+            await _context.Comments.AddAsync(new Comment()
+            {
+                ArticleId = (int)value.ArticleId!,
+                WriterId = user_id,
+                Body = value.Body
+            });
+            await _context.SaveChangesAsync();
+            return RegularResponse.Success(message: _localizer["CommentAdded"]);
+        }
+
+        public async Task<RegularResponse> ArticleRemoveCommentAsync(int user_id, int comment_id, string roleString)
+        {
+            Role role = Enum.Parse<Role>(roleString);
+            if (role == Role.Admin || role == Role.SuperAdmin)
+            {
+                await DeleteCommentDangerousAsync(comment_id);
+                return RegularResponse.Success(message: _localizer["CommentDeleted"]);
+            }
+
+            if (await _context.Comments.AnyAsync(x => x.CommentId == comment_id && x.WriterId == user_id))
+            {
+                await DeleteCommentDangerousAsync(comment_id);
+                return RegularResponse.Success(message: _localizer["CommentDeleted"]);
+            }
+
+            throw new NotFoundException(_localizer["notfound", _localizer["thiscomment"]]);
+        }
+        async Task DeleteCommentDangerousAsync(int id)
+        {
+            await _context.Database.ExecuteSqlRawAsync($"delete from comments where comment_id = {id}");
         }
     }
 }

@@ -108,5 +108,9 @@
   "price": "Price",
   "listingcategoryid": "Listing category",
   "articlecategoryid": "Article category",
-  "previouslyfetched": "Previously fetched"
+  "previouslyfetched": "Previously fetched",
+  "thiscomment": "This comment",
+  "commentdeleted": "The comment is deleted successfully",
+  "commentadded":  "The comment is added successfully",
+  "article": "article"
 }

@@ -12,6 +12,7 @@ using FreeSmile.DTOs.Posts;
 using FreeSmile.CustomValidations;
 using System.ComponentModel.DataAnnotations;
 using FreeSmile.DTOs.Query;
+using FreeSmile.DTOs;
 
 namespace FreeSmile.Controllers
 {
@@ -187,6 +188,29 @@ namespace FreeSmile.Controllers
             return Ok();
         }
 
+        [SwaggerOperation(Summary = $"Takes {nameof(AddCommentDto)} as JSON and adds comment to specified article")]
+        [HttpPost("ArticleAddComment")]
+        public async Task<IActionResult> ArticleAddCommentAsync([FromBody] AddCommentDto value)
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+
+            RegularResponse res = await _dentistService.ArticleAddCommentAsync(user_id_int, value);
+
+            return StatusCode(res.StatusCode, res);
+        }
+        [SwaggerOperation(Summary = $"Takes {nameof(comment_id)} as query and deletes user's certain comment")]
+        [HttpDelete("ArticleRemoveComment")]
+        public async Task<IActionResult> ArticleRemoveCommentAsync([FromQuery] int comment_id)
+        {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)!.Value!;
+            int user_id_int = int.Parse(user_id);
+            string role = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value!;
+
+            RegularResponse res = await _dentistService.ArticleRemoveCommentAsync(user_id_int, comment_id, role);
+
+            return StatusCode(res.StatusCode, res);
+        }
 
         #region DummyActions
         [HttpPost("Dummy")]
